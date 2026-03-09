@@ -1,6 +1,7 @@
 /*
 
    Copyright 2018-2023 Charles Korn.
+   Copyright 2026 Ruslan Ibrahimau.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,7 +17,7 @@
 
 */
 
-rootProject.name = "kaml"
+rootProject.name = "kotaml"
 
 pluginManagement {
     plugins {
