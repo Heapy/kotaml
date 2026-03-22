@@ -28,15 +28,19 @@ import it.krzeminski.snakeyaml.engine.kmp.parser.ParserImpl
 import it.krzeminski.snakeyaml.engine.kmp.scanner.StreamReader
 import okio.Source
 
-internal class YamlParser(reader: Source, codePointLimit: Int? = null) {
+internal class YamlParser(
+    reader: Source,
+    codePointLimit: Int? = null,
+) {
     internal constructor(source: String) : this(source.bufferedSource())
 
     private val dummyFileName = "DUMMY_FILE_NAME"
-    private val loadSettings = LoadSettings(
-        label = dummyFileName,
-    ).copy {
-        if (codePointLimit != null) this.codePointLimit = codePointLimit
-    }
+    private val loadSettings =
+        LoadSettings(
+            label = dummyFileName,
+        ).copy {
+            if (codePointLimit != null) this.codePointLimit = codePointLimit
+        }
     private val streamReader = StreamReader(loadSettings, reader)
     private val events = ParserImpl(loadSettings, streamReader)
 
@@ -56,9 +60,13 @@ internal class YamlParser(reader: Source, codePointLimit: Int? = null) {
     }
 
     fun consumeEvent(path: YamlPath): Event = checkEvent(path) { events.next() }
+
     fun peekEvent(path: YamlPath): Event = checkEvent(path) { events.peekEvent() }
 
-    fun consumeEventOfType(type: Event.ID, path: YamlPath) {
+    fun consumeEventOfType(
+        type: Event.ID,
+        path: YamlPath,
+    ) {
         val event = consumeEvent(path)
 
         if (event.eventId != type) {
@@ -69,7 +77,10 @@ internal class YamlParser(reader: Source, codePointLimit: Int? = null) {
         }
     }
 
-    private fun checkEvent(path: YamlPath, retrieve: () -> Event): Event {
+    private fun checkEvent(
+        path: YamlPath,
+        retrieve: () -> Event,
+    ): Event {
         try {
             return retrieve()
         } catch (e: MarkedYamlEngineException) {
@@ -77,7 +88,10 @@ internal class YamlParser(reader: Source, codePointLimit: Int? = null) {
         }
     }
 
-    private fun translateYamlEngineException(e: MarkedYamlEngineException, path: YamlPath): MalformedYamlException {
+    private fun translateYamlEngineException(
+        e: MarkedYamlEngineException,
+        path: YamlPath,
+    ): MalformedYamlException {
         val updatedMessage = StringBuilder()
 
         val context = e.context
@@ -121,12 +135,17 @@ internal class YamlParser(reader: Source, codePointLimit: Int? = null) {
         )
     }
 
-    private fun translateYamlEngineExceptionMessage(message: String): String = when (message) {
-        "mapping values are not allowed here",
-        "expected <block end>, but found '<block sequence start>'",
-        "expected <block end>, but found '<block mapping start>'",
-        ->
-            "$message (is the indentation level of this line or a line nearby incorrect?)"
-        else -> message
-    }
+    private fun translateYamlEngineExceptionMessage(message: String): String =
+        when (message) {
+            "mapping values are not allowed here",
+            "expected <block end>, but found '<block sequence start>'",
+            "expected <block end>, but found '<block mapping start>'",
+            -> {
+                "$message (is the indentation level of this line or a line nearby incorrect?)"
+            }
+
+            else -> {
+                message
+            }
+        }
 }

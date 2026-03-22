@@ -22,46 +22,47 @@ package com.charleskorn.kaml
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 
-class YamlNullTest : FunSpec({
-    val nullValue = YamlNull(YamlPath.root)
-    val path = YamlPath.root.withListEntry(0, Location(2, 4))
-    val original = YamlNull(YamlPath.root)
-    val newPath = YamlPath.forAliasDefinition("blah", Location(2, 3))
-    val value = YamlNull(path)
+class YamlNullTest :
+    FunSpec({
+        val nullValue = YamlNull(YamlPath.root)
+        val path = YamlPath.root.withListEntry(0, Location(2, 4))
+        val original = YamlNull(YamlPath.root)
+        val newPath = YamlPath.forAliasDefinition("blah", Location(2, 3))
+        val value = YamlNull(path)
 
-    test("Null value should be equivalent to same instance") {
-        nullValue.equivalentContentTo(nullValue) shouldBe true
-    }
+        test("Null value should be equivalent to same instance") {
+            nullValue.equivalentContentTo(nullValue) shouldBe true
+        }
 
-    test("Null value should be equivalent to another null value with same path") {
-        nullValue.equivalentContentTo(YamlNull(nullValue.path)) shouldBe true
-    }
+        test("Null value should be equivalent to another null value with same path") {
+            nullValue.equivalentContentTo(YamlNull(nullValue.path)) shouldBe true
+        }
 
-    test("Null value should be equivalent to another null value with different path") {
-        nullValue.equivalentContentTo(YamlNull(path)) shouldBe true
-    }
+        test("Null value should be equivalent to another null value with different path") {
+            nullValue.equivalentContentTo(YamlNull(path)) shouldBe true
+        }
 
-    test("Null value should not be equivalent to a scalar value") {
-        nullValue.equivalentContentTo(YamlScalar("some content", nullValue.path)) shouldBe false
-    }
+        test("Null value should not be equivalent to a scalar value") {
+            nullValue.equivalentContentTo(YamlScalar("some content", nullValue.path)) shouldBe false
+        }
 
-    test("Null value should not be equivalent to a list") {
-        nullValue.equivalentContentTo(YamlList(emptyList(), nullValue.path)) shouldBe false
-    }
+        test("Null value should not be equivalent to a list") {
+            nullValue.equivalentContentTo(YamlList(emptyList(), nullValue.path)) shouldBe false
+        }
 
-    test("Null value should not be equivalent to a map") {
-        nullValue.equivalentContentTo(YamlMap(emptyMap(), nullValue.path)) shouldBe false
-    }
+        test("Null value should not be equivalent to a map") {
+            nullValue.equivalentContentTo(YamlMap(emptyMap(), nullValue.path)) shouldBe false
+        }
 
-    test("Converting content to human-readable string should return 'null'") {
-        YamlNull(YamlPath.root).contentToString() shouldBe "null"
-    }
+        test("Converting content to human-readable string should return 'null'") {
+            YamlNull(YamlPath.root).contentToString() shouldBe "null"
+        }
 
-    test("Replacing its path should return null value with the provided path") {
-        original.withPath(newPath) shouldBe YamlNull(newPath)
-    }
+        test("Replacing its path should return null value with the provided path") {
+            original.withPath(newPath) shouldBe YamlNull(newPath)
+        }
 
-    test("Converting to string should return a human-readable description") {
-        value.toString() shouldBe "null @ $path"
-    }
-})
+        test("Converting to string should return a human-readable description") {
+            value.toString() shouldBe "null @ $path"
+        }
+    })

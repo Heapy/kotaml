@@ -101,38 +101,56 @@ data class TestClassWithNestedTaggedNode(
 
 @Serializable
 @JvmInline
-value class TestInlineString(val value: String)
+value class TestInlineString(
+    val value: String,
+)
 
 @Serializable
 @JvmInline
-value class TestInlineInt(val value: Int)
+value class TestInlineInt(
+    val value: Int,
+)
 
 @Serializable
 @JvmInline
-value class TestInlineBoolean(val value: Boolean)
+value class TestInlineBoolean(
+    val value: Boolean,
+)
 
 @Serializable
 @JvmInline
-value class TestInlineDouble(val value: Double)
+value class TestInlineDouble(
+    val value: Double,
+)
 
 @Serializable
 @JvmInline
-value class TestInlineList(val value: List<Int>)
+value class TestInlineList(
+    val value: List<Int>,
+)
 
 @Serializable
 @JvmInline
-value class TestInlineMap(val value: Map<String, Int>)
+value class TestInlineMap(
+    val value: Map<String, Int>,
+)
 
 @Serializable
 @JvmInline
-value class TestInlineSealedInterface(val value: TestSealedInterface)
+value class TestInlineSealedInterface(
+    val value: TestSealedInterface,
+)
 
 @Serializable
 @JvmInline
-value class TestInlineClass(val value: NestedObjects)
+value class TestInlineClass(
+    val value: NestedObjects,
+)
 
 @Serializable
 sealed interface TestSealedInterface
 
 @Serializable
-data class TestSealedImpl(val value: String) : TestSealedInterface
+data class TestSealedImpl(
+    val value: String,
+) : TestSealedInterface

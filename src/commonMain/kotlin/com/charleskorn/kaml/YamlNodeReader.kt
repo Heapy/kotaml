@@ -61,15 +61,22 @@ internal class YamlNodeReader(
         return WeightedNode(node, weight = 0u) to null
     }
 
-    private fun readFromEvent(event: Event, path: YamlPath): WeightedNode = when (event) {
-        is ScalarEvent -> WeightedNode(readScalarOrNull(event, path).maybeToTaggedNode(event.tag), weight = 0u)
-        is SequenceStartEvent -> readSequence(path).let { it.copy(node = it.node.maybeToTaggedNode(event.tag)) }
-        is MappingStartEvent -> readMapping(path).let { it.copy(node = it.node.maybeToTaggedNode(event.tag)) }
-        is AliasEvent -> readAlias(event, path)
-        else -> throw MalformedYamlException("Unexpected ${event.eventId}", path.withError(event.location))
-    }
+    private fun readFromEvent(
+        event: Event,
+        path: YamlPath,
+    ): WeightedNode =
+        when (event) {
+            is ScalarEvent -> WeightedNode(readScalarOrNull(event, path).maybeToTaggedNode(event.tag), weight = 0u)
+            is SequenceStartEvent -> readSequence(path).let { it.copy(node = it.node.maybeToTaggedNode(event.tag)) }
+            is MappingStartEvent -> readMapping(path).let { it.copy(node = it.node.maybeToTaggedNode(event.tag)) }
+            is AliasEvent -> readAlias(event, path)
+            else -> throw MalformedYamlException("Unexpected ${event.eventId}", path.withError(event.location))
+        }
 
-    private fun readScalarOrNull(event: ScalarEvent, path: YamlPath): YamlNode {
+    private fun readScalarOrNull(
+        event: ScalarEvent,
+        path: YamlPath,
+    ): YamlNode {
         if ((event.value == "null" || event.value == "" || event.value == "~") && event.plain) {
             return YamlNull(path)
         } else {
@@ -149,31 +156,53 @@ internal class YamlNodeReader(
 
                 return scalarEvent.value
             }
-            else -> throw nonScalarMapKeyException(path, event)
+
+            else -> {
+                throw nonScalarMapKeyException(path, event)
+            }
         }
     }
 
-    private fun nonScalarMapKeyException(path: YamlPath, event: Event) = MalformedYamlException("Property name must not be a list, map, null or tagged value. (To use 'null' as a property name, enclose it in quotes.)", path.withError(event.location))
+    private fun nonScalarMapKeyException(
+        path: YamlPath,
+        event: Event,
+    ) = MalformedYamlException(
+        "Property name must not be a list, map, null or tagged value. (To use 'null' as a property name, enclose it in quotes.)",
+        path.withError(event.location),
+    )
 
-    private fun YamlNode.maybeToTaggedNode(tag: String?): YamlNode =
-        tag?.let { YamlTaggedNode(it, this) } ?: this
+    private fun YamlNode.maybeToTaggedNode(tag: String?): YamlNode = tag?.let { YamlTaggedNode(it, this) } ?: this
 
     private fun doMerges(items: Map<YamlScalar, YamlNode>): Map<YamlScalar, YamlNode> {
         val mergeEntries = items.entries.filter { (key, _) -> isMerge(key) }
 
         when (mergeEntries.count()) {
-            0 -> return items
-            1 -> when (val mappingsToMerge = mergeEntries.single().value) {
-                is YamlList -> return doMerges(items, mappingsToMerge.items)
-                else -> return doMerges(items, listOf(mappingsToMerge))
+            0 -> {
+                return items
             }
-            else -> throw MalformedYamlException("Cannot perform multiple '<<' merges into a map. Instead, combine all merges into a single '<<' entry.", mergeEntries.second().key.path)
+
+            1 -> {
+                when (val mappingsToMerge = mergeEntries.single().value) {
+                    is YamlList -> return doMerges(items, mappingsToMerge.items)
+                    else -> return doMerges(items, listOf(mappingsToMerge))
+                }
+            }
+
+            else -> {
+                throw MalformedYamlException(
+                    "Cannot perform multiple '<<' merges into a map. Instead, combine all merges into a single '<<' entry.",
+                    mergeEntries.second().key.path,
+                )
+            }
         }
     }
 
     private fun isMerge(key: YamlNode): Boolean = key is YamlScalar && key.content == "<<"
 
-    private fun doMerges(original: Map<YamlScalar, YamlNode>, others: List<YamlNode>): Map<YamlScalar, YamlNode> {
+    private fun doMerges(
+        original: Map<YamlScalar, YamlNode>,
+        others: List<YamlNode>,
+    ): Map<YamlScalar, YamlNode> {
         val merged = mutableMapOf<YamlScalar, YamlNode>()
 
         original
@@ -183,11 +212,23 @@ internal class YamlNodeReader(
         others
             .forEach { other ->
                 when (other) {
-                    is YamlNull -> throw MalformedYamlException("Cannot merge a null value into a map.", other.path)
-                    is YamlScalar -> throw MalformedYamlException("Cannot merge a scalar value into a map.", other.path)
-                    is YamlList -> throw MalformedYamlException("Cannot merge a list value into a map.", other.path)
-                    is YamlTaggedNode -> throw MalformedYamlException("Cannot merge a tagged value into a map.", other.path)
-                    is YamlMap ->
+                    is YamlNull -> {
+                        throw MalformedYamlException("Cannot merge a null value into a map.", other.path)
+                    }
+
+                    is YamlScalar -> {
+                        throw MalformedYamlException("Cannot merge a scalar value into a map.", other.path)
+                    }
+
+                    is YamlList -> {
+                        throw MalformedYamlException("Cannot merge a list value into a map.", other.path)
+                    }
+
+                    is YamlTaggedNode -> {
+                        throw MalformedYamlException("Cannot merge a tagged value into a map.", other.path)
+                    }
+
+                    is YamlMap -> {
                         other.entries.forEach { (key, value) ->
                             val existingEntry = merged.entries.singleOrNull { it.key.equivalentContentTo(key) }
 
@@ -195,22 +236,27 @@ internal class YamlNodeReader(
                                 merged.put(key, value)
                             }
                         }
+                    }
                 }
             }
 
         return merged
     }
 
-    private fun readAlias(event: AliasEvent, path: YamlPath): WeightedNode {
+    private fun readAlias(
+        event: AliasEvent,
+        path: YamlPath,
+    ): WeightedNode {
         if (maxAliasCount == 0u) {
             throw ForbiddenAnchorOrAliasException("Parsing anchors and aliases is disabled.", path)
         }
 
         val anchor = event.alias
 
-        val (resolvedNode, resolvedNodeWeight) = aliases.getOrElse(anchor) {
-            throw UnknownAnchorException(anchor.value, path.withError(event.location))
-        }
+        val (resolvedNode, resolvedNodeWeight) =
+            aliases.getOrElse(anchor) {
+                throw UnknownAnchorException(anchor.value, path.withError(event.location))
+            }
 
         val resultWeight = resolvedNodeWeight + 1u
         aliasCount += resultWeight
@@ -223,10 +269,12 @@ internal class YamlNodeReader(
         }
 
         return WeightedNode(
-            node = resolvedNode.withPath(
-                path.withAliasReference(anchor.value, event.location)
-                    .withAliasDefinition(anchor.value, resolvedNode.location),
-            ),
+            node =
+                resolvedNode.withPath(
+                    path
+                        .withAliasReference(anchor.value, event.location)
+                        .withAliasDefinition(anchor.value, resolvedNode.location),
+                ),
             weight = resultWeight,
         )
     }

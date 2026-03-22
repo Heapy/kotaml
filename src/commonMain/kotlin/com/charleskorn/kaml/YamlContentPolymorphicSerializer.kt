@@ -34,34 +34,42 @@ import kotlinx.serialization.serializerOrNull
 import kotlin.reflect.KClass
 
 @OptIn(ExperimentalSerializationApi::class)
-public abstract class YamlContentPolymorphicSerializer<T : Any>(private val baseClass: KClass<T>) : KSerializer<T> {
+public abstract class YamlContentPolymorphicSerializer<T : Any>(
+    private val baseClass: KClass<T>,
+) : KSerializer<T> {
     @OptIn(InternalSerializationApi::class)
-    override val descriptor: SerialDescriptor = buildSerialDescriptor(
-        "${YamlContentPolymorphicSerializer::class.simpleName}<${baseClass.simpleName}>",
-        PolymorphicKind.SEALED,
-    ) {
-        annotations += Marker()
-    }
+    override val descriptor: SerialDescriptor =
+        buildSerialDescriptor(
+            "${YamlContentPolymorphicSerializer::class.simpleName}<${baseClass.simpleName}>",
+            PolymorphicKind.SEALED,
+        ) {
+            annotations += Marker()
+        }
 
     @SerialInfo
     internal annotation class Marker
 
     @OptIn(InternalSerializationApi::class)
-    override fun serialize(encoder: Encoder, value: T) {
-        val actualSerializer = encoder.serializersModule.getPolymorphic(baseClass, value)
-            ?: value::class.serializerOrNull()
-            ?: throwSubtypeNotRegistered(value::class, baseClass)
+    override fun serialize(
+        encoder: Encoder,
+        value: T,
+    ) {
+        val actualSerializer =
+            encoder.serializersModule.getPolymorphic(baseClass, value)
+                ?: value::class.serializerOrNull()
+                ?: throwSubtypeNotRegistered(value::class, baseClass)
         @Suppress("UNCHECKED_CAST")
         (actualSerializer as KSerializer<T>).serialize(encoder, value)
     }
 
-    override fun deserialize(decoder: Decoder): T {
-        return decoder.decodeSerializableValue(selectDeserializer((decoder as YamlInput).node))
-    }
+    override fun deserialize(decoder: Decoder): T = decoder.decodeSerializableValue(selectDeserializer((decoder as YamlInput).node))
 
     public abstract fun selectDeserializer(node: YamlNode): DeserializationStrategy<T>
 
-    private fun throwSubtypeNotRegistered(subClass: KClass<*>, baseClass: KClass<*>): Nothing {
+    private fun throwSubtypeNotRegistered(
+        subClass: KClass<*>,
+        baseClass: KClass<*>,
+    ): Nothing {
         val subClassName = subClass.simpleName ?: "$subClass"
         throw SerializationException(
             """

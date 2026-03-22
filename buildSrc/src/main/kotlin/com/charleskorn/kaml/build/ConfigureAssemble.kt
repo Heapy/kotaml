@@ -33,7 +33,9 @@ fun Project.configureAssemble() {
         description = "Prepares files for release."
         group = "Distribution"
 
-        project.extensions.getByType<PublishingExtension>().publications.names
+        project.extensions
+            .getByType<PublishingExtension>()
+            .publications.names
             .filter { it != "kotlinMultiplatform" }
             .forEach { publicationName ->
                 if (publicationName in TARGETS_WITH_JAR_TASK) {
@@ -58,13 +60,29 @@ fun Project.configureAssemble() {
                 with(
                     copySpec()
                         .from(tasks.named("generatePomFileFor${publicationName.capitalize()}Publication"))
-                        .rename { fileName -> if (fileName == "pom-default.xml") "${project.name}-$publicationName-${project.version}.pom" else fileName },
+                        .rename { fileName ->
+                            if (fileName ==
+                                "pom-default.xml"
+                            ) {
+                                "${project.name}-$publicationName-${project.version}.pom"
+                            } else {
+                                fileName
+                            }
+                        },
                 )
 
                 with(
                     copySpec()
                         .from(tasks.named("generateMetadataFileFor${publicationName.capitalize()}Publication"))
-                        .rename { fileName -> if (fileName == "module.json") "${project.name}-$publicationName-${project.version}.module.json" else fileName },
+                        .rename { fileName ->
+                            if (fileName ==
+                                "module.json"
+                            ) {
+                                "${project.name}-$publicationName-${project.version}.module.json"
+                            } else {
+                                fileName
+                            }
+                        },
                 )
             }
 

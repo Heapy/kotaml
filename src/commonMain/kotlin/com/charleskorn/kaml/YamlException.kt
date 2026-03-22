@@ -37,14 +37,18 @@ public class DuplicateKeyException(
     public val originalPath: YamlPath,
     public val duplicatePath: YamlPath,
     public val key: String,
-) :
-    YamlException("Duplicate key $key. It was previously given at line ${originalPath.endLocation.line}, column ${originalPath.endLocation.column}.", duplicatePath) {
-
+) : YamlException(
+        "Duplicate key $key. It was previously given at line ${originalPath.endLocation.line}, column ${originalPath.endLocation.column}.",
+        duplicatePath,
+    ) {
     public val originalLocation: Location = originalPath.endLocation
     public val duplicateLocation: Location = duplicatePath.endLocation
 }
 
-public class EmptyYamlDocumentException(message: String, path: YamlPath) : YamlException(message, path)
+public class EmptyYamlDocumentException(
+    message: String,
+    path: YamlPath,
+) : YamlException(message, path)
 
 public class InvalidPropertyValueException(
     public val propertyName: String,
@@ -53,31 +57,33 @@ public class InvalidPropertyValueException(
     cause: Throwable? = null,
 ) : YamlException("Value for '$propertyName' is invalid: $reason", path, cause)
 
-public class MalformedYamlException(message: String, path: YamlPath) : YamlException(message, path)
+public class MalformedYamlException(
+    message: String,
+    path: YamlPath,
+) : YamlException(message, path)
 
-public class UnexpectedNullValueException(path: YamlPath) : YamlException("Unexpected null or empty value for non-null field.", path)
+public class UnexpectedNullValueException(
+    path: YamlPath,
+) : YamlException("Unexpected null or empty value for non-null field.", path)
 
 public class MissingRequiredPropertyException(
     public val propertyName: String,
     path: YamlPath,
     cause: Throwable? = null,
-) :
-    YamlException("Property '$propertyName' is required but it is missing.", path, cause)
+) : YamlException("Property '$propertyName' is required but it is missing.", path, cause)
 
 public class UnknownPropertyException(
     public val propertyName: String,
     public val validPropertyNames: Set<String>,
     path: YamlPath,
-) :
-    YamlException("Unknown property '$propertyName'. Known properties are: ${validPropertyNames.sorted().joinToString(", ")}", path)
+) : YamlException("Unknown property '$propertyName'. Known properties are: ${validPropertyNames.sorted().joinToString(", ")}", path)
 
 public class UnknownPolymorphicTypeException(
     public val typeName: String,
     public val validTypeNames: Set<String>,
     path: YamlPath,
     cause: Throwable? = null,
-) :
-    YamlException("Unknown type '$typeName'. Known types are: ${validTypeNames.sorted().joinToString(", ")}", path, cause)
+) : YamlException("Unknown type '$typeName'. Known types are: ${validTypeNames.sorted().joinToString(", ")}", path, cause)
 
 public class YamlScalarFormatException(
     message: String,
@@ -85,19 +91,30 @@ public class YamlScalarFormatException(
     public val originalValue: String,
 ) : YamlException(message, path)
 
-public open class IncorrectTypeException(message: String, path: YamlPath) : YamlException(message, path)
+public open class IncorrectTypeException(
+    message: String,
+    path: YamlPath,
+) : YamlException(message, path)
 
-public class MissingTypeTagException(path: YamlPath) :
-    IncorrectTypeException("Value is missing a type tag (eg. !<type>)", path)
+public class MissingTypeTagException(
+    path: YamlPath,
+) : IncorrectTypeException("Value is missing a type tag (eg. !<type>)", path)
 
-public class UnknownAnchorException(public val anchorName: String, path: YamlPath) :
-    YamlException("Unknown anchor '$anchorName'.", path)
+public class UnknownAnchorException(
+    public val anchorName: String,
+    path: YamlPath,
+) : YamlException("Unknown anchor '$anchorName'.", path)
 
 public class NoAnchorForExtensionException(
     public val key: String,
     public val extensionDefinitionPrefix: String,
     path: YamlPath,
-) :
-    YamlException("The key '$key' starts with the extension definition prefix '$extensionDefinitionPrefix' but does not define an anchor.", path)
+) : YamlException(
+        "The key '$key' starts with the extension definition prefix '$extensionDefinitionPrefix' but does not define an anchor.",
+        path,
+    )
 
-public class ForbiddenAnchorOrAliasException(message: String, path: YamlPath) : YamlException(message, path)
+public class ForbiddenAnchorOrAliasException(
+    message: String,
+    path: YamlPath,
+) : YamlException(message, path)

@@ -22,38 +22,39 @@ package com.charleskorn.kaml
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 
-class YamlTaggedNodeTest : FunSpec({
-    val tagged = YamlTaggedNode("tag", YamlScalar("test", YamlPath.root))
-    val original = YamlTaggedNode("tag", YamlScalar("value", YamlPath.root))
-    val newPath = YamlPath.forAliasDefinition("blah", Location(2, 3))
-    val value = YamlTaggedNode("some tag", YamlScalar("some value", YamlPath.root.withListEntry(2, Location(3, 4))))
-    val map = YamlTaggedNode("tag", YamlScalar("test", YamlPath.root))
+class YamlTaggedNodeTest :
+    FunSpec({
+        val tagged = YamlTaggedNode("tag", YamlScalar("test", YamlPath.root))
+        val original = YamlTaggedNode("tag", YamlScalar("value", YamlPath.root))
+        val newPath = YamlPath.forAliasDefinition("blah", Location(2, 3))
+        val value = YamlTaggedNode("some tag", YamlScalar("some value", YamlPath.root.withListEntry(2, Location(3, 4))))
+        val map = YamlTaggedNode("tag", YamlScalar("test", YamlPath.root))
 
-    test("Tagged node should be equivalent to the same instance") {
-        tagged.equivalentContentTo(tagged) shouldBe true
-    }
+        test("Tagged node should be equivalent to the same instance") {
+            tagged.equivalentContentTo(tagged) shouldBe true
+        }
 
-    test("Tagged node should not be equivalent to a non-tagged node") {
-        tagged.equivalentContentTo(YamlScalar("test", YamlPath.root)) shouldBe false
-    }
+        test("Tagged node should not be equivalent to a non-tagged node") {
+            tagged.equivalentContentTo(YamlScalar("test", YamlPath.root)) shouldBe false
+        }
 
-    test("Tagged node should not be equivalent to a tagged node with different tag") {
-        tagged.equivalentContentTo(YamlTaggedNode("tag2", YamlScalar("test", YamlPath.root))) shouldBe false
-    }
+        test("Tagged node should not be equivalent to a tagged node with different tag") {
+            tagged.equivalentContentTo(YamlTaggedNode("tag2", YamlScalar("test", YamlPath.root))) shouldBe false
+        }
 
-    test("Tagged node should not be equivalent to a tagged node with different child node") {
-        tagged.equivalentContentTo(YamlTaggedNode("tag", YamlScalar("test2", YamlPath.root))) shouldBe false
-    }
+        test("Tagged node should not be equivalent to a tagged node with different child node") {
+            tagged.equivalentContentTo(YamlTaggedNode("tag", YamlScalar("test2", YamlPath.root))) shouldBe false
+        }
 
-    test("Converting tagged scalar content to human-readable string should return tag and child") {
-        map.contentToString() shouldBe "!tag 'test'"
-    }
+        test("Converting tagged scalar content to human-readable string should return tag and child") {
+            map.contentToString() shouldBe "!tag 'test'"
+        }
 
-    test("Replacing its path should return a tagged node with the inner node updated with the provided path") {
-        original.withPath(newPath) shouldBe YamlTaggedNode("tag", YamlScalar("value", newPath))
-    }
+        test("Replacing its path should return a tagged node with the inner node updated with the provided path") {
+            original.withPath(newPath) shouldBe YamlTaggedNode("tag", YamlScalar("value", newPath))
+        }
 
-    test("Converting to string should return a human-readable description") {
-        value.toString() shouldBe "tagged 'some tag': scalar @ ${value.path} : some value"
-    }
-})
+        test("Converting to string should return a human-readable description") {
+            value.toString() shouldBe "tagged 'some tag': scalar @ ${value.path} : some value"
+        }
+    })

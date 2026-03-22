@@ -38,10 +38,15 @@ internal object LocationThrowingSerializer : KSerializer<Any> {
         val location = (decoder as YamlInput).getCurrentLocation()
         val path = decoder.getCurrentPath()
 
-        throw LocationInformationException("Serializer called with location (${location.line}, ${location.column}) and path: ${path.toHumanReadableString()}")
+        throw LocationInformationException(
+            "Serializer called with location (${location.line}, ${location.column}) and path: ${path.toHumanReadableString()}",
+        )
     }
 
-    override fun serialize(encoder: Encoder, value: Any) = throw UnsupportedOperationException()
+    override fun serialize(
+        encoder: Encoder,
+        value: Any,
+    ) = throw UnsupportedOperationException()
 }
 
 internal object LocationThrowingMapSerializer : KSerializer<Any> {
@@ -51,10 +56,17 @@ internal object LocationThrowingMapSerializer : KSerializer<Any> {
         val location = (decoder as YamlInput).getCurrentLocation()
         val path = decoder.getCurrentPath()
 
-        throw LocationInformationException("Serializer called with location (${location.line}, ${location.column}) and path: ${path.toHumanReadableString()}")
+        throw LocationInformationException(
+            "Serializer called with location (${location.line}, ${location.column}) and path: ${path.toHumanReadableString()}",
+        )
     }
 
-    override fun serialize(encoder: Encoder, value: Any) = throw UnsupportedOperationException()
+    override fun serialize(
+        encoder: Encoder,
+        value: Any,
+    ) = throw UnsupportedOperationException()
 }
 
-internal class LocationInformationException(message: String) : RuntimeException(message)
+internal class LocationInformationException(
+    message: String,
+) : RuntimeException(message)

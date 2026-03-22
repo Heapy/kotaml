@@ -44,7 +44,10 @@ internal object YamlNodeSerializer : KSerializer<YamlNode> {
             annotations += YamlContentPolymorphicSerializer.Marker()
         }.nullable
 
-    override fun serialize(encoder: Encoder, value: YamlNode) {
+    override fun serialize(
+        encoder: Encoder,
+        value: YamlNode,
+    ) {
         encoder.asYamlOutput()
         when (value) {
             is YamlList -> encoder.encodeSerializableValue(YamlListSerializer, value)
@@ -65,7 +68,10 @@ internal object YamlScalarSerializer : KSerializer<YamlScalar> {
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("com.charleskorn.kaml.YamlScalar", PrimitiveKind.STRING)
 
-    override fun serialize(encoder: Encoder, value: YamlScalar) {
+    override fun serialize(
+        encoder: Encoder,
+        value: YamlScalar,
+    ) {
         encoder.asYamlOutput()
         value.toBooleanOrNull()?.also { return encoder.encodeBoolean(it) }
         value.toLongOrNull()?.also { return encoder.encodeLong(it) }
@@ -84,7 +90,10 @@ internal object YamlScalarSerializer : KSerializer<YamlScalar> {
 internal object YamlNullSerializer : KSerializer<YamlNull> {
     override val descriptor: SerialDescriptor = buildSerialDescriptor("com.charleskorn.kaml.YamlNull", SerialKind.ENUM)
 
-    override fun serialize(encoder: Encoder, value: YamlNull) {
+    override fun serialize(
+        encoder: Encoder,
+        value: YamlNull,
+    ) {
         encoder.asYamlOutput().encodeNull()
     }
 
@@ -95,14 +104,16 @@ internal object YamlNullSerializer : KSerializer<YamlNull> {
 }
 
 internal object YamlTaggedNodeSerializer : KSerializer<YamlTaggedNode> {
-
     override val descriptor: SerialDescriptor =
         buildSerialDescriptor("com.charleskorn.kaml.YamlTaggedNode", PolymorphicKind.OPEN) {
             element("tag", String.serializer().descriptor)
             element("node", YamlNodeSerializer.descriptor)
         }
 
-    override fun serialize(encoder: Encoder, value: YamlTaggedNode) {
+    override fun serialize(
+        encoder: Encoder,
+        value: YamlTaggedNode,
+    ) {
         encoder.asYamlOutput().encodeStructure(descriptor) {
             encodeStringElement(descriptor, 0, value.tag)
             encodeSerializableElement(descriptor, 1, YamlNodeSerializer, value.innerNode)
@@ -118,7 +129,10 @@ internal object YamlTaggedNodeSerializer : KSerializer<YamlTaggedNode> {
 internal object YamlMapSerializer : KSerializer<YamlMap> {
     override val descriptor: SerialDescriptor = MapSerializer(YamlScalarSerializer, YamlNodeSerializer).descriptor
 
-    override fun serialize(encoder: Encoder, value: YamlMap) {
+    override fun serialize(
+        encoder: Encoder,
+        value: YamlMap,
+    ) {
         encoder.asYamlOutput()
         MapSerializer(YamlScalarSerializer, YamlNodeSerializer).serialize(encoder, value.entries)
     }
@@ -132,7 +146,10 @@ internal object YamlMapSerializer : KSerializer<YamlMap> {
 internal object YamlListSerializer : KSerializer<YamlList> {
     override val descriptor: SerialDescriptor = ListSerializer(YamlNodeSerializer).descriptor
 
-    override fun serialize(encoder: Encoder, value: YamlList) {
+    override fun serialize(
+        encoder: Encoder,
+        value: YamlList,
+    ) {
         encoder.asYamlOutput()
         ListSerializer(YamlNodeSerializer).serialize(encoder, value.items)
     }
@@ -143,10 +160,12 @@ internal object YamlListSerializer : KSerializer<YamlList> {
     }
 }
 
-private inline fun <reified I : YamlInput> Decoder.asYamlInput(): I = checkNotNull(this as? I) {
-    "This serializer can be used only with Yaml format. Expected Decoder to be ${I::class.simpleName}, got ${this::class}"
-}
+private inline fun <reified I : YamlInput> Decoder.asYamlInput(): I =
+    checkNotNull(this as? I) {
+        "This serializer can be used only with Yaml format. Expected Decoder to be ${I::class.simpleName}, got ${this::class}"
+    }
 
-private fun Encoder.asYamlOutput() = checkNotNull(this as? YamlOutput) {
-    "This serializer can be used only with Yaml format. Expected Encoder to be YamlOutput, got ${this::class}"
-}
+private fun Encoder.asYamlOutput() =
+    checkNotNull(this as? YamlOutput) {
+        "This serializer can be used only with Yaml format. Expected Encoder to be YamlOutput, got ${this::class}"
+    }

@@ -37,13 +37,11 @@ public class Yaml(
     override val serializersModule: SerializersModule = EmptySerializersModule(),
     public val configuration: YamlConfiguration = YamlConfiguration(),
 ) : StringFormat {
-
     public companion object {
         public val default: Yaml = Yaml()
     }
 
-    public inline fun <reified T> decodeFromYamlNode(node: YamlNode): T =
-        decodeFromYamlNode(serializersModule.serializer<T>(), node)
+    public inline fun <reified T> decodeFromYamlNode(node: YamlNode): T = decodeFromYamlNode(serializersModule.serializer<T>(), node)
 
     public fun <T> decodeFromYamlNode(
         deserializer: DeserializationStrategy<T>,
@@ -56,12 +54,9 @@ public class Yaml(
     override fun <T> decodeFromString(
         deserializer: DeserializationStrategy<T>,
         string: String,
-    ): T {
-        return decodeFromSource(deserializer, string.bufferedSource())
-    }
+    ): T = decodeFromSource(deserializer, string.bufferedSource())
 
-    public inline fun <reified T> decodeFromSource(source: Source): T =
-        decodeFromSource(serializersModule.serializer<T>(), source)
+    public inline fun <reified T> decodeFromSource(source: Source): T = decodeFromSource(serializersModule.serializer<T>(), source)
 
     public fun <T> decodeFromSource(
         deserializer: DeserializationStrategy<T>,
@@ -73,23 +68,25 @@ public class Yaml(
         return input.decodeSerializableValue(deserializer)
     }
 
-    public fun parseToYamlNode(string: String): YamlNode =
-        parseToYamlNode(string.bufferedSource())
+    public fun parseToYamlNode(string: String): YamlNode = parseToYamlNode(string.bufferedSource())
 
     internal fun parseToYamlNode(source: Source): YamlNode {
         val parser = YamlParser(source, configuration.codePointLimit)
-        val reader = YamlNodeReader(
-            parser,
-            configuration.extensionDefinitionPrefix,
-            configuration.anchorsAndAliases.maxAliasCount,
-        )
+        val reader =
+            YamlNodeReader(
+                parser,
+                configuration.extensionDefinitionPrefix,
+                configuration.anchorsAndAliases.maxAliasCount,
+            )
         val node = reader.read()
         parser.ensureEndOfStreamReached()
         return node
     }
 
-    public inline fun <reified T> encodeToSink(value: T, sink: Sink): Unit =
-        encodeToSink(serializersModule.serializer<T>(), value, sink)
+    public inline fun <reified T> encodeToSink(
+        value: T,
+        sink: Sink,
+    ): Unit = encodeToSink(serializersModule.serializer<T>(), value, sink)
 
     public fun <T> encodeToSink(
         serializer: SerializationStrategy<T>,
@@ -108,8 +105,10 @@ public class Yaml(
         return buffer.readUtf8().trimEnd()
     }
 
-    public inline fun <reified T> encodeToBufferedSink(value: T, sink: BufferedSink): Unit =
-        encodeToBufferedSink(serializersModule.serializer<T>(), value, sink)
+    public inline fun <reified T> encodeToBufferedSink(
+        value: T,
+        sink: BufferedSink,
+    ): Unit = encodeToBufferedSink(serializersModule.serializer<T>(), value, sink)
 
     @PublishedApi
     internal fun <T> encodeToBufferedSink(
@@ -127,14 +126,19 @@ public class Yaml(
 
 private class BufferedSinkDataWriter(
     val sink: BufferedSink,
-) : StreamDataWriter, AutoCloseable {
+) : StreamDataWriter,
+    AutoCloseable {
     override fun flush(): Unit = sink.flush()
 
     override fun write(str: String) {
         sink.writeUtf8(str)
     }
 
-    override fun write(str: String, off: Int, len: Int) {
+    override fun write(
+        str: String,
+        off: Int,
+        len: Int,
+    ) {
         sink.writeUtf8(string = str, beginIndex = off, endIndex = off + len)
     }
 

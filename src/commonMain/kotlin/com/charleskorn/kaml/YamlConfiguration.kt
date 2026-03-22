@@ -113,12 +113,13 @@ public enum class SingleLineStringStyle {
     ;
 
     public val multiLineStringStyle: MultiLineStringStyle
-        get() = when (this) {
-            DoubleQuoted -> MultiLineStringStyle.DoubleQuoted
-            SingleQuoted -> MultiLineStringStyle.SingleQuoted
-            Plain -> MultiLineStringStyle.Plain
-            PlainExceptAmbiguous -> MultiLineStringStyle.Plain
-        }
+        get() =
+            when (this) {
+                DoubleQuoted -> MultiLineStringStyle.DoubleQuoted
+                SingleQuoted -> MultiLineStringStyle.SingleQuoted
+                Plain -> MultiLineStringStyle.Plain
+                PlainExceptAmbiguous -> MultiLineStringStyle.Plain
+            }
 }
 
 public enum class AmbiguousQuoteStyle {
@@ -136,5 +137,7 @@ public sealed class AnchorsAndAliases {
     /**
      * [maxAliasCount]: the maximum amount of aliases allowed in the input YAML document if allowed at all, `null` allows any amount (defaults to `100`)
      */
-    public data class Permitted(override val maxAliasCount: UInt? = 100u) : AnchorsAndAliases()
+    public data class Permitted(
+        override val maxAliasCount: UInt? = 100u,
+    ) : AnchorsAndAliases()
 }

@@ -23,7 +23,12 @@ import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.modules.SerializersModule
 
-internal sealed class YamlMapLikeInputBase(map: YamlMap, yaml: Yaml, context: SerializersModule, configuration: YamlConfiguration) : YamlInput(map, yaml, context, configuration) {
+internal sealed class YamlMapLikeInputBase(
+    map: YamlMap,
+    yaml: Yaml,
+    context: SerializersModule,
+    configuration: YamlConfiguration,
+) : YamlInput(map, yaml, context, configuration) {
     protected lateinit var currentValueDecoder: YamlInput
     protected lateinit var currentKey: YamlScalar
     protected var currentlyReadingValue = false
@@ -37,14 +42,23 @@ internal sealed class YamlMapLikeInputBase(map: YamlMap, yaml: Yaml, context: Se
     }
 
     override fun decodeString(): String = fromCurrentValue { decodeString() }
+
     override fun decodeInt(): Int = fromCurrentValue { decodeInt() }
+
     override fun decodeLong(): Long = fromCurrentValue { decodeLong() }
+
     override fun decodeShort(): Short = fromCurrentValue { decodeShort() }
+
     override fun decodeByte(): Byte = fromCurrentValue { decodeByte() }
+
     override fun decodeDouble(): Double = fromCurrentValue { decodeDouble() }
+
     override fun decodeFloat(): Float = fromCurrentValue { decodeFloat() }
+
     override fun decodeBoolean(): Boolean = fromCurrentValue { decodeBoolean() }
+
     override fun decodeChar(): Char = fromCurrentValue { decodeChar() }
+
     override fun decodeEnum(enumDescriptor: SerialDescriptor): Int = fromCurrentValue { decodeEnum(enumDescriptor) }
 
     override fun <T> decodeSerializableValue(deserializer: DeserializationStrategy<T>): T {
@@ -71,13 +85,12 @@ internal sealed class YamlMapLikeInputBase(map: YamlMap, yaml: Yaml, context: Se
     protected val haveStartedReadingEntries: Boolean
         get() = this::currentValueDecoder.isInitialized
 
-    override fun getCurrentPath(): YamlPath {
-        return if (haveStartedReadingEntries) {
+    override fun getCurrentPath(): YamlPath =
+        if (haveStartedReadingEntries) {
             currentValueDecoder.node.path
         } else {
             node.path
         }
-    }
 
     override fun getCurrentLocation(): Location = getCurrentPath().endLocation
 

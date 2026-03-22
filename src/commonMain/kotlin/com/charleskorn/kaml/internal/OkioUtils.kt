@@ -27,6 +27,7 @@ import okio.ByteString.Companion.encodeUtf8
  * Convert a [String] to a [BufferedSource].
  *
  * The string _must_ be encoded with UTF-8.
+ *
+ * https://github.com/square/okio/issues/774#issuecomment-703315013
  */
-// https://github.com/square/okio/issues/774#issuecomment-703315013
 internal fun String.bufferedSource(): BufferedSource = Buffer().write(encodeUtf8())

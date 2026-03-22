@@ -23,16 +23,25 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.modules.SerializersModule
 
-internal class YamlNullInput(val nullValue: YamlNull, yaml: Yaml, context: SerializersModule, configuration: YamlConfiguration) : YamlInput(nullValue, yaml, context, configuration) {
+internal class YamlNullInput(
+    val nullValue: YamlNull,
+    yaml: Yaml,
+    context: SerializersModule,
+    configuration: YamlConfiguration,
+) : YamlInput(nullValue, yaml, context, configuration) {
     override fun decodeNotNullMark(): Boolean = false
 
     override fun decodeValue(): Any = throw UnexpectedNullValueException(nullValue.path)
+
     override fun decodeCollectionSize(descriptor: SerialDescriptor): Int = throw UnexpectedNullValueException(nullValue.path)
-    override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder = throw UnexpectedNullValueException(
-        nullValue.path,
-    )
+
+    override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder =
+        throw UnexpectedNullValueException(
+            nullValue.path,
+        )
 
     override fun getCurrentLocation(): Location = nullValue.location
+
     override fun getCurrentPath(): YamlPath = nullValue.path
 
     override fun decodeElementIndex(descriptor: SerialDescriptor): Int = CompositeDecoder.DECODE_DONE

@@ -49,18 +49,20 @@ internal class YamlOutput(
     writer: StreamDataWriter,
     override val serializersModule: SerializersModule,
     private val configuration: YamlConfiguration,
-) : AbstractEncoder(), AutoCloseable {
-    private val settings = DumpSettings(
-        dumpComments = true,
-        // SnakeYAML validates that this value must be at least 1
-        indent = configuration.encodingIndentationSize,
-        // SnakeYAML helps to validate that this value must be non-negative
-        indicatorIndent = configuration.sequenceBlockIndent,
-        // No special reason why true is conditional. Designed to be consistent with 0.46.0 of kaml
-        indentWithIndicator = configuration.sequenceBlockIndent > 0,
-        // Unclear if this value is validated
-        width = configuration.breakScalarsAt,
-    )
+) : AbstractEncoder(),
+    AutoCloseable {
+    private val settings =
+        DumpSettings(
+            dumpComments = true,
+            // SnakeYAML validates that this value must be at least 1
+            indent = configuration.encodingIndentationSize,
+            // SnakeYAML helps to validate that this value must be non-negative
+            indicatorIndent = configuration.sequenceBlockIndent,
+            // No special reason why true is conditional. Designed to be consistent with 0.46.0 of kaml
+            indentWithIndicator = configuration.sequenceBlockIndent > 0,
+            // Unclear if this value is validated
+            width = configuration.breakScalarsAt,
+        )
 
     private val emitter = Emitter(settings, writer)
     private var shouldReadTypeName = false
@@ -71,15 +73,27 @@ internal class YamlOutput(
         emitter.emit(DocumentStartEvent(false, null, emptyMap()))
     }
 
-    override fun shouldEncodeElementDefault(descriptor: SerialDescriptor, index: Int): Boolean = configuration.encodeDefaults
+    override fun shouldEncodeElementDefault(
+        descriptor: SerialDescriptor,
+        index: Int,
+    ): Boolean = configuration.encodeDefaults
+
     override fun encodeNull() = emitPlainScalar("null")
+
     override fun encodeBoolean(value: Boolean) = emitPlainScalar(value.toString())
+
     override fun encodeByte(value: Byte) = emitPlainScalar(value.toString())
+
     override fun encodeChar(value: Char) = emitQuotedScalar(value.toString(), configuration.singleLineStringStyle.scalarStyle)
+
     override fun encodeDouble(value: Double) = emitPlainScalar(value.toString())
+
     override fun encodeFloat(value: Float) = emitPlainScalar(value.toString())
+
     override fun encodeInt(value: Int) = emitPlainScalar(value.toString())
+
     override fun encodeLong(value: Long) = emitPlainScalar(value.toString())
+
     override fun encodeShort(value: Short) = emitPlainScalar(value.toString())
 
     private var forcedSingleLineScalarStyle: SingleLineStringStyle? = null
@@ -95,26 +109,37 @@ internal class YamlOutput(
             when {
                 value.contains('\n')
                 -> emitScalar(value, multiLineScalarStyle)
+
                 configuration.singleLineStringStyle == SingleLineStringStyle.PlainExceptAmbiguous && value.isAmbiguous()
                 -> emitQuotedScalar(value, configuration.ambiguousQuoteStyle.scalarStyle)
+
                 else
                 -> emitScalar(value, singleLineScalarStyle)
             }
         }
     }
 
-    override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) = emitQuotedScalar(enumDescriptor.getElementName(index), configuration.singleLineStringStyle.scalarStyle)
+    override fun encodeEnum(
+        enumDescriptor: SerialDescriptor,
+        index: Int,
+    ) = emitQuotedScalar(enumDescriptor.getElementName(index), configuration.singleLineStringStyle.scalarStyle)
 
     private fun emitPlainScalar(value: String) = emitScalar(value, ScalarStyle.PLAIN)
-    private fun emitQuotedScalar(value: String, scalarStyle: ScalarStyle) = emitScalar(value, scalarStyle)
 
-    private inline fun <reified R> SerialDescriptor.getAnnotation(index: Int): R? {
-        return getElementAnnotations(index)
+    private fun emitQuotedScalar(
+        value: String,
+        scalarStyle: ScalarStyle,
+    ) = emitScalar(value, scalarStyle)
+
+    private inline fun <reified R> SerialDescriptor.getAnnotation(index: Int): R? =
+        getElementAnnotations(index)
             .filterIsInstance<R>()
             .firstOrNull()
-    }
 
-    override fun encodeElement(descriptor: SerialDescriptor, index: Int): Boolean {
+    override fun encodeElement(
+        descriptor: SerialDescriptor,
+        index: Int,
+    ): Boolean {
         encodeComment(descriptor, index)
 
         if (descriptor.kind is StructureKind.CLASS) {
@@ -132,8 +157,14 @@ internal class YamlOutput(
 
     override fun beginStructure(descriptor: SerialDescriptor): CompositeEncoder {
         when (descriptor.kind) {
-            is PolymorphicKind -> shouldReadTypeName = true
-            StructureKind.LIST -> emitter.emit(SequenceStartEvent(null, null, true, configuration.sequenceStyle.flowStyle))
+            is PolymorphicKind -> {
+                shouldReadTypeName = true
+            }
+
+            StructureKind.LIST -> {
+                emitter.emit(SequenceStartEvent(null, null, true, configuration.sequenceStyle.flowStyle))
+            }
+
             StructureKind.MAP, StructureKind.CLASS, StructureKind.OBJECT -> {
                 val typeName = getAndClearTypeName()
 
@@ -142,6 +173,7 @@ internal class YamlOutput(
                         val implicit = typeName == null
                         emitter.emit(MappingStartEvent(null, typeName, implicit, FlowStyle.BLOCK))
                     }
+
                     PolymorphismStyle.Property -> {
                         emitter.emit(MappingStartEvent(null, null, true, FlowStyle.BLOCK))
 
@@ -150,11 +182,13 @@ internal class YamlOutput(
                             emitQuotedScalar(typeName, SingleLineStringStyle.DoubleQuoted.scalarStyle)
                         }
                     }
+
                     PolymorphismStyle.None -> {
                         emitter.emit(MappingStartEvent(null, null, true, FlowStyle.BLOCK))
                     }
                 }
             }
+
             else -> {
                 // Nothing to do.
             }
@@ -165,8 +199,14 @@ internal class YamlOutput(
 
     override fun endStructure(descriptor: SerialDescriptor) {
         when (descriptor.kind) {
-            StructureKind.LIST -> emitter.emit(SequenceEndEvent())
-            StructureKind.MAP, StructureKind.CLASS, StructureKind.OBJECT -> emitter.emit(MappingEndEvent())
+            StructureKind.LIST -> {
+                emitter.emit(SequenceEndEvent())
+            }
+
+            StructureKind.MAP, StructureKind.CLASS, StructureKind.OBJECT -> {
+                emitter.emit(MappingEndEvent())
+            }
+
             else -> {
                 // Nothing to do.
             }
@@ -178,7 +218,10 @@ internal class YamlOutput(
         emitter.emit(StreamEndEvent())
     }
 
-    private fun encodeComment(descriptor: SerialDescriptor, index: Int) {
+    private fun encodeComment(
+        descriptor: SerialDescriptor,
+        index: Int,
+    ) {
         val commentAnno = descriptor.getAnnotation<YamlComment>(index) ?: return
 
         for (line in commentAnno.lines) {
@@ -186,11 +229,16 @@ internal class YamlOutput(
         }
     }
 
-    private fun emitScalar(value: String, style: ScalarStyle) {
+    private fun emitScalar(
+        value: String,
+        style: ScalarStyle,
+    ) {
         val tag = getAndClearTypeName()
 
         if (tag != null && configuration.polymorphismStyle != PolymorphismStyle.Tag) {
-            throw IllegalStateException("Cannot serialize a polymorphic value that is not a YAML object when using ${PolymorphismStyle::class.simpleName}.${configuration.polymorphismStyle}.")
+            throw IllegalStateException(
+                "Cannot serialize a polymorphic value that is not a YAML object when using ${PolymorphismStyle::class.simpleName}.${configuration.polymorphismStyle}.",
+            )
         }
 
         val implicit = if (tag != null) ALL_EXPLICIT else ALL_IMPLICIT
@@ -203,48 +251,90 @@ internal class YamlOutput(
         return typeName
     }
 
-    private fun String.isAmbiguous(): Boolean {
-        return when {
-            isEmpty() -> true
-            startsWith("0x") -> true
-            startsWith("0o") -> true
-            toDoubleOrNull() != null -> true
-            startsWith("#") -> true
-            else -> this in listOf(
-                "~", "-", ".inf", ".Inf", ".INF", "-.inf", "-.Inf", "-.INF", ".nan", ".NaN", ".NAN", "-.nan", "-.NaN",
-                "-.NAN", "null", "Null", "NULL", "true", "True", "TRUE", "false", "False", "FALSE",
-            )
+    private fun String.isAmbiguous(): Boolean =
+        when {
+            isEmpty() -> {
+                true
+            }
+
+            startsWith("0x") -> {
+                true
+            }
+
+            startsWith("0o") -> {
+                true
+            }
+
+            toDoubleOrNull() != null -> {
+                true
+            }
+
+            startsWith("#") -> {
+                true
+            }
+
+            else -> {
+                this in
+                    listOf(
+                        "~",
+                        "-",
+                        ".inf",
+                        ".Inf",
+                        ".INF",
+                        "-.inf",
+                        "-.Inf",
+                        "-.INF",
+                        ".nan",
+                        ".NaN",
+                        ".NAN",
+                        "-.nan",
+                        "-.NaN",
+                        "-.NAN",
+                        "null",
+                        "Null",
+                        "NULL",
+                        "true",
+                        "True",
+                        "TRUE",
+                        "false",
+                        "False",
+                        "FALSE",
+                    )
+            }
         }
-    }
 
     private val SequenceStyle.flowStyle: FlowStyle
-        get() = when (this) {
-            SequenceStyle.Block -> FlowStyle.BLOCK
-            SequenceStyle.Flow -> FlowStyle.FLOW
-        }
+        get() =
+            when (this) {
+                SequenceStyle.Block -> FlowStyle.BLOCK
+                SequenceStyle.Flow -> FlowStyle.FLOW
+            }
 
     private val MultiLineStringStyle.scalarStyle: ScalarStyle
-        get() = when (this) {
-            MultiLineStringStyle.DoubleQuoted -> ScalarStyle.DOUBLE_QUOTED
-            MultiLineStringStyle.SingleQuoted -> ScalarStyle.SINGLE_QUOTED
-            MultiLineStringStyle.Literal -> ScalarStyle.LITERAL
-            MultiLineStringStyle.Folded -> ScalarStyle.FOLDED
-            MultiLineStringStyle.Plain -> ScalarStyle.PLAIN
-        }
+        get() =
+            when (this) {
+                MultiLineStringStyle.DoubleQuoted -> ScalarStyle.DOUBLE_QUOTED
+                MultiLineStringStyle.SingleQuoted -> ScalarStyle.SINGLE_QUOTED
+                MultiLineStringStyle.Literal -> ScalarStyle.LITERAL
+                MultiLineStringStyle.Folded -> ScalarStyle.FOLDED
+                MultiLineStringStyle.Plain -> ScalarStyle.PLAIN
+            }
 
     private val SingleLineStringStyle.scalarStyle: ScalarStyle
-        get() = when (this) {
-            SingleLineStringStyle.DoubleQuoted -> ScalarStyle.DOUBLE_QUOTED
-            SingleLineStringStyle.SingleQuoted -> ScalarStyle.SINGLE_QUOTED
-            SingleLineStringStyle.Plain -> ScalarStyle.PLAIN
-            SingleLineStringStyle.PlainExceptAmbiguous -> ScalarStyle.PLAIN
-        }
+        get() =
+            when (this) {
+                SingleLineStringStyle.DoubleQuoted -> ScalarStyle.DOUBLE_QUOTED
+                SingleLineStringStyle.SingleQuoted -> ScalarStyle.SINGLE_QUOTED
+                SingleLineStringStyle.Plain -> ScalarStyle.PLAIN
+                SingleLineStringStyle.PlainExceptAmbiguous -> ScalarStyle.PLAIN
+            }
 
     private val AmbiguousQuoteStyle.scalarStyle: ScalarStyle
-        get() = when (this) {
-            AmbiguousQuoteStyle.DoubleQuoted -> ScalarStyle.DOUBLE_QUOTED
-            AmbiguousQuoteStyle.SingleQuoted -> ScalarStyle.SINGLE_QUOTED
-        }
+        get() =
+            when (this) {
+                AmbiguousQuoteStyle.DoubleQuoted -> ScalarStyle.DOUBLE_QUOTED
+                AmbiguousQuoteStyle.SingleQuoted -> ScalarStyle.SINGLE_QUOTED
+            }
 
     companion object {
         private val ALL_IMPLICIT = ImplicitTuple(true, true)

@@ -25,15 +25,28 @@ import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.modules.SerializersModule
 
 @OptIn(ExperimentalSerializationApi::class)
-internal class YamlScalarInput(val scalar: YamlScalar, yaml: Yaml, context: SerializersModule, configuration: YamlConfiguration) : YamlInput(scalar, yaml, context, configuration) {
+internal class YamlScalarInput(
+    val scalar: YamlScalar,
+    yaml: Yaml,
+    context: SerializersModule,
+    configuration: YamlConfiguration,
+) : YamlInput(scalar, yaml, context, configuration) {
     override fun decodeString(): String = scalar.content
+
     override fun decodeInt(): Int = scalar.toInt()
+
     override fun decodeLong(): Long = scalar.toLong()
+
     override fun decodeShort(): Short = scalar.toShort()
+
     override fun decodeByte(): Byte = scalar.toByte()
+
     override fun decodeDouble(): Double = scalar.toDouble()
+
     override fun decodeFloat(): Float = scalar.toFloat()
+
     override fun decodeBoolean(): Boolean = scalar.toBoolean()
+
     override fun decodeChar(): Char = scalar.toChar()
 
     override fun decodeEnum(enumDescriptor: SerialDescriptor): Int {
@@ -43,9 +56,10 @@ internal class YamlScalarInput(val scalar: YamlScalar, yaml: Yaml, context: Seri
             return index
         }
 
-        val choices = (0..<enumDescriptor.elementsCount)
-            .asSequence()
-            .map { enumDescriptor.getElementName(it) }
+        val choices =
+            (0..<enumDescriptor.elementsCount)
+                .asSequence()
+                .map { enumDescriptor.getElementName(it) }
 
         if (configuration.decodeEnumCaseInsensitive) {
             val idx = choices.indexOfFirst { it.equals(scalar.content, ignoreCase = true) }
@@ -63,6 +77,7 @@ internal class YamlScalarInput(val scalar: YamlScalar, yaml: Yaml, context: Seri
     }
 
     override fun getCurrentLocation(): Location = scalar.location
+
     override fun getCurrentPath(): YamlPath = scalar.path
 
     override fun decodeElementIndex(descriptor: SerialDescriptor): Int = 0

@@ -51,7 +51,7 @@ $licenseText
 fun Project.configureSpotless() {
     apply<SpotlessPlugin>()
 
-    configure<SpotlessExtension>() {
+    configure<SpotlessExtension> {
         format("misc") {
             target(
                 fileTree(
@@ -70,7 +70,7 @@ fun Project.configureSpotless() {
 
         kotlinGradle {
             target("*.gradle.kts", "gradle/*.gradle.kts", "buildSrc/*.gradle.kts")
-            ktlint("0.50.0")
+            ktlint("1.8.0")
 
             @Suppress("INACCESSIBLE_TYPE")
             licenseHeader(kotlinLicenseHeader, "import|tasks|apply|plugins|rootProject")
@@ -82,7 +82,7 @@ fun Project.configureSpotless() {
 
         kotlin {
             target("src/**/*.kt", "buildSrc/**/*.kt")
-            ktlint("0.50.0")
+            ktlint("1.8.0")
 
             @Suppress("INACCESSIBLE_TYPE")
             licenseHeader(kotlinLicenseHeader)

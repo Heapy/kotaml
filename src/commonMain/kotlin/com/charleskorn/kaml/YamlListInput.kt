@@ -26,7 +26,12 @@ import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.modules.SerializersModule
 
 @OptIn(ExperimentalSerializationApi::class)
-internal class YamlListInput(val list: YamlList, yaml: Yaml, context: SerializersModule, configuration: YamlConfiguration) : YamlInput(list, yaml, context, configuration) {
+internal class YamlListInput(
+    val list: YamlList,
+    yaml: Yaml,
+    context: SerializersModule,
+    configuration: YamlConfiguration,
+) : YamlInput(list, yaml, context, configuration) {
     private var nextElementIndex = 0
     private lateinit var currentElementDecoder: YamlInput
 
@@ -37,13 +42,14 @@ internal class YamlListInput(val list: YamlList, yaml: Yaml, context: Serializer
             return CompositeDecoder.DECODE_DONE
         }
 
-        currentElementDecoder = createFor(
-            list.items[nextElementIndex],
-            yaml,
-            serializersModule,
-            configuration,
-            descriptor.getElementDescriptor(0),
-        )
+        currentElementDecoder =
+            createFor(
+                list.items[nextElementIndex],
+                yaml,
+                serializersModule,
+                configuration,
+                descriptor.getElementDescriptor(0),
+            )
 
         return nextElementIndex++
     }
@@ -57,14 +63,23 @@ internal class YamlListInput(val list: YamlList, yaml: Yaml, context: Serializer
     }
 
     override fun decodeString(): String = currentElementDecoder.decodeString()
+
     override fun decodeInt(): Int = currentElementDecoder.decodeInt()
+
     override fun decodeLong(): Long = currentElementDecoder.decodeLong()
+
     override fun decodeShort(): Short = currentElementDecoder.decodeShort()
+
     override fun decodeByte(): Byte = currentElementDecoder.decodeByte()
+
     override fun decodeDouble(): Double = currentElementDecoder.decodeDouble()
+
     override fun decodeFloat(): Float = currentElementDecoder.decodeFloat()
+
     override fun decodeBoolean(): Boolean = currentElementDecoder.decodeBoolean()
+
     override fun decodeChar(): Char = currentElementDecoder.decodeChar()
+
     override fun decodeEnum(enumDescriptor: SerialDescriptor): Int = currentElementDecoder.decodeEnum(enumDescriptor)
 
     override fun <T> decodeSerializableValue(deserializer: DeserializationStrategy<T>): T {
@@ -85,13 +100,12 @@ internal class YamlListInput(val list: YamlList, yaml: Yaml, context: Serializer
         return super.beginStructure(descriptor)
     }
 
-    override fun getCurrentPath(): YamlPath {
-        return if (haveStartedReadingElements) {
+    override fun getCurrentPath(): YamlPath =
+        if (haveStartedReadingElements) {
             currentElementDecoder.node.path
         } else {
             list.path
         }
-    }
 
     override fun getCurrentLocation(): Location = getCurrentPath().endLocation
 }

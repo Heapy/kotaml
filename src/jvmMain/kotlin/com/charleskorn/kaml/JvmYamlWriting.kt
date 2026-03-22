@@ -28,9 +28,10 @@ import java.io.OutputStream
  * Convert [value] to YAML, and output the result into an [OutputStream].
  *
  * The character encoding is UTF-8.
+ *
+ * The character encoding is not configurable, because we use Okio which doesn't support converting
+ * between UTF-8 and other encodings.
  */
-// The character encoding is not configurable, because we use Okio which doesn't support converting
-// between UTF-8 and other encodings.
 public fun <T> Yaml.encodeToStream(
     serializer: SerializationStrategy<T>,
     value: T,

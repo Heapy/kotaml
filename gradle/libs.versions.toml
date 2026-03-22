@@ -6,7 +6,7 @@ snakeyaml-engine-kmp = "4.0.1"
 okio = "3.16.4"
 kotest = "6.1.7"
 ksp = "2.3.6"
-spotless = "7.2.1"
+spotless = "8.4.0"
 
 [libraries]
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }

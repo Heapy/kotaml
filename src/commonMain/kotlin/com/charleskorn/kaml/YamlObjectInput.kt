@@ -25,17 +25,23 @@ import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.modules.SerializersModule
 
 @OptIn(ExperimentalSerializationApi::class)
-internal class YamlObjectInput(map: YamlMap, yaml: Yaml, context: SerializersModule, configuration: YamlConfiguration) : YamlMapLikeInputBase(map, yaml, context, configuration) {
+internal class YamlObjectInput(
+    map: YamlMap,
+    yaml: Yaml,
+    context: SerializersModule,
+    configuration: YamlConfiguration,
+) : YamlMapLikeInputBase(map, yaml, context, configuration) {
     private val entriesList = map.entries.entries.toList()
     private var nextIndex = 0
     private lateinit var pairedPropertyNames: Map<String, Int>
 
     override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
         if (!::pairedPropertyNames.isInitialized) {
-            pairedPropertyNames = (0 until descriptor.elementsCount).associateBy { index ->
-                val elementName = descriptor.getElementName(index)
-                configuration.yamlNamingStrategy?.serialNameForYaml(elementName) ?: elementName
-            }
+            pairedPropertyNames =
+                (0 until descriptor.elementsCount).associateBy { index ->
+                    val elementName = descriptor.getElementName(index)
+                    configuration.yamlNamingStrategy?.serialNameForYaml(elementName) ?: elementName
+                }
         }
 
         while (true) {
@@ -62,13 +68,14 @@ internal class YamlObjectInput(map: YamlMap, yaml: Yaml, context: SerializersMod
             }
 
             try {
-                currentValueDecoder = createFor(
-                    entriesList[nextIndex].value,
-                    yaml,
-                    serializersModule,
-                    configuration,
-                    descriptor.getElementDescriptor(fieldDescriptorIndex),
-                )
+                currentValueDecoder =
+                    createFor(
+                        entriesList[nextIndex].value,
+                        yaml,
+                        serializersModule,
+                        configuration,
+                        descriptor.getElementDescriptor(fieldDescriptorIndex),
+                    )
             } catch (e: IncorrectTypeException) {
                 throw InvalidPropertyValueException(propertyName, e.message, e.path, e)
             }

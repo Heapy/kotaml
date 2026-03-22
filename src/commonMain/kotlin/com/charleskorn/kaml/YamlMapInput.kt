@@ -25,7 +25,12 @@ import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.modules.SerializersModule
 
 @OptIn(ExperimentalSerializationApi::class)
-internal class YamlMapInput(map: YamlMap, yaml: Yaml, context: SerializersModule, configuration: YamlConfiguration) : YamlMapLikeInputBase(map, yaml, context, configuration) {
+internal class YamlMapInput(
+    map: YamlMap,
+    yaml: Yaml,
+    context: SerializersModule,
+    configuration: YamlConfiguration,
+) : YamlMapLikeInputBase(map, yaml, context, configuration) {
     private val entriesList = map.entries.entries.toList()
     private var nextIndex = 0
     private lateinit var currentEntry: Map.Entry<YamlScalar, YamlNode>
@@ -40,16 +45,20 @@ internal class YamlMapInput(map: YamlMap, yaml: Yaml, context: SerializersModule
         currentKey = currentEntry.key
         currentlyReadingValue = nextIndex % 2 != 0
 
-        currentValueDecoder = when (currentlyReadingValue) {
-            true ->
-                try {
-                    createFor(currentEntry.value, yaml, serializersModule, configuration, descriptor.getElementDescriptor(1))
-                } catch (e: IncorrectTypeException) {
-                    throw InvalidPropertyValueException(propertyName, e.message, e.path, e)
+        currentValueDecoder =
+            when (currentlyReadingValue) {
+                true -> {
+                    try {
+                        createFor(currentEntry.value, yaml, serializersModule, configuration, descriptor.getElementDescriptor(1))
+                    } catch (e: IncorrectTypeException) {
+                        throw InvalidPropertyValueException(propertyName, e.message, e.path, e)
+                    }
                 }
 
-            false -> createFor(currentKey, yaml, serializersModule, configuration, descriptor.getElementDescriptor(0))
-        }
+                false -> {
+                    createFor(currentKey, yaml, serializersModule, configuration, descriptor.getElementDescriptor(0))
+                }
+            }
 
         return nextIndex++
     }

@@ -47,10 +47,11 @@ private fun Project.createPublishingTasks() {
             // (see https://kotlinlang.slack.com/archives/C0F4UNJET/p1616470404031100?thread_ts=1616198351.029900&cid=C0F4UNJET)
             // This creates an empty JavaDoc JAR to make Maven Central happy.
             val publicationName = this.name
-            val javadocTask = tasks.register<Jar>(this.name + "JavadocJar") {
-                archiveClassifier.set("javadoc")
-                archiveBaseName.set("kaml-$publicationName")
-            }
+            val javadocTask =
+                tasks.register<Jar>(this.name + "JavadocJar") {
+                    archiveClassifier.set("javadoc")
+                    archiveBaseName.set("kaml-$publicationName")
+                }
 
             artifact(javadocTask)
 
@@ -89,9 +90,12 @@ private fun Project.createPublishingTasks() {
 
         repositories {
             maven {
-                url = rootProject.layout.buildDirectory
-                    .dir("staging-deploy")
-                    .get().asFile.toURI()
+                url =
+                    rootProject.layout.buildDirectory
+                        .dir("staging-deploy")
+                        .get()
+                        .asFile
+                        .toURI()
             }
         }
     }

@@ -28,28 +28,29 @@ import java.io.InputStream
  * Decode a YAML value [T] from an [InputStream].
  *
  * [InputStream] must be encoded with UTF-8.
+ *
+ * The character encoding is not configurable, because we use Okio which doesn't support converting
+ * between UTF-8 and other encodings.
  */
-// The character encoding is not configurable, because we use Okio which doesn't support converting
-// between UTF-8 and other encodings.
 public fun <T> Yaml.decodeFromStream(
     deserializer: DeserializationStrategy<T>,
     source: InputStream,
-): T = decodeFromSource(
-    deserializer = deserializer,
-    source = source.source(),
-)
+): T =
+    decodeFromSource(
+        deserializer = deserializer,
+        source = source.source(),
+    )
 
 /**
  * Decode a YAML value [T] from an [InputStream].
  *
  * [InputStream] must be encoded with UTF-8.
  */
-public inline fun <reified T> Yaml.decodeFromStream(
-    stream: InputStream,
-): T = decodeFromSource(
-    deserializer = serializersModule.serializer<T>(),
-    source = stream.source(),
-)
+public inline fun <reified T> Yaml.decodeFromStream(stream: InputStream): T =
+    decodeFromSource(
+        deserializer = serializersModule.serializer<T>(),
+        source = stream.source(),
+    )
 
 /**
  *
@@ -57,7 +58,4 @@ public inline fun <reified T> Yaml.decodeFromStream(
  *
  * [InputStream] must be encoded with UTF-8.
  */
-public fun Yaml.parseToYamlNode(
-    source: InputStream,
-): YamlNode =
-    parseToYamlNode(source.source())
+public fun Yaml.parseToYamlNode(source: InputStream): YamlNode = parseToYamlNode(source.source())
