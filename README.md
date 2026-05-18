@@ -4,7 +4,7 @@
 
 [![Pipeline](https://github.com/Heapy/kotaml/actions/workflows/build.yml/badge.svg)](https://github.com/Heapy/kotaml/actions/workflows/build.yml)
 [![License](https://img.shields.io/github/license/Heapy/kotaml.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Maven Central](https://img.shields.io/maven-central/v/io.heapy.kotaml/kotaml.svg?label=maven%20central)](https://search.maven.org/search?q=g:%22io.heapy.kotaml%22%20AND%20a:%22kotaml%22)
+[![Maven Central](https://img.shields.io/maven-central/v/io.heapy.kotaml/kotaml.svg?label=maven%20central)](https://central.sonatype.com/artifact/io.heapy.kotaml/kotaml)
 
 ## What is this?
 
