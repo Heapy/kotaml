@@ -16,3 +16,12 @@ updates:
       all:
         patterns:
           - "*"
+  - package-ecosystem: "npm"
+    directory: "/kotlin-js-store"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 0
+    groups:
+      all:
+        patterns:
+          - "*"
