@@ -23,6 +23,8 @@ import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
+import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
+import org.gradle.api.tasks.Delete
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
@@ -38,6 +40,7 @@ fun Project.configurePublishing() {
 
     createPublishingTasks()
     createSigningTasks()
+    pruneGeneratedChecksums()
 }
 
 private fun Project.createPublishingTasks() {
@@ -104,6 +107,29 @@ private fun Project.createPublishingTasks() {
 private fun Project.createSigningTasks() {
     configure<SigningExtension> {
         sign(publishing.publications)
+    }
+}
+
+private fun Project.pruneGeneratedChecksums() {
+    val stagingDir = rootProject.layout.buildDirectory.dir("staging-deploy")
+
+    val pruneGeneratedChecksums =
+        tasks.register<Delete>("pruneGeneratedChecksums") {
+            delete(
+                stagingDir.map { dir ->
+                    dir.asFileTree.matching {
+                        include(
+                            "**/*.asc.*",
+                            "**/*.sha256",
+                            "**/*.sha512",
+                        )
+                    }
+                },
+            )
+        }
+
+    tasks.withType<PublishToMavenRepository>().configureEach {
+        finalizedBy(pruneGeneratedChecksums)
     }
 }
 
