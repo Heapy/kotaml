@@ -37,7 +37,7 @@ jobs:
         uses: gradle/actions/wrapper-validation@v6.2.0
 
       - name: Set up JDK
-        uses: actions/setup-java@v5.3.0
+        uses: actions/setup-java@v5.4.0
         with:
           java-version: 25
           distribution: temurin
@@ -46,7 +46,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v6.2.0
 
       - name: Cache konan dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.konan
           key: ${{ runner.os }}-gradle-${{ hashFiles('*.gradle.kts') }}
