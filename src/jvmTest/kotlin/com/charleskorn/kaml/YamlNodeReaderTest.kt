@@ -62,6 +62,40 @@ class YamlNodeReaderTest :
                 }
             }
 
+            mapOf(
+                "0.10" to true,
+                "hello" to true,
+                "'0.10'" to false,
+                """"0.10"""" to false,
+                "'hello'" to false,
+                """"hello"""" to false,
+            ).forEach { (input, expectedPlain) ->
+                context("given the scalar '$input'") {
+                    describe("parsing that input") {
+                        val parser = YamlParser(input)
+                        val result = YamlNodeReader(parser).read()
+
+                        it("exposes whether the scalar was written in plain style") {
+                            (result as YamlScalar).plain shouldBe expectedPlain
+                        }
+                    }
+                }
+            }
+
+            describe("plain and quoted scalars with the same content") {
+                val plainScalar = YamlNodeReader(YamlParser("0.10")).read() as YamlScalar
+                val quotedScalar = YamlNodeReader(YamlParser("'0.10'")).read() as YamlScalar
+
+                it("preserve the same content") {
+                    plainScalar.content shouldBe quotedScalar.content
+                }
+
+                it("can be told apart via plain") {
+                    plainScalar.plain shouldBe true
+                    quotedScalar.plain shouldBe false
+                }
+            }
+
             // https://yaml.org/spec/1.2/spec.html#id2793979 is useful reference here, as is
             // https://yaml-multiline.info/
             mapOf(

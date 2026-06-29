@@ -44,6 +44,7 @@ public sealed class YamlNode(
 public data class YamlScalar(
     val content: String,
     override val path: YamlPath,
+    val plain: Boolean = true,
 ) : YamlNode(path) {
     override fun equivalentContentTo(other: YamlNode): Boolean = other is YamlScalar && this.content == other.content
 
@@ -157,6 +158,11 @@ public data class YamlScalar(
     internal fun toCharOrNull(): Char? = content.singleOrNull()
 
     override fun withPath(newPath: YamlPath): YamlScalar = this.copy(path = newPath)
+
+    // equals/hashCode intentionally exclude plain: the scalar style is a presentation detail and must not affect content equality.
+    override fun equals(other: Any?): Boolean = other is YamlScalar && content == other.content && path == other.path
+
+    override fun hashCode(): Int = 31 * content.hashCode() + path.hashCode()
 
     override fun toString(): String = "scalar @ $path : $content"
 }
