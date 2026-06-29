@@ -90,7 +90,7 @@ plugins {
 }
 
 dependencies {
-    implementation("io.heapy.kotaml:kotaml:0.109.1")
+    implementation("io.heapy.kotaml:kotaml:0.110.0")
 }
 ```
 
