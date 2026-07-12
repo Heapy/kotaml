@@ -4,8 +4,8 @@ kotlinx-serialization = "1.11.0"
 kotlinx-coroutines = "1.11.0"
 snakeyaml-engine-kmp = "4.0.1"
 okio = "3.17.0"
-kotest = "6.2.1"
-ksp = "2.3.9"
+kotest = "6.2.2"
+ksp = "2.3.10"
 spotless = "8.8.0"
 
 [libraries]
