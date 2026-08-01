@@ -3,10 +3,10 @@ kotlin = "2.4.10"
 kotlinx-serialization = "1.11.0"
 kotlinx-coroutines = "1.11.0"
 snakeyaml-engine-kmp = "4.0.1"
-okio = "3.18.0"
+okio = "3.18.1"
 kotest = "6.2.3"
 ksp = "2.3.10"
-spotless = "8.8.0"
+spotless = "8.9.0"
 
 [libraries]
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
