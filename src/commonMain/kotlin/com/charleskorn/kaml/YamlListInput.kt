@@ -35,16 +35,16 @@ internal class YamlListInput(
     private var nextElementIndex = 0
     private lateinit var currentElementDecoder: YamlInput
 
-    override fun decodeCollectionSize(descriptor: SerialDescriptor): Int = list.items.size
+    override fun decodeCollectionSize(descriptor: SerialDescriptor): Int = list.size
 
     override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
-        if (nextElementIndex == list.items.size) {
+        if (nextElementIndex == list.size) {
             return CompositeDecoder.DECODE_DONE
         }
 
         currentElementDecoder =
             createFor(
-                list.items[nextElementIndex],
+                list[nextElementIndex],
                 yaml,
                 serializersModule,
                 configuration,

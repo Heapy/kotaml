@@ -184,7 +184,7 @@ internal class YamlNodeReader(
 
             1 -> {
                 when (val mappingsToMerge = mergeEntries.single().value) {
-                    is YamlList -> return doMerges(items, mappingsToMerge.items)
+                    is YamlList -> return doMerges(items, mappingsToMerge)
                     else -> return doMerges(items, listOf(mappingsToMerge))
                 }
             }
@@ -230,7 +230,7 @@ internal class YamlNodeReader(
                     }
 
                     is YamlMap -> {
-                        other.entries.forEach { (key, value) ->
+                        other.forEach { (key, value) ->
                             val existingEntry = merged.entries.singleOrNull { it.key.equivalentContentTo(key) }
 
                             if (existingEntry == null) {

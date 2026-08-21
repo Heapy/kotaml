@@ -247,7 +247,7 @@ public sealed class YamlInput(
 
         private fun YamlMap.getValue(desiredKey: String): YamlNode = this.get(desiredKey) ?: throw MissingRequiredPropertyException(desiredKey, this.path)
 
-        private fun YamlMap.withoutKey(key: String): YamlMap = this.copy(entries = entries.filterKeys { it.content != key })
+        private fun YamlMap.withoutKey(key: String): YamlMap = this.copy(pairs = this.filterKeys { it.content != key })
 
         private val SerialDescriptor.isContentBasedPolymorphic get() = annotations.any { it is YamlContentPolymorphicSerializer.Marker }
     }

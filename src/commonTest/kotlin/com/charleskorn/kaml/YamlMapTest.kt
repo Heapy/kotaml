@@ -117,7 +117,7 @@ class YamlMapTest :
 
                 context("comparing it to another map with the same items in the same order with a different path") {
                     test("indicates that they are equivalent") {
-                        map.equivalentContentTo(YamlMap(map.entries, YamlPath.root.withListEntry(0, Location(3, 4)))) shouldBe true
+                        map.equivalentContentTo(YamlMap(map, YamlPath.root.withListEntry(0, Location(3, 4)))) shouldBe true
                     }
                 }
 

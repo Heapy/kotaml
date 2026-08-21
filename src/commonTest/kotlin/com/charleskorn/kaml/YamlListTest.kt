@@ -40,11 +40,11 @@ class YamlListTest :
         }
 
         test("list equivalence with same items but different path") {
-            list.equivalentContentTo(YamlList(list.items, YamlPath.root.withMapElementValue(Location(5, 6)))) shouldBe true
+            list.equivalentContentTo(YamlList(list, YamlPath.root.withMapElementValue(Location(5, 6)))) shouldBe true
         }
 
         test("list equivalence with same items in different order") {
-            list.equivalentContentTo(YamlList(list.items.reversed(), list.path)) shouldBe false
+            list.equivalentContentTo(YamlList(list.reversed(), list.path)) shouldBe false
         }
 
         test("list equivalence with different items") {

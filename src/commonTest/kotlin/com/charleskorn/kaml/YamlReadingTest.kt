@@ -320,7 +320,7 @@ class YamlReadingTest :
 
                 context("parsing that input as a list node") {
                     val result = Yaml.default.decodeFromString(TestClassWithNestedList.serializer(), input)
-                    val resultList = result.node.items.map { if (it is YamlNull) null else it.yamlScalar.toDouble() }
+                    val resultList = result.node.map { if (it is YamlNull) null else it.yamlScalar.toDouble() }
 
                     test("deserializes list") {
                         resultList shouldBe listOf(1.2, 3.0, Double.POSITIVE_INFINITY, null)
@@ -336,7 +336,7 @@ class YamlReadingTest :
 
                     test("deserializes node to double list") {
                         val resultList =
-                            result.node.yamlList.items
+                            result.node.yamlList
                                 .map { if (it is YamlNull) null else it.yamlScalar.toDouble() }
                         resultList shouldBe listOf(1.2, 3.0, Double.POSITIVE_INFINITY, null)
                     }
@@ -1046,13 +1046,12 @@ class YamlReadingTest :
                     val result = Yaml.default.decodeFromString(TestClassWithNestedMap.serializer(), input)
 
                     test("deserializes map") {
-                        result.node.entries shouldHaveSize 5
+                        result.node shouldHaveSize 5
                         result.node.get<YamlScalar>("foo1")!!.content shouldBe "bar"
                         result.node.get<YamlNull>("foo2").shouldBeInstanceOf<YamlNull>()
                         result.node.get<YamlScalar>("foo3")!!.toDouble() shouldBe 3.14
                         result.node
                             .get<YamlList>("foo4")!!
-                            .items
                             .map { it.yamlScalar.toInt() } shouldBe listOf(1, 2, 3)
                         result.node
                             .get<YamlMap>("foo5")!!
@@ -1074,11 +1073,11 @@ class YamlReadingTest :
 
                     test("deserializes node to double list") {
                         val node = result.node.yamlMap
-                        node.entries shouldHaveSize 5
+                        node shouldHaveSize 5
                         node.get<YamlScalar>("foo1")!!.content shouldBe "bar"
                         node.get<YamlNull>("foo2").shouldBeInstanceOf<YamlNull>()
                         node.get<YamlScalar>("foo3")!!.toDouble() shouldBe 3.14
-                        node.get<YamlList>("foo4")!!.items.map { it.yamlScalar.toInt() } shouldBe listOf(1, 2, 3)
+                        node.get<YamlList>("foo4")!!.map { it.yamlScalar.toInt() } shouldBe listOf(1, 2, 3)
                         node.get<YamlMap>("foo5")!!.get<YamlScalar>("element1")!!.toInt() shouldBe 1
                         node.get<YamlMap>("foo5")!!.get<YamlScalar>("element2")!!.toInt() shouldBe 2
                     }
@@ -2422,7 +2421,7 @@ class YamlReadingTest :
 
                             override fun deserialize(decoder: Decoder): List<Database> {
                                 check(decoder is YamlInput)
-                                return decoder.node.yamlMap.entries.map { (_, value) ->
+                                return decoder.node.yamlMap.map { (_, value) ->
                                     decoder.yaml.decodeFromYamlNode(Database.serializer(), value)
                                 }
                             }
@@ -2631,7 +2630,7 @@ private object DecodingFromYamlNodeSerializer : KSerializer<DatabaseListing> {
         check(decoder is YamlInput)
 
         val list =
-            decoder.node.yamlMap.entries.map { (_, value) ->
+            decoder.node.yamlMap.map { (_, value) ->
                 decoder.yaml.decodeFromYamlNode(Database.serializer(), value)
             }
 
@@ -2672,7 +2671,7 @@ private object SerializerForObjectWithCustomSerializer : KSerializer<ObjectWithC
 
         // Intentionally parse the values from the current yaml node
         val values =
-            decoder.node.yamlList.items
+            decoder.node.yamlList
                 .map { it.yamlScalar.content }
 
         return ObjectWithCustomSerializer(values.joinToString(VALUES_SEPARATOR))

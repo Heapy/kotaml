@@ -31,7 +31,7 @@ internal class YamlObjectInput(
     context: SerializersModule,
     configuration: YamlConfiguration,
 ) : YamlMapLikeInputBase(map, yaml, context, configuration) {
-    private val entriesList = map.entries.entries.toList()
+    private val entriesList = map.entries.toList()
     private var nextIndex = 0
     private lateinit var pairedPropertyNames: Map<String, Int>
 

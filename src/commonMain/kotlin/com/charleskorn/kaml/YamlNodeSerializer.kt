@@ -134,7 +134,7 @@ internal object YamlMapSerializer : KSerializer<YamlMap> {
         value: YamlMap,
     ) {
         encoder.asYamlOutput()
-        MapSerializer(YamlScalarSerializer, YamlNodeSerializer).serialize(encoder, value.entries)
+        MapSerializer(YamlScalarSerializer, YamlNodeSerializer).serialize(encoder, value)
     }
 
     override fun deserialize(decoder: Decoder): YamlMap {
@@ -151,7 +151,7 @@ internal object YamlListSerializer : KSerializer<YamlList> {
         value: YamlList,
     ) {
         encoder.asYamlOutput()
-        ListSerializer(YamlNodeSerializer).serialize(encoder, value.items)
+        ListSerializer(YamlNodeSerializer).serialize(encoder, value)
     }
 
     override fun deserialize(decoder: Decoder): YamlList {
