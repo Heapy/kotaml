@@ -76,7 +76,7 @@ public data class YamlScalar(
                 content.startsWith("-0o") -> converter("-" + content.substring(3), 8)
                 else -> converter(content, 10)
             }
-        } catch (e: NumberFormatException) {
+        } catch (_: NumberFormatException) {
             null
         }
 
@@ -97,11 +97,7 @@ public data class YamlScalar(
             else -> {
                 try {
                     content.toFloat()
-                } catch (e: NumberFormatException) {
-                    throw YamlScalarFormatException("Value '$content' is not a valid floating point value.", path, content)
-                } catch (e: IndexOutOfBoundsException) {
-                    // Workaround for https://youtrack.jetbrains.com/issue/KT-69327
-                    // TODO: remove once it is fixed
+                } catch (_: NumberFormatException) {
                     throw YamlScalarFormatException("Value '$content' is not a valid floating point value.", path, content)
                 }
             }
@@ -128,11 +124,7 @@ public data class YamlScalar(
             else -> {
                 try {
                     content.toDouble()
-                } catch (e: NumberFormatException) {
-                    null
-                } catch (e: IndexOutOfBoundsException) {
-                    // Workaround for https://youtrack.jetbrains.com/issue/KT-69327
-                    // TODO: remove once it is fixed
+                } catch (_: NumberFormatException) {
                     null
                 }
             }

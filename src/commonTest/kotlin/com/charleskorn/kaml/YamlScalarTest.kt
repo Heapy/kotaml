@@ -250,14 +250,6 @@ class YamlScalarTest :
 
                     val floatingPointTestCondition: EnabledOrReasonIf = {
                         when (kotlinTarget) {
-                            KotlinTarget.NATIVE -> {
-                                if (content == "1e-") {
-                                    disabled("floating point parser bug: https://youtrack.jetbrains.com/issue/KT-69327")
-                                } else {
-                                    enabled
-                                }
-                            }
-
                             KotlinTarget.JS -> {
                                 if (content in setOf("0x2", "0o2")) {
                                     disabled("$content is a valid floating value for JS due to dynamic cast")
