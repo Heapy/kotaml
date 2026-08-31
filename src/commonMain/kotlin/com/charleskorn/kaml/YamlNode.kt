@@ -176,7 +176,14 @@ public data class YamlNull(
 public data class YamlList(
     val items: List<YamlNode>,
     override val path: YamlPath,
-) : YamlNode(path) {
+) : YamlNode(path),
+    Iterable<YamlNode> {
+    /** The number of items in this list. */
+    public val size: Int
+        get() = items.size
+
+    override fun iterator(): Iterator<YamlNode> = items.iterator()
+
     override fun equivalentContentTo(other: YamlNode): Boolean {
         if (other !is YamlList) {
             return false
@@ -221,7 +228,14 @@ public data class YamlList(
 public data class YamlMap(
     val entries: Map<YamlScalar, YamlNode>,
     override val path: YamlPath,
-) : YamlNode(path) {
+) : YamlNode(path),
+    Iterable<Map.Entry<YamlScalar, YamlNode>> {
+    /** The number of entries in this map. */
+    public val size: Int
+        get() = entries.size
+
+    override fun iterator(): Iterator<Map.Entry<YamlScalar, YamlNode>> = entries.iterator()
+
     init {
         val keys =
             entries.keys.sortedWith { a, b ->
@@ -361,6 +375,47 @@ public val YamlNode.yamlMap: YamlMap
 
 public val YamlNode.yamlTaggedNode: YamlTaggedNode
     get() = this as? YamlTaggedNode ?: error(this, "YamlTaggedNode")
+
+/**
+ * Returns a map containing the results of applying the given [transform] function
+ * to each entry in this map.
+ *
+ * The returned map is a plain [Map] with the transformed keys and the original values,
+ * so it can be used with all the standard library functions for maps.
+ */
+public fun <R> YamlMap.mapKeys(transform: (Map.Entry<YamlScalar, YamlNode>) -> R): Map<R, YamlNode> =
+    entries.mapKeys(transform)
+
+/**
+ * Returns a map containing the results of applying the given [transform] function
+ * to each entry in this map.
+ *
+ * The returned map is a plain [Map] with the original keys and the transformed values,
+ * so it can be used with all the standard library functions for maps.
+ */
+public fun <R> YamlMap.mapValues(transform: (Map.Entry<YamlScalar, YamlNode>) -> R): Map<YamlScalar, R> =
+    entries.mapValues(transform)
+
+/**
+ * Returns a [YamlMap] containing only the entries whose keys match the given [predicate].
+ */
+public fun YamlMap.filterKeys(predicate: (YamlScalar) -> Boolean): YamlMap =
+    YamlMap(entries.filterKeys(predicate), path)
+
+/**
+ * Returns a [YamlMap] containing only the entries whose values match the given [predicate].
+ */
+public fun YamlMap.filterValues(predicate: (YamlNode) -> Boolean): YamlMap =
+    YamlMap(entries.filterValues(predicate), path)
+
+/**
+ * Returns the value corresponding to the given [key], or throws [NoSuchElementException]
+ * if no such key is present in the map.
+ *
+ * Unlike [get], this function returns the value regardless of its type.
+ */
+public fun YamlMap.getValue(key: String): YamlNode =
+    get<YamlNode>(key) ?: throw NoSuchElementException("Key '$key' is not present in this map.")
 
 private fun error(
     node: YamlNode,
