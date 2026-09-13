@@ -93,6 +93,10 @@ kotlin {
                 // Overriding coroutines' version to solve a problem with WASM JS tests.
                 // See https://kotlinlang.slack.com/archives/CDFP59223/p1736191408326039?thread_ts=1734964013.996149&cid=CDFP59223
                 runtimeOnly(libs.kotlinx.coroutines.core)
+                // kotest's kotlinx-io uses `import.meta` in its Wasm import object, which webpack
+                // 5.108+ parses as an ES module, breaking the Karma bundle. Drop this once kotest
+                // depends on kotlinx-io 0.9.1 or later. See https://youtrack.jetbrains.com/issue/KT-88162
+                runtimeOnly(libs.kotlinx.io.core)
             }
         }
 
