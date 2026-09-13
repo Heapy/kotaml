@@ -273,6 +273,82 @@ class YamlMapTest :
                 }
             }
 
+            context("using the map as a collection") {
+                val helloKeyPath = YamlPath.root.withMapElementKey("hello", Location(1, 1))
+                val helloValuePath = helloKeyPath.withMapElementValue(Location(2, 1))
+                val alsoKeyPath = YamlPath.root.withMapElementKey("also", Location(3, 1))
+                val alsoValuePath = alsoKeyPath.withMapElementValue(Location(4, 1))
+
+                val helloKey = YamlScalar("hello", helloKeyPath)
+                val helloValue = YamlScalar("world", helloValuePath)
+                val alsoKey = YamlScalar("also", alsoKeyPath)
+                val alsoValue = YamlScalar("something", alsoValuePath)
+
+                val map = YamlMap(mapOf(helloKey to helloValue, alsoKey to alsoValue), YamlPath.root)
+
+                test("iterating over map yields its entries in order") {
+                    val contents = mutableListOf<String>()
+
+                    for ((key, value) in map) {
+                        contents += "${key.content}=${value.yamlScalar.content}"
+                    }
+
+                    contents shouldBe listOf("hello=world", "also=something")
+                }
+
+                test("map size matches its entries") {
+                    map.size shouldBe 2
+                }
+
+                test("mapping over map without accessing entries property") {
+                    map.map { (key, value) -> key.content to value.yamlScalar.content } shouldBe
+                        listOf("hello" to "world", "also" to "something")
+                }
+
+                test("associating map entries without accessing entries property") {
+                    map.associate { (key, value) -> key.content to value.yamlScalar.content } shouldBe
+                        mapOf("hello" to "world", "also" to "something")
+                }
+
+                test("mapping keys produces a plain map with transformed keys") {
+                    map.mapKeys { (key, _) -> key.content.uppercase() } shouldBe
+                        mapOf("HELLO" to helloValue, "ALSO" to alsoValue)
+                }
+
+                test("mapping values produces a plain map with transformed values") {
+                    map.mapValues { (_, value) -> value.yamlScalar.content.uppercase() } shouldBe
+                        mapOf(helloKey to "WORLD", alsoKey to "SOMETHING")
+                }
+
+                test("filtering keys produces a YamlMap with the matching entries") {
+                    map.filterKeys { it.content.startsWith("h") } shouldBe
+                        YamlMap(mapOf(helloKey to helloValue), YamlPath.root)
+                }
+
+                test("filtering values produces a YamlMap with the matching entries") {
+                    map.filterValues { it.yamlScalar.content.length > 5 } shouldBe
+                        YamlMap(mapOf(alsoKey to alsoValue), YamlPath.root)
+                }
+
+                test("getting a value by its string key returns the value") {
+                    map.getValue("hello") shouldBe helloValue
+                }
+
+                test("getting a value for a missing key throws NoSuchElementException") {
+                    shouldThrow<NoSuchElementException> { map.getValue("missing") }
+                }
+
+                test("key-centric operations compose with iteration") {
+                    val (key, value) = map
+                        .filterKeys { it.content.startsWith("h") }
+                        .mapValues { (_, value) -> value.yamlScalar.content }
+                        .entries
+                        .first()
+
+                    key.content to value shouldBe ("hello" to "world")
+                }
+            }
+
             context("getting scalar elements of the map") {
                 val helloKeyPath = YamlPath.root.withMapElementKey("hello", Location(1, 1))
                 val helloValuePath = helloKeyPath.withMapElementValue(Location(2, 1))
