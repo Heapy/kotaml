@@ -1,0 +1,612 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, watchosArm32, watchosArm64, watchosSimulatorArm64, watchosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.heapy.kotaml:kotaml>
+open annotation class com.charleskorn.kaml/YamlComment : kotlin/Annotation { // com.charleskorn.kaml/YamlComment|null[0]
+    constructor <init>(kotlin/Array<out kotlin/String>...) // com.charleskorn.kaml/YamlComment.<init>|<init>(kotlin.Array<out|kotlin.String>...){}[0]
+
+    final val lines // com.charleskorn.kaml/YamlComment.lines|{}lines[0]
+        final fun <get-lines>(): kotlin/Array<out kotlin/String> // com.charleskorn.kaml/YamlComment.lines.<get-lines>|<get-lines>(){}[0]
+}
+
+open annotation class com.charleskorn.kaml/YamlMultiLineStringStyle : kotlin/Annotation { // com.charleskorn.kaml/YamlMultiLineStringStyle|null[0]
+    constructor <init>(com.charleskorn.kaml/MultiLineStringStyle) // com.charleskorn.kaml/YamlMultiLineStringStyle.<init>|<init>(com.charleskorn.kaml.MultiLineStringStyle){}[0]
+
+    final val multiLineStringStyle // com.charleskorn.kaml/YamlMultiLineStringStyle.multiLineStringStyle|{}multiLineStringStyle[0]
+        final fun <get-multiLineStringStyle>(): com.charleskorn.kaml/MultiLineStringStyle // com.charleskorn.kaml/YamlMultiLineStringStyle.multiLineStringStyle.<get-multiLineStringStyle>|<get-multiLineStringStyle>(){}[0]
+}
+
+open annotation class com.charleskorn.kaml/YamlSingleLineStringStyle : kotlin/Annotation { // com.charleskorn.kaml/YamlSingleLineStringStyle|null[0]
+    constructor <init>(com.charleskorn.kaml/SingleLineStringStyle) // com.charleskorn.kaml/YamlSingleLineStringStyle.<init>|<init>(com.charleskorn.kaml.SingleLineStringStyle){}[0]
+
+    final val singleLineStringStyle // com.charleskorn.kaml/YamlSingleLineStringStyle.singleLineStringStyle|{}singleLineStringStyle[0]
+        final fun <get-singleLineStringStyle>(): com.charleskorn.kaml/SingleLineStringStyle // com.charleskorn.kaml/YamlSingleLineStringStyle.singleLineStringStyle.<get-singleLineStringStyle>|<get-singleLineStringStyle>(){}[0]
+}
+
+final enum class com.charleskorn.kaml/AmbiguousQuoteStyle : kotlin/Enum<com.charleskorn.kaml/AmbiguousQuoteStyle> { // com.charleskorn.kaml/AmbiguousQuoteStyle|null[0]
+    enum entry DoubleQuoted // com.charleskorn.kaml/AmbiguousQuoteStyle.DoubleQuoted|null[0]
+    enum entry SingleQuoted // com.charleskorn.kaml/AmbiguousQuoteStyle.SingleQuoted|null[0]
+
+    final val entries // com.charleskorn.kaml/AmbiguousQuoteStyle.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.charleskorn.kaml/AmbiguousQuoteStyle> // com.charleskorn.kaml/AmbiguousQuoteStyle.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.charleskorn.kaml/AmbiguousQuoteStyle // com.charleskorn.kaml/AmbiguousQuoteStyle.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.charleskorn.kaml/AmbiguousQuoteStyle> // com.charleskorn.kaml/AmbiguousQuoteStyle.values|values#static(){}[0]
+}
+
+final enum class com.charleskorn.kaml/MultiLineStringStyle : kotlin/Enum<com.charleskorn.kaml/MultiLineStringStyle> { // com.charleskorn.kaml/MultiLineStringStyle|null[0]
+    enum entry DoubleQuoted // com.charleskorn.kaml/MultiLineStringStyle.DoubleQuoted|null[0]
+    enum entry Folded // com.charleskorn.kaml/MultiLineStringStyle.Folded|null[0]
+    enum entry Literal // com.charleskorn.kaml/MultiLineStringStyle.Literal|null[0]
+    enum entry Plain // com.charleskorn.kaml/MultiLineStringStyle.Plain|null[0]
+    enum entry SingleQuoted // com.charleskorn.kaml/MultiLineStringStyle.SingleQuoted|null[0]
+
+    final val entries // com.charleskorn.kaml/MultiLineStringStyle.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.charleskorn.kaml/MultiLineStringStyle> // com.charleskorn.kaml/MultiLineStringStyle.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.charleskorn.kaml/MultiLineStringStyle // com.charleskorn.kaml/MultiLineStringStyle.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.charleskorn.kaml/MultiLineStringStyle> // com.charleskorn.kaml/MultiLineStringStyle.values|values#static(){}[0]
+}
+
+final enum class com.charleskorn.kaml/PolymorphismStyle : kotlin/Enum<com.charleskorn.kaml/PolymorphismStyle> { // com.charleskorn.kaml/PolymorphismStyle|null[0]
+    enum entry None // com.charleskorn.kaml/PolymorphismStyle.None|null[0]
+    enum entry Property // com.charleskorn.kaml/PolymorphismStyle.Property|null[0]
+    enum entry Tag // com.charleskorn.kaml/PolymorphismStyle.Tag|null[0]
+
+    final val entries // com.charleskorn.kaml/PolymorphismStyle.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.charleskorn.kaml/PolymorphismStyle> // com.charleskorn.kaml/PolymorphismStyle.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.charleskorn.kaml/PolymorphismStyle // com.charleskorn.kaml/PolymorphismStyle.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.charleskorn.kaml/PolymorphismStyle> // com.charleskorn.kaml/PolymorphismStyle.values|values#static(){}[0]
+}
+
+final enum class com.charleskorn.kaml/SequenceStyle : kotlin/Enum<com.charleskorn.kaml/SequenceStyle> { // com.charleskorn.kaml/SequenceStyle|null[0]
+    enum entry Block // com.charleskorn.kaml/SequenceStyle.Block|null[0]
+    enum entry Flow // com.charleskorn.kaml/SequenceStyle.Flow|null[0]
+
+    final val entries // com.charleskorn.kaml/SequenceStyle.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.charleskorn.kaml/SequenceStyle> // com.charleskorn.kaml/SequenceStyle.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.charleskorn.kaml/SequenceStyle // com.charleskorn.kaml/SequenceStyle.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.charleskorn.kaml/SequenceStyle> // com.charleskorn.kaml/SequenceStyle.values|values#static(){}[0]
+}
+
+final enum class com.charleskorn.kaml/SingleLineStringStyle : kotlin/Enum<com.charleskorn.kaml/SingleLineStringStyle> { // com.charleskorn.kaml/SingleLineStringStyle|null[0]
+    enum entry DoubleQuoted // com.charleskorn.kaml/SingleLineStringStyle.DoubleQuoted|null[0]
+    enum entry Plain // com.charleskorn.kaml/SingleLineStringStyle.Plain|null[0]
+    enum entry PlainExceptAmbiguous // com.charleskorn.kaml/SingleLineStringStyle.PlainExceptAmbiguous|null[0]
+    enum entry SingleQuoted // com.charleskorn.kaml/SingleLineStringStyle.SingleQuoted|null[0]
+
+    final val entries // com.charleskorn.kaml/SingleLineStringStyle.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.charleskorn.kaml/SingleLineStringStyle> // com.charleskorn.kaml/SingleLineStringStyle.entries.<get-entries>|<get-entries>#static(){}[0]
+    final val multiLineStringStyle // com.charleskorn.kaml/SingleLineStringStyle.multiLineStringStyle|{}multiLineStringStyle[0]
+        final fun <get-multiLineStringStyle>(): com.charleskorn.kaml/MultiLineStringStyle // com.charleskorn.kaml/SingleLineStringStyle.multiLineStringStyle.<get-multiLineStringStyle>|<get-multiLineStringStyle>(){}[0]
+
+    final fun valueOf(kotlin/String): com.charleskorn.kaml/SingleLineStringStyle // com.charleskorn.kaml/SingleLineStringStyle.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.charleskorn.kaml/SingleLineStringStyle> // com.charleskorn.kaml/SingleLineStringStyle.values|values#static(){}[0]
+}
+
+abstract fun interface com.charleskorn.kaml/YamlNamingStrategy { // com.charleskorn.kaml/YamlNamingStrategy|null[0]
+    abstract fun serialNameForYaml(kotlin/String): kotlin/String // com.charleskorn.kaml/YamlNamingStrategy.serialNameForYaml|serialNameForYaml(kotlin.String){}[0]
+
+    final object Builtins { // com.charleskorn.kaml/YamlNamingStrategy.Builtins|null[0]
+        final val CamelCase // com.charleskorn.kaml/YamlNamingStrategy.Builtins.CamelCase|{}CamelCase[0]
+            final fun <get-CamelCase>(): com.charleskorn.kaml/YamlNamingStrategy // com.charleskorn.kaml/YamlNamingStrategy.Builtins.CamelCase.<get-CamelCase>|<get-CamelCase>(){}[0]
+        final val KebabCase // com.charleskorn.kaml/YamlNamingStrategy.Builtins.KebabCase|{}KebabCase[0]
+            final fun <get-KebabCase>(): com.charleskorn.kaml/YamlNamingStrategy // com.charleskorn.kaml/YamlNamingStrategy.Builtins.KebabCase.<get-KebabCase>|<get-KebabCase>(){}[0]
+        final val PascalCase // com.charleskorn.kaml/YamlNamingStrategy.Builtins.PascalCase|{}PascalCase[0]
+            final fun <get-PascalCase>(): com.charleskorn.kaml/YamlNamingStrategy // com.charleskorn.kaml/YamlNamingStrategy.Builtins.PascalCase.<get-PascalCase>|<get-PascalCase>(){}[0]
+        final val SnakeCase // com.charleskorn.kaml/YamlNamingStrategy.Builtins.SnakeCase|{}SnakeCase[0]
+            final fun <get-SnakeCase>(): com.charleskorn.kaml/YamlNamingStrategy // com.charleskorn.kaml/YamlNamingStrategy.Builtins.SnakeCase.<get-SnakeCase>|<get-SnakeCase>(){}[0]
+    }
+}
+
+abstract class <#A: kotlin/Any> com.charleskorn.kaml/YamlContentPolymorphicSerializer : kotlinx.serialization/KSerializer<#A> { // com.charleskorn.kaml/YamlContentPolymorphicSerializer|null[0]
+    constructor <init>(kotlin.reflect/KClass<#A>) // com.charleskorn.kaml/YamlContentPolymorphicSerializer.<init>|<init>(kotlin.reflect.KClass<1:0>){}[0]
+
+    open val descriptor // com.charleskorn.kaml/YamlContentPolymorphicSerializer.descriptor|{}descriptor[0]
+        open fun <get-descriptor>(): kotlinx.serialization.descriptors/SerialDescriptor // com.charleskorn.kaml/YamlContentPolymorphicSerializer.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+
+    abstract fun selectDeserializer(com.charleskorn.kaml/YamlNode): kotlinx.serialization/DeserializationStrategy<#A> // com.charleskorn.kaml/YamlContentPolymorphicSerializer.selectDeserializer|selectDeserializer(com.charleskorn.kaml.YamlNode){}[0]
+    open fun deserialize(kotlinx.serialization.encoding/Decoder): #A // com.charleskorn.kaml/YamlContentPolymorphicSerializer.deserialize|deserialize(kotlinx.serialization.encoding.Decoder){}[0]
+    open fun serialize(kotlinx.serialization.encoding/Encoder, #A) // com.charleskorn.kaml/YamlContentPolymorphicSerializer.serialize|serialize(kotlinx.serialization.encoding.Encoder;1:0){}[0]
+}
+
+final class com.charleskorn.kaml/DuplicateKeyException : com.charleskorn.kaml/YamlException { // com.charleskorn.kaml/DuplicateKeyException|null[0]
+    constructor <init>(com.charleskorn.kaml/YamlPath, com.charleskorn.kaml/YamlPath, kotlin/String) // com.charleskorn.kaml/DuplicateKeyException.<init>|<init>(com.charleskorn.kaml.YamlPath;com.charleskorn.kaml.YamlPath;kotlin.String){}[0]
+
+    final val duplicateLocation // com.charleskorn.kaml/DuplicateKeyException.duplicateLocation|{}duplicateLocation[0]
+        final fun <get-duplicateLocation>(): com.charleskorn.kaml/Location // com.charleskorn.kaml/DuplicateKeyException.duplicateLocation.<get-duplicateLocation>|<get-duplicateLocation>(){}[0]
+    final val duplicatePath // com.charleskorn.kaml/DuplicateKeyException.duplicatePath|{}duplicatePath[0]
+        final fun <get-duplicatePath>(): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/DuplicateKeyException.duplicatePath.<get-duplicatePath>|<get-duplicatePath>(){}[0]
+    final val key // com.charleskorn.kaml/DuplicateKeyException.key|{}key[0]
+        final fun <get-key>(): kotlin/String // com.charleskorn.kaml/DuplicateKeyException.key.<get-key>|<get-key>(){}[0]
+    final val originalLocation // com.charleskorn.kaml/DuplicateKeyException.originalLocation|{}originalLocation[0]
+        final fun <get-originalLocation>(): com.charleskorn.kaml/Location // com.charleskorn.kaml/DuplicateKeyException.originalLocation.<get-originalLocation>|<get-originalLocation>(){}[0]
+    final val originalPath // com.charleskorn.kaml/DuplicateKeyException.originalPath|{}originalPath[0]
+        final fun <get-originalPath>(): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/DuplicateKeyException.originalPath.<get-originalPath>|<get-originalPath>(){}[0]
+}
+
+final class com.charleskorn.kaml/EmptyYamlDocumentException : com.charleskorn.kaml/YamlException { // com.charleskorn.kaml/EmptyYamlDocumentException|null[0]
+    constructor <init>(kotlin/String, com.charleskorn.kaml/YamlPath) // com.charleskorn.kaml/EmptyYamlDocumentException.<init>|<init>(kotlin.String;com.charleskorn.kaml.YamlPath){}[0]
+}
+
+final class com.charleskorn.kaml/ForbiddenAnchorOrAliasException : com.charleskorn.kaml/YamlException { // com.charleskorn.kaml/ForbiddenAnchorOrAliasException|null[0]
+    constructor <init>(kotlin/String, com.charleskorn.kaml/YamlPath) // com.charleskorn.kaml/ForbiddenAnchorOrAliasException.<init>|<init>(kotlin.String;com.charleskorn.kaml.YamlPath){}[0]
+}
+
+final class com.charleskorn.kaml/InvalidPropertyValueException : com.charleskorn.kaml/YamlException { // com.charleskorn.kaml/InvalidPropertyValueException|null[0]
+    constructor <init>(kotlin/String, kotlin/String, com.charleskorn.kaml/YamlPath, kotlin/Throwable? = ...) // com.charleskorn.kaml/InvalidPropertyValueException.<init>|<init>(kotlin.String;kotlin.String;com.charleskorn.kaml.YamlPath;kotlin.Throwable?){}[0]
+
+    final val propertyName // com.charleskorn.kaml/InvalidPropertyValueException.propertyName|{}propertyName[0]
+        final fun <get-propertyName>(): kotlin/String // com.charleskorn.kaml/InvalidPropertyValueException.propertyName.<get-propertyName>|<get-propertyName>(){}[0]
+    final val reason // com.charleskorn.kaml/InvalidPropertyValueException.reason|{}reason[0]
+        final fun <get-reason>(): kotlin/String // com.charleskorn.kaml/InvalidPropertyValueException.reason.<get-reason>|<get-reason>(){}[0]
+}
+
+final class com.charleskorn.kaml/Location { // com.charleskorn.kaml/Location|null[0]
+    constructor <init>(kotlin/Int, kotlin/Int) // com.charleskorn.kaml/Location.<init>|<init>(kotlin.Int;kotlin.Int){}[0]
+
+    final val column // com.charleskorn.kaml/Location.column|{}column[0]
+        final fun <get-column>(): kotlin/Int // com.charleskorn.kaml/Location.column.<get-column>|<get-column>(){}[0]
+    final val line // com.charleskorn.kaml/Location.line|{}line[0]
+        final fun <get-line>(): kotlin/Int // com.charleskorn.kaml/Location.line.<get-line>|<get-line>(){}[0]
+
+    final fun component1(): kotlin/Int // com.charleskorn.kaml/Location.component1|component1(){}[0]
+    final fun component2(): kotlin/Int // com.charleskorn.kaml/Location.component2|component2(){}[0]
+    final fun copy(kotlin/Int = ..., kotlin/Int = ...): com.charleskorn.kaml/Location // com.charleskorn.kaml/Location.copy|copy(kotlin.Int;kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.charleskorn.kaml/Location.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.charleskorn.kaml/Location.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.charleskorn.kaml/Location.toString|toString(){}[0]
+}
+
+final class com.charleskorn.kaml/MalformedYamlException : com.charleskorn.kaml/YamlException { // com.charleskorn.kaml/MalformedYamlException|null[0]
+    constructor <init>(kotlin/String, com.charleskorn.kaml/YamlPath) // com.charleskorn.kaml/MalformedYamlException.<init>|<init>(kotlin.String;com.charleskorn.kaml.YamlPath){}[0]
+}
+
+final class com.charleskorn.kaml/MissingRequiredPropertyException : com.charleskorn.kaml/YamlException { // com.charleskorn.kaml/MissingRequiredPropertyException|null[0]
+    constructor <init>(kotlin/String, com.charleskorn.kaml/YamlPath, kotlin/Throwable? = ...) // com.charleskorn.kaml/MissingRequiredPropertyException.<init>|<init>(kotlin.String;com.charleskorn.kaml.YamlPath;kotlin.Throwable?){}[0]
+
+    final val propertyName // com.charleskorn.kaml/MissingRequiredPropertyException.propertyName|{}propertyName[0]
+        final fun <get-propertyName>(): kotlin/String // com.charleskorn.kaml/MissingRequiredPropertyException.propertyName.<get-propertyName>|<get-propertyName>(){}[0]
+}
+
+final class com.charleskorn.kaml/MissingTypeTagException : com.charleskorn.kaml/IncorrectTypeException { // com.charleskorn.kaml/MissingTypeTagException|null[0]
+    constructor <init>(com.charleskorn.kaml/YamlPath) // com.charleskorn.kaml/MissingTypeTagException.<init>|<init>(com.charleskorn.kaml.YamlPath){}[0]
+}
+
+final class com.charleskorn.kaml/NoAnchorForExtensionException : com.charleskorn.kaml/YamlException { // com.charleskorn.kaml/NoAnchorForExtensionException|null[0]
+    constructor <init>(kotlin/String, kotlin/String, com.charleskorn.kaml/YamlPath) // com.charleskorn.kaml/NoAnchorForExtensionException.<init>|<init>(kotlin.String;kotlin.String;com.charleskorn.kaml.YamlPath){}[0]
+
+    final val extensionDefinitionPrefix // com.charleskorn.kaml/NoAnchorForExtensionException.extensionDefinitionPrefix|{}extensionDefinitionPrefix[0]
+        final fun <get-extensionDefinitionPrefix>(): kotlin/String // com.charleskorn.kaml/NoAnchorForExtensionException.extensionDefinitionPrefix.<get-extensionDefinitionPrefix>|<get-extensionDefinitionPrefix>(){}[0]
+    final val key // com.charleskorn.kaml/NoAnchorForExtensionException.key|{}key[0]
+        final fun <get-key>(): kotlin/String // com.charleskorn.kaml/NoAnchorForExtensionException.key.<get-key>|<get-key>(){}[0]
+}
+
+final class com.charleskorn.kaml/UnexpectedNullValueException : com.charleskorn.kaml/YamlException { // com.charleskorn.kaml/UnexpectedNullValueException|null[0]
+    constructor <init>(com.charleskorn.kaml/YamlPath) // com.charleskorn.kaml/UnexpectedNullValueException.<init>|<init>(com.charleskorn.kaml.YamlPath){}[0]
+}
+
+final class com.charleskorn.kaml/UnknownAnchorException : com.charleskorn.kaml/YamlException { // com.charleskorn.kaml/UnknownAnchorException|null[0]
+    constructor <init>(kotlin/String, com.charleskorn.kaml/YamlPath) // com.charleskorn.kaml/UnknownAnchorException.<init>|<init>(kotlin.String;com.charleskorn.kaml.YamlPath){}[0]
+
+    final val anchorName // com.charleskorn.kaml/UnknownAnchorException.anchorName|{}anchorName[0]
+        final fun <get-anchorName>(): kotlin/String // com.charleskorn.kaml/UnknownAnchorException.anchorName.<get-anchorName>|<get-anchorName>(){}[0]
+}
+
+final class com.charleskorn.kaml/UnknownPolymorphicTypeException : com.charleskorn.kaml/YamlException { // com.charleskorn.kaml/UnknownPolymorphicTypeException|null[0]
+    constructor <init>(kotlin/String, kotlin.collections/Set<kotlin/String>, com.charleskorn.kaml/YamlPath, kotlin/Throwable? = ...) // com.charleskorn.kaml/UnknownPolymorphicTypeException.<init>|<init>(kotlin.String;kotlin.collections.Set<kotlin.String>;com.charleskorn.kaml.YamlPath;kotlin.Throwable?){}[0]
+
+    final val typeName // com.charleskorn.kaml/UnknownPolymorphicTypeException.typeName|{}typeName[0]
+        final fun <get-typeName>(): kotlin/String // com.charleskorn.kaml/UnknownPolymorphicTypeException.typeName.<get-typeName>|<get-typeName>(){}[0]
+    final val validTypeNames // com.charleskorn.kaml/UnknownPolymorphicTypeException.validTypeNames|{}validTypeNames[0]
+        final fun <get-validTypeNames>(): kotlin.collections/Set<kotlin/String> // com.charleskorn.kaml/UnknownPolymorphicTypeException.validTypeNames.<get-validTypeNames>|<get-validTypeNames>(){}[0]
+}
+
+final class com.charleskorn.kaml/UnknownPropertyException : com.charleskorn.kaml/YamlException { // com.charleskorn.kaml/UnknownPropertyException|null[0]
+    constructor <init>(kotlin/String, kotlin.collections/Set<kotlin/String>, com.charleskorn.kaml/YamlPath) // com.charleskorn.kaml/UnknownPropertyException.<init>|<init>(kotlin.String;kotlin.collections.Set<kotlin.String>;com.charleskorn.kaml.YamlPath){}[0]
+
+    final val propertyName // com.charleskorn.kaml/UnknownPropertyException.propertyName|{}propertyName[0]
+        final fun <get-propertyName>(): kotlin/String // com.charleskorn.kaml/UnknownPropertyException.propertyName.<get-propertyName>|<get-propertyName>(){}[0]
+    final val validPropertyNames // com.charleskorn.kaml/UnknownPropertyException.validPropertyNames|{}validPropertyNames[0]
+        final fun <get-validPropertyNames>(): kotlin.collections/Set<kotlin/String> // com.charleskorn.kaml/UnknownPropertyException.validPropertyNames.<get-validPropertyNames>|<get-validPropertyNames>(){}[0]
+}
+
+final class com.charleskorn.kaml/Yaml : kotlinx.serialization/StringFormat { // com.charleskorn.kaml/Yaml|null[0]
+    constructor <init>(kotlinx.serialization.modules/SerializersModule = ..., com.charleskorn.kaml/YamlConfiguration = ...) // com.charleskorn.kaml/Yaml.<init>|<init>(kotlinx.serialization.modules.SerializersModule;com.charleskorn.kaml.YamlConfiguration){}[0]
+
+    final val configuration // com.charleskorn.kaml/Yaml.configuration|{}configuration[0]
+        final fun <get-configuration>(): com.charleskorn.kaml/YamlConfiguration // com.charleskorn.kaml/Yaml.configuration.<get-configuration>|<get-configuration>(){}[0]
+    final val serializersModule // com.charleskorn.kaml/Yaml.serializersModule|{}serializersModule[0]
+        final fun <get-serializersModule>(): kotlinx.serialization.modules/SerializersModule // com.charleskorn.kaml/Yaml.serializersModule.<get-serializersModule>|<get-serializersModule>(){}[0]
+
+    final fun <#A1: kotlin/Any?> decodeFromSource(kotlinx.serialization/DeserializationStrategy<#A1>, okio/Source): #A1 // com.charleskorn.kaml/Yaml.decodeFromSource|decodeFromSource(kotlinx.serialization.DeserializationStrategy<0:0>;okio.Source){0§<kotlin.Any?>}[0]
+    final fun <#A1: kotlin/Any?> decodeFromString(kotlinx.serialization/DeserializationStrategy<#A1>, kotlin/String): #A1 // com.charleskorn.kaml/Yaml.decodeFromString|decodeFromString(kotlinx.serialization.DeserializationStrategy<0:0>;kotlin.String){0§<kotlin.Any?>}[0]
+    final fun <#A1: kotlin/Any?> decodeFromYamlNode(kotlinx.serialization/DeserializationStrategy<#A1>, com.charleskorn.kaml/YamlNode): #A1 // com.charleskorn.kaml/Yaml.decodeFromYamlNode|decodeFromYamlNode(kotlinx.serialization.DeserializationStrategy<0:0>;com.charleskorn.kaml.YamlNode){0§<kotlin.Any?>}[0]
+    final fun <#A1: kotlin/Any?> encodeToBufferedSink(kotlinx.serialization/SerializationStrategy<#A1>, #A1, okio/BufferedSink) // com.charleskorn.kaml/Yaml.encodeToBufferedSink|encodeToBufferedSink(kotlinx.serialization.SerializationStrategy<0:0>;0:0;okio.BufferedSink){0§<kotlin.Any?>}[0]
+    final fun <#A1: kotlin/Any?> encodeToSink(kotlinx.serialization/SerializationStrategy<#A1>, #A1, okio/Sink) // com.charleskorn.kaml/Yaml.encodeToSink|encodeToSink(kotlinx.serialization.SerializationStrategy<0:0>;0:0;okio.Sink){0§<kotlin.Any?>}[0]
+    final fun <#A1: kotlin/Any?> encodeToString(kotlinx.serialization/SerializationStrategy<#A1>, #A1): kotlin/String // com.charleskorn.kaml/Yaml.encodeToString|encodeToString(kotlinx.serialization.SerializationStrategy<0:0>;0:0){0§<kotlin.Any?>}[0]
+    final fun parseToYamlNode(kotlin/String): com.charleskorn.kaml/YamlNode // com.charleskorn.kaml/Yaml.parseToYamlNode|parseToYamlNode(kotlin.String){}[0]
+    final inline fun <#A1: reified kotlin/Any?> decodeFromSource(okio/Source): #A1 // com.charleskorn.kaml/Yaml.decodeFromSource|decodeFromSource(okio.Source){0§<kotlin.Any?>}[0]
+    final inline fun <#A1: reified kotlin/Any?> decodeFromYamlNode(com.charleskorn.kaml/YamlNode): #A1 // com.charleskorn.kaml/Yaml.decodeFromYamlNode|decodeFromYamlNode(com.charleskorn.kaml.YamlNode){0§<kotlin.Any?>}[0]
+    final inline fun <#A1: reified kotlin/Any?> encodeToBufferedSink(#A1, okio/BufferedSink) // com.charleskorn.kaml/Yaml.encodeToBufferedSink|encodeToBufferedSink(0:0;okio.BufferedSink){0§<kotlin.Any?>}[0]
+    final inline fun <#A1: reified kotlin/Any?> encodeToSink(#A1, okio/Sink) // com.charleskorn.kaml/Yaml.encodeToSink|encodeToSink(0:0;okio.Sink){0§<kotlin.Any?>}[0]
+
+    final object Companion { // com.charleskorn.kaml/Yaml.Companion|null[0]
+        final val default // com.charleskorn.kaml/Yaml.Companion.default|{}default[0]
+            final fun <get-default>(): com.charleskorn.kaml/Yaml // com.charleskorn.kaml/Yaml.Companion.default.<get-default>|<get-default>(){}[0]
+    }
+}
+
+final class com.charleskorn.kaml/YamlConfiguration { // com.charleskorn.kaml/YamlConfiguration|null[0]
+    constructor <init>(kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/String? = ..., com.charleskorn.kaml/PolymorphismStyle = ..., kotlin/String = ..., kotlin/Int = ..., kotlin/Int = ..., com.charleskorn.kaml/SequenceStyle = ..., com.charleskorn.kaml/SingleLineStringStyle = ..., com.charleskorn.kaml/MultiLineStringStyle = ..., com.charleskorn.kaml/AmbiguousQuoteStyle = ..., kotlin/Int = ..., com.charleskorn.kaml/AnchorsAndAliases = ..., com.charleskorn.kaml/YamlNamingStrategy? = ..., kotlin/Int? = ..., kotlin/Boolean = ...) // com.charleskorn.kaml/YamlConfiguration.<init>|<init>(kotlin.Boolean;kotlin.Boolean;kotlin.String?;com.charleskorn.kaml.PolymorphismStyle;kotlin.String;kotlin.Int;kotlin.Int;com.charleskorn.kaml.SequenceStyle;com.charleskorn.kaml.SingleLineStringStyle;com.charleskorn.kaml.MultiLineStringStyle;com.charleskorn.kaml.AmbiguousQuoteStyle;kotlin.Int;com.charleskorn.kaml.AnchorsAndAliases;com.charleskorn.kaml.YamlNamingStrategy?;kotlin.Int?;kotlin.Boolean){}[0]
+
+    final fun copy(kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/String? = ..., com.charleskorn.kaml/PolymorphismStyle = ..., kotlin/String = ..., kotlin/Int = ..., kotlin/Int = ..., com.charleskorn.kaml/SequenceStyle = ..., com.charleskorn.kaml/SingleLineStringStyle = ..., com.charleskorn.kaml/MultiLineStringStyle = ..., com.charleskorn.kaml/AmbiguousQuoteStyle = ..., kotlin/Int = ..., com.charleskorn.kaml/AnchorsAndAliases = ..., com.charleskorn.kaml/YamlNamingStrategy? = ..., kotlin/Int? = ..., kotlin/Boolean = ...): com.charleskorn.kaml/YamlConfiguration // com.charleskorn.kaml/YamlConfiguration.copy|copy(kotlin.Boolean;kotlin.Boolean;kotlin.String?;com.charleskorn.kaml.PolymorphismStyle;kotlin.String;kotlin.Int;kotlin.Int;com.charleskorn.kaml.SequenceStyle;com.charleskorn.kaml.SingleLineStringStyle;com.charleskorn.kaml.MultiLineStringStyle;com.charleskorn.kaml.AmbiguousQuoteStyle;kotlin.Int;com.charleskorn.kaml.AnchorsAndAliases;com.charleskorn.kaml.YamlNamingStrategy?;kotlin.Int?;kotlin.Boolean){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.charleskorn.kaml/YamlConfiguration.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.charleskorn.kaml/YamlConfiguration.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.charleskorn.kaml/YamlConfiguration.toString|toString(){}[0]
+}
+
+final class com.charleskorn.kaml/YamlList : com.charleskorn.kaml/YamlNode { // com.charleskorn.kaml/YamlList|null[0]
+    constructor <init>(kotlin.collections/List<com.charleskorn.kaml/YamlNode>, com.charleskorn.kaml/YamlPath) // com.charleskorn.kaml/YamlList.<init>|<init>(kotlin.collections.List<com.charleskorn.kaml.YamlNode>;com.charleskorn.kaml.YamlPath){}[0]
+
+    final val items // com.charleskorn.kaml/YamlList.items|{}items[0]
+        final fun <get-items>(): kotlin.collections/List<com.charleskorn.kaml/YamlNode> // com.charleskorn.kaml/YamlList.items.<get-items>|<get-items>(){}[0]
+    final val path // com.charleskorn.kaml/YamlList.path|{}path[0]
+        final fun <get-path>(): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/YamlList.path.<get-path>|<get-path>(){}[0]
+
+    final fun component1(): kotlin.collections/List<com.charleskorn.kaml/YamlNode> // com.charleskorn.kaml/YamlList.component1|component1(){}[0]
+    final fun component2(): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/YamlList.component2|component2(){}[0]
+    final fun contentToString(): kotlin/String // com.charleskorn.kaml/YamlList.contentToString|contentToString(){}[0]
+    final fun copy(kotlin.collections/List<com.charleskorn.kaml/YamlNode> = ..., com.charleskorn.kaml/YamlPath = ...): com.charleskorn.kaml/YamlList // com.charleskorn.kaml/YamlList.copy|copy(kotlin.collections.List<com.charleskorn.kaml.YamlNode>;com.charleskorn.kaml.YamlPath){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.charleskorn.kaml/YamlList.equals|equals(kotlin.Any?){}[0]
+    final fun equivalentContentTo(com.charleskorn.kaml/YamlNode): kotlin/Boolean // com.charleskorn.kaml/YamlList.equivalentContentTo|equivalentContentTo(com.charleskorn.kaml.YamlNode){}[0]
+    final fun get(kotlin/Int): com.charleskorn.kaml/YamlNode // com.charleskorn.kaml/YamlList.get|get(kotlin.Int){}[0]
+    final fun hashCode(): kotlin/Int // com.charleskorn.kaml/YamlList.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.charleskorn.kaml/YamlList.toString|toString(){}[0]
+    final fun withPath(com.charleskorn.kaml/YamlPath): com.charleskorn.kaml/YamlList // com.charleskorn.kaml/YamlList.withPath|withPath(com.charleskorn.kaml.YamlPath){}[0]
+
+    final object Companion { // com.charleskorn.kaml/YamlList.Companion|null[0]
+        final fun serializer(): kotlinx.serialization/KSerializer<com.charleskorn.kaml/YamlList> // com.charleskorn.kaml/YamlList.Companion.serializer|serializer(){}[0]
+    }
+}
+
+final class com.charleskorn.kaml/YamlMap : com.charleskorn.kaml/YamlNode { // com.charleskorn.kaml/YamlMap|null[0]
+    constructor <init>(kotlin.collections/Map<com.charleskorn.kaml/YamlScalar, com.charleskorn.kaml/YamlNode>, com.charleskorn.kaml/YamlPath) // com.charleskorn.kaml/YamlMap.<init>|<init>(kotlin.collections.Map<com.charleskorn.kaml.YamlScalar,com.charleskorn.kaml.YamlNode>;com.charleskorn.kaml.YamlPath){}[0]
+
+    final val entries // com.charleskorn.kaml/YamlMap.entries|{}entries[0]
+        final fun <get-entries>(): kotlin.collections/Map<com.charleskorn.kaml/YamlScalar, com.charleskorn.kaml/YamlNode> // com.charleskorn.kaml/YamlMap.entries.<get-entries>|<get-entries>(){}[0]
+    final val path // com.charleskorn.kaml/YamlMap.path|{}path[0]
+        final fun <get-path>(): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/YamlMap.path.<get-path>|<get-path>(){}[0]
+
+    final fun component1(): kotlin.collections/Map<com.charleskorn.kaml/YamlScalar, com.charleskorn.kaml/YamlNode> // com.charleskorn.kaml/YamlMap.component1|component1(){}[0]
+    final fun component2(): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/YamlMap.component2|component2(){}[0]
+    final fun contentToString(): kotlin/String // com.charleskorn.kaml/YamlMap.contentToString|contentToString(){}[0]
+    final fun copy(kotlin.collections/Map<com.charleskorn.kaml/YamlScalar, com.charleskorn.kaml/YamlNode> = ..., com.charleskorn.kaml/YamlPath = ...): com.charleskorn.kaml/YamlMap // com.charleskorn.kaml/YamlMap.copy|copy(kotlin.collections.Map<com.charleskorn.kaml.YamlScalar,com.charleskorn.kaml.YamlNode>;com.charleskorn.kaml.YamlPath){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.charleskorn.kaml/YamlMap.equals|equals(kotlin.Any?){}[0]
+    final fun equivalentContentTo(com.charleskorn.kaml/YamlNode): kotlin/Boolean // com.charleskorn.kaml/YamlMap.equivalentContentTo|equivalentContentTo(com.charleskorn.kaml.YamlNode){}[0]
+    final fun getKey(kotlin/String): com.charleskorn.kaml/YamlScalar? // com.charleskorn.kaml/YamlMap.getKey|getKey(kotlin.String){}[0]
+    final fun getScalar(kotlin/String): com.charleskorn.kaml/YamlScalar? // com.charleskorn.kaml/YamlMap.getScalar|getScalar(kotlin.String){}[0]
+    final fun hashCode(): kotlin/Int // com.charleskorn.kaml/YamlMap.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.charleskorn.kaml/YamlMap.toString|toString(){}[0]
+    final fun withPath(com.charleskorn.kaml/YamlPath): com.charleskorn.kaml/YamlMap // com.charleskorn.kaml/YamlMap.withPath|withPath(com.charleskorn.kaml.YamlPath){}[0]
+    final inline fun <#A1: reified com.charleskorn.kaml/YamlNode> get(kotlin/String): #A1? // com.charleskorn.kaml/YamlMap.get|get(kotlin.String){0§<com.charleskorn.kaml.YamlNode>}[0]
+
+    final object Companion { // com.charleskorn.kaml/YamlMap.Companion|null[0]
+        final fun serializer(): kotlinx.serialization/KSerializer<com.charleskorn.kaml/YamlMap> // com.charleskorn.kaml/YamlMap.Companion.serializer|serializer(){}[0]
+    }
+}
+
+final class com.charleskorn.kaml/YamlNull : com.charleskorn.kaml/YamlNode { // com.charleskorn.kaml/YamlNull|null[0]
+    constructor <init>(com.charleskorn.kaml/YamlPath) // com.charleskorn.kaml/YamlNull.<init>|<init>(com.charleskorn.kaml.YamlPath){}[0]
+
+    final val path // com.charleskorn.kaml/YamlNull.path|{}path[0]
+        final fun <get-path>(): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/YamlNull.path.<get-path>|<get-path>(){}[0]
+
+    final fun component1(): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/YamlNull.component1|component1(){}[0]
+    final fun contentToString(): kotlin/String // com.charleskorn.kaml/YamlNull.contentToString|contentToString(){}[0]
+    final fun copy(com.charleskorn.kaml/YamlPath = ...): com.charleskorn.kaml/YamlNull // com.charleskorn.kaml/YamlNull.copy|copy(com.charleskorn.kaml.YamlPath){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.charleskorn.kaml/YamlNull.equals|equals(kotlin.Any?){}[0]
+    final fun equivalentContentTo(com.charleskorn.kaml/YamlNode): kotlin/Boolean // com.charleskorn.kaml/YamlNull.equivalentContentTo|equivalentContentTo(com.charleskorn.kaml.YamlNode){}[0]
+    final fun hashCode(): kotlin/Int // com.charleskorn.kaml/YamlNull.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.charleskorn.kaml/YamlNull.toString|toString(){}[0]
+    final fun withPath(com.charleskorn.kaml/YamlPath): com.charleskorn.kaml/YamlNull // com.charleskorn.kaml/YamlNull.withPath|withPath(com.charleskorn.kaml.YamlPath){}[0]
+
+    final object Companion { // com.charleskorn.kaml/YamlNull.Companion|null[0]
+        final fun serializer(): kotlinx.serialization/KSerializer<com.charleskorn.kaml/YamlNull> // com.charleskorn.kaml/YamlNull.Companion.serializer|serializer(){}[0]
+    }
+}
+
+final class com.charleskorn.kaml/YamlPath { // com.charleskorn.kaml/YamlPath|null[0]
+    constructor <init>(kotlin.collections/List<com.charleskorn.kaml/YamlPathSegment>) // com.charleskorn.kaml/YamlPath.<init>|<init>(kotlin.collections.List<com.charleskorn.kaml.YamlPathSegment>){}[0]
+    constructor <init>(kotlin/Array<out com.charleskorn.kaml/YamlPathSegment>...) // com.charleskorn.kaml/YamlPath.<init>|<init>(kotlin.Array<out|com.charleskorn.kaml.YamlPathSegment>...){}[0]
+
+    final val endLocation // com.charleskorn.kaml/YamlPath.endLocation|{}endLocation[0]
+        final fun <get-endLocation>(): com.charleskorn.kaml/Location // com.charleskorn.kaml/YamlPath.endLocation.<get-endLocation>|<get-endLocation>(){}[0]
+    final val segments // com.charleskorn.kaml/YamlPath.segments|{}segments[0]
+        final fun <get-segments>(): kotlin.collections/List<com.charleskorn.kaml/YamlPathSegment> // com.charleskorn.kaml/YamlPath.segments.<get-segments>|<get-segments>(){}[0]
+
+    final fun component1(): kotlin.collections/List<com.charleskorn.kaml/YamlPathSegment> // com.charleskorn.kaml/YamlPath.component1|component1(){}[0]
+    final fun copy(kotlin.collections/List<com.charleskorn.kaml/YamlPathSegment> = ...): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/YamlPath.copy|copy(kotlin.collections.List<com.charleskorn.kaml.YamlPathSegment>){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.charleskorn.kaml/YamlPath.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.charleskorn.kaml/YamlPath.hashCode|hashCode(){}[0]
+    final fun toHumanReadableString(): kotlin/String // com.charleskorn.kaml/YamlPath.toHumanReadableString|toHumanReadableString(){}[0]
+    final fun toString(): kotlin/String // com.charleskorn.kaml/YamlPath.toString|toString(){}[0]
+    final fun withAliasDefinition(kotlin/String, com.charleskorn.kaml/Location): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/YamlPath.withAliasDefinition|withAliasDefinition(kotlin.String;com.charleskorn.kaml.Location){}[0]
+    final fun withAliasReference(kotlin/String, com.charleskorn.kaml/Location): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/YamlPath.withAliasReference|withAliasReference(kotlin.String;com.charleskorn.kaml.Location){}[0]
+    final fun withError(com.charleskorn.kaml/Location): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/YamlPath.withError|withError(com.charleskorn.kaml.Location){}[0]
+    final fun withListEntry(kotlin/Int, com.charleskorn.kaml/Location): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/YamlPath.withListEntry|withListEntry(kotlin.Int;com.charleskorn.kaml.Location){}[0]
+    final fun withMapElementKey(kotlin/String, com.charleskorn.kaml/Location): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/YamlPath.withMapElementKey|withMapElementKey(kotlin.String;com.charleskorn.kaml.Location){}[0]
+    final fun withMapElementValue(com.charleskorn.kaml/Location): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/YamlPath.withMapElementValue|withMapElementValue(com.charleskorn.kaml.Location){}[0]
+    final fun withMerge(com.charleskorn.kaml/Location): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/YamlPath.withMerge|withMerge(com.charleskorn.kaml.Location){}[0]
+
+    final object Companion { // com.charleskorn.kaml/YamlPath.Companion|null[0]
+        final val root // com.charleskorn.kaml/YamlPath.Companion.root|{}root[0]
+            final fun <get-root>(): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/YamlPath.Companion.root.<get-root>|<get-root>(){}[0]
+
+        final fun forAliasDefinition(kotlin/String, com.charleskorn.kaml/Location): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/YamlPath.Companion.forAliasDefinition|forAliasDefinition(kotlin.String;com.charleskorn.kaml.Location){}[0]
+    }
+}
+
+final class com.charleskorn.kaml/YamlScalar : com.charleskorn.kaml/YamlNode { // com.charleskorn.kaml/YamlScalar|null[0]
+    constructor <init>(kotlin/String, com.charleskorn.kaml/YamlPath, kotlin/Boolean = ...) // com.charleskorn.kaml/YamlScalar.<init>|<init>(kotlin.String;com.charleskorn.kaml.YamlPath;kotlin.Boolean){}[0]
+
+    final val content // com.charleskorn.kaml/YamlScalar.content|{}content[0]
+        final fun <get-content>(): kotlin/String // com.charleskorn.kaml/YamlScalar.content.<get-content>|<get-content>(){}[0]
+    final val path // com.charleskorn.kaml/YamlScalar.path|{}path[0]
+        final fun <get-path>(): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/YamlScalar.path.<get-path>|<get-path>(){}[0]
+    final val plain // com.charleskorn.kaml/YamlScalar.plain|{}plain[0]
+        final fun <get-plain>(): kotlin/Boolean // com.charleskorn.kaml/YamlScalar.plain.<get-plain>|<get-plain>(){}[0]
+
+    final fun component1(): kotlin/String // com.charleskorn.kaml/YamlScalar.component1|component1(){}[0]
+    final fun component2(): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/YamlScalar.component2|component2(){}[0]
+    final fun component3(): kotlin/Boolean // com.charleskorn.kaml/YamlScalar.component3|component3(){}[0]
+    final fun contentToString(): kotlin/String // com.charleskorn.kaml/YamlScalar.contentToString|contentToString(){}[0]
+    final fun copy(kotlin/String = ..., com.charleskorn.kaml/YamlPath = ..., kotlin/Boolean = ...): com.charleskorn.kaml/YamlScalar // com.charleskorn.kaml/YamlScalar.copy|copy(kotlin.String;com.charleskorn.kaml.YamlPath;kotlin.Boolean){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.charleskorn.kaml/YamlScalar.equals|equals(kotlin.Any?){}[0]
+    final fun equivalentContentTo(com.charleskorn.kaml/YamlNode): kotlin/Boolean // com.charleskorn.kaml/YamlScalar.equivalentContentTo|equivalentContentTo(com.charleskorn.kaml.YamlNode){}[0]
+    final fun hashCode(): kotlin/Int // com.charleskorn.kaml/YamlScalar.hashCode|hashCode(){}[0]
+    final fun toBoolean(): kotlin/Boolean // com.charleskorn.kaml/YamlScalar.toBoolean|toBoolean(){}[0]
+    final fun toByte(): kotlin/Byte // com.charleskorn.kaml/YamlScalar.toByte|toByte(){}[0]
+    final fun toChar(): kotlin/Char // com.charleskorn.kaml/YamlScalar.toChar|toChar(){}[0]
+    final fun toDouble(): kotlin/Double // com.charleskorn.kaml/YamlScalar.toDouble|toDouble(){}[0]
+    final fun toFloat(): kotlin/Float // com.charleskorn.kaml/YamlScalar.toFloat|toFloat(){}[0]
+    final fun toInt(): kotlin/Int // com.charleskorn.kaml/YamlScalar.toInt|toInt(){}[0]
+    final fun toLong(): kotlin/Long // com.charleskorn.kaml/YamlScalar.toLong|toLong(){}[0]
+    final fun toShort(): kotlin/Short // com.charleskorn.kaml/YamlScalar.toShort|toShort(){}[0]
+    final fun toString(): kotlin/String // com.charleskorn.kaml/YamlScalar.toString|toString(){}[0]
+    final fun withPath(com.charleskorn.kaml/YamlPath): com.charleskorn.kaml/YamlScalar // com.charleskorn.kaml/YamlScalar.withPath|withPath(com.charleskorn.kaml.YamlPath){}[0]
+
+    final object Companion { // com.charleskorn.kaml/YamlScalar.Companion|null[0]
+        final fun serializer(): kotlinx.serialization/KSerializer<com.charleskorn.kaml/YamlScalar> // com.charleskorn.kaml/YamlScalar.Companion.serializer|serializer(){}[0]
+    }
+}
+
+final class com.charleskorn.kaml/YamlScalarFormatException : com.charleskorn.kaml/YamlException { // com.charleskorn.kaml/YamlScalarFormatException|null[0]
+    constructor <init>(kotlin/String, com.charleskorn.kaml/YamlPath, kotlin/String) // com.charleskorn.kaml/YamlScalarFormatException.<init>|<init>(kotlin.String;com.charleskorn.kaml.YamlPath;kotlin.String){}[0]
+
+    final val originalValue // com.charleskorn.kaml/YamlScalarFormatException.originalValue|{}originalValue[0]
+        final fun <get-originalValue>(): kotlin/String // com.charleskorn.kaml/YamlScalarFormatException.originalValue.<get-originalValue>|<get-originalValue>(){}[0]
+}
+
+final class com.charleskorn.kaml/YamlTaggedNode : com.charleskorn.kaml/YamlNode { // com.charleskorn.kaml/YamlTaggedNode|null[0]
+    constructor <init>(kotlin/String, com.charleskorn.kaml/YamlNode) // com.charleskorn.kaml/YamlTaggedNode.<init>|<init>(kotlin.String;com.charleskorn.kaml.YamlNode){}[0]
+
+    final val innerNode // com.charleskorn.kaml/YamlTaggedNode.innerNode|{}innerNode[0]
+        final fun <get-innerNode>(): com.charleskorn.kaml/YamlNode // com.charleskorn.kaml/YamlTaggedNode.innerNode.<get-innerNode>|<get-innerNode>(){}[0]
+    final val tag // com.charleskorn.kaml/YamlTaggedNode.tag|{}tag[0]
+        final fun <get-tag>(): kotlin/String // com.charleskorn.kaml/YamlTaggedNode.tag.<get-tag>|<get-tag>(){}[0]
+
+    final fun component1(): kotlin/String // com.charleskorn.kaml/YamlTaggedNode.component1|component1(){}[0]
+    final fun component2(): com.charleskorn.kaml/YamlNode // com.charleskorn.kaml/YamlTaggedNode.component2|component2(){}[0]
+    final fun contentToString(): kotlin/String // com.charleskorn.kaml/YamlTaggedNode.contentToString|contentToString(){}[0]
+    final fun copy(kotlin/String = ..., com.charleskorn.kaml/YamlNode = ...): com.charleskorn.kaml/YamlTaggedNode // com.charleskorn.kaml/YamlTaggedNode.copy|copy(kotlin.String;com.charleskorn.kaml.YamlNode){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.charleskorn.kaml/YamlTaggedNode.equals|equals(kotlin.Any?){}[0]
+    final fun equivalentContentTo(com.charleskorn.kaml/YamlNode): kotlin/Boolean // com.charleskorn.kaml/YamlTaggedNode.equivalentContentTo|equivalentContentTo(com.charleskorn.kaml.YamlNode){}[0]
+    final fun hashCode(): kotlin/Int // com.charleskorn.kaml/YamlTaggedNode.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.charleskorn.kaml/YamlTaggedNode.toString|toString(){}[0]
+    final fun withPath(com.charleskorn.kaml/YamlPath): com.charleskorn.kaml/YamlNode // com.charleskorn.kaml/YamlTaggedNode.withPath|withPath(com.charleskorn.kaml.YamlPath){}[0]
+
+    final object Companion { // com.charleskorn.kaml/YamlTaggedNode.Companion|null[0]
+        final fun serializer(): kotlinx.serialization/KSerializer<com.charleskorn.kaml/YamlTaggedNode> // com.charleskorn.kaml/YamlTaggedNode.Companion.serializer|serializer(){}[0]
+    }
+}
+
+open class com.charleskorn.kaml/IncorrectTypeException : com.charleskorn.kaml/YamlException { // com.charleskorn.kaml/IncorrectTypeException|null[0]
+    constructor <init>(kotlin/String, com.charleskorn.kaml/YamlPath) // com.charleskorn.kaml/IncorrectTypeException.<init>|<init>(kotlin.String;com.charleskorn.kaml.YamlPath){}[0]
+}
+
+open class com.charleskorn.kaml/YamlException : kotlinx.serialization/SerializationException { // com.charleskorn.kaml/YamlException|null[0]
+    constructor <init>(kotlin/String, com.charleskorn.kaml/YamlPath, kotlin/Throwable? = ...) // com.charleskorn.kaml/YamlException.<init>|<init>(kotlin.String;com.charleskorn.kaml.YamlPath;kotlin.Throwable?){}[0]
+
+    final val column // com.charleskorn.kaml/YamlException.column|{}column[0]
+        final fun <get-column>(): kotlin/Int // com.charleskorn.kaml/YamlException.column.<get-column>|<get-column>(){}[0]
+    final val line // com.charleskorn.kaml/YamlException.line|{}line[0]
+        final fun <get-line>(): kotlin/Int // com.charleskorn.kaml/YamlException.line.<get-line>|<get-line>(){}[0]
+    final val location // com.charleskorn.kaml/YamlException.location|{}location[0]
+        final fun <get-location>(): com.charleskorn.kaml/Location // com.charleskorn.kaml/YamlException.location.<get-location>|<get-location>(){}[0]
+    final val path // com.charleskorn.kaml/YamlException.path|{}path[0]
+        final fun <get-path>(): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/YamlException.path.<get-path>|<get-path>(){}[0]
+    open val cause // com.charleskorn.kaml/YamlException.cause|{}cause[0]
+        open fun <get-cause>(): kotlin/Throwable? // com.charleskorn.kaml/YamlException.cause.<get-cause>|<get-cause>(){}[0]
+    open val message // com.charleskorn.kaml/YamlException.message|{}message[0]
+        open fun <get-message>(): kotlin/String // com.charleskorn.kaml/YamlException.message.<get-message>|<get-message>(){}[0]
+
+    open fun toString(): kotlin/String // com.charleskorn.kaml/YamlException.toString|toString(){}[0]
+}
+
+sealed class com.charleskorn.kaml/AnchorsAndAliases { // com.charleskorn.kaml/AnchorsAndAliases|null[0]
+    final class Permitted : com.charleskorn.kaml/AnchorsAndAliases { // com.charleskorn.kaml/AnchorsAndAliases.Permitted|null[0]
+        constructor <init>(kotlin/UInt? = ...) // com.charleskorn.kaml/AnchorsAndAliases.Permitted.<init>|<init>(kotlin.UInt?){}[0]
+
+        final fun copy(kotlin/UInt? = ...): com.charleskorn.kaml/AnchorsAndAliases.Permitted // com.charleskorn.kaml/AnchorsAndAliases.Permitted.copy|copy(kotlin.UInt?){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.charleskorn.kaml/AnchorsAndAliases.Permitted.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.charleskorn.kaml/AnchorsAndAliases.Permitted.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.charleskorn.kaml/AnchorsAndAliases.Permitted.toString|toString(){}[0]
+    }
+
+    final object Forbidden : com.charleskorn.kaml/AnchorsAndAliases { // com.charleskorn.kaml/AnchorsAndAliases.Forbidden|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.charleskorn.kaml/AnchorsAndAliases.Forbidden.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.charleskorn.kaml/AnchorsAndAliases.Forbidden.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.charleskorn.kaml/AnchorsAndAliases.Forbidden.toString|toString(){}[0]
+    }
+}
+
+sealed class com.charleskorn.kaml/YamlInput : kotlinx.serialization.encoding/AbstractDecoder { // com.charleskorn.kaml/YamlInput|null[0]
+    final val configuration // com.charleskorn.kaml/YamlInput.configuration|{}configuration[0]
+        final fun <get-configuration>(): com.charleskorn.kaml/YamlConfiguration // com.charleskorn.kaml/YamlInput.configuration.<get-configuration>|<get-configuration>(){}[0]
+    final val node // com.charleskorn.kaml/YamlInput.node|{}node[0]
+        final fun <get-node>(): com.charleskorn.kaml/YamlNode // com.charleskorn.kaml/YamlInput.node.<get-node>|<get-node>(){}[0]
+    final val yaml // com.charleskorn.kaml/YamlInput.yaml|{}yaml[0]
+        final fun <get-yaml>(): com.charleskorn.kaml/Yaml // com.charleskorn.kaml/YamlInput.yaml.<get-yaml>|<get-yaml>(){}[0]
+
+    open var serializersModule // com.charleskorn.kaml/YamlInput.serializersModule|{}serializersModule[0]
+        open fun <get-serializersModule>(): kotlinx.serialization.modules/SerializersModule // com.charleskorn.kaml/YamlInput.serializersModule.<get-serializersModule>|<get-serializersModule>(){}[0]
+        open fun <set-serializersModule>(kotlinx.serialization.modules/SerializersModule) // com.charleskorn.kaml/YamlInput.serializersModule.<set-serializersModule>|<set-serializersModule>(kotlinx.serialization.modules.SerializersModule){}[0]
+
+    abstract fun getCurrentLocation(): com.charleskorn.kaml/Location // com.charleskorn.kaml/YamlInput.getCurrentLocation|getCurrentLocation(){}[0]
+    abstract fun getCurrentPath(): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/YamlInput.getCurrentPath|getCurrentPath(){}[0]
+    open fun <#A1: kotlin/Any?> decodeSerializableValue(kotlinx.serialization/DeserializationStrategy<#A1>): #A1 // com.charleskorn.kaml/YamlInput.decodeSerializableValue|decodeSerializableValue(kotlinx.serialization.DeserializationStrategy<0:0>){0§<kotlin.Any?>}[0]
+}
+
+sealed class com.charleskorn.kaml/YamlNode { // com.charleskorn.kaml/YamlNode|null[0]
+    final val location // com.charleskorn.kaml/YamlNode.location|{}location[0]
+        final fun <get-location>(): com.charleskorn.kaml/Location // com.charleskorn.kaml/YamlNode.location.<get-location>|<get-location>(){}[0]
+    open val path // com.charleskorn.kaml/YamlNode.path|{}path[0]
+        open fun <get-path>(): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/YamlNode.path.<get-path>|<get-path>(){}[0]
+
+    abstract fun contentToString(): kotlin/String // com.charleskorn.kaml/YamlNode.contentToString|contentToString(){}[0]
+    abstract fun equivalentContentTo(com.charleskorn.kaml/YamlNode): kotlin/Boolean // com.charleskorn.kaml/YamlNode.equivalentContentTo|equivalentContentTo(com.charleskorn.kaml.YamlNode){}[0]
+    abstract fun withPath(com.charleskorn.kaml/YamlPath): com.charleskorn.kaml/YamlNode // com.charleskorn.kaml/YamlNode.withPath|withPath(com.charleskorn.kaml.YamlPath){}[0]
+    final fun replacePathOnChild(com.charleskorn.kaml/YamlNode, com.charleskorn.kaml/YamlPath): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/YamlNode.replacePathOnChild|replacePathOnChild(com.charleskorn.kaml.YamlNode;com.charleskorn.kaml.YamlPath){}[0]
+
+    final object Companion { // com.charleskorn.kaml/YamlNode.Companion|null[0]
+        final fun serializer(): kotlinx.serialization/KSerializer<com.charleskorn.kaml/YamlNode> // com.charleskorn.kaml/YamlNode.Companion.serializer|serializer(){}[0]
+    }
+}
+
+sealed class com.charleskorn.kaml/YamlPathSegment { // com.charleskorn.kaml/YamlPathSegment|null[0]
+    open val location // com.charleskorn.kaml/YamlPathSegment.location|{}location[0]
+        open fun <get-location>(): com.charleskorn.kaml/Location // com.charleskorn.kaml/YamlPathSegment.location.<get-location>|<get-location>(){}[0]
+
+    final class AliasDefinition : com.charleskorn.kaml/YamlPathSegment { // com.charleskorn.kaml/YamlPathSegment.AliasDefinition|null[0]
+        constructor <init>(kotlin/String, com.charleskorn.kaml/Location) // com.charleskorn.kaml/YamlPathSegment.AliasDefinition.<init>|<init>(kotlin.String;com.charleskorn.kaml.Location){}[0]
+
+        final val location // com.charleskorn.kaml/YamlPathSegment.AliasDefinition.location|{}location[0]
+            final fun <get-location>(): com.charleskorn.kaml/Location // com.charleskorn.kaml/YamlPathSegment.AliasDefinition.location.<get-location>|<get-location>(){}[0]
+        final val name // com.charleskorn.kaml/YamlPathSegment.AliasDefinition.name|{}name[0]
+            final fun <get-name>(): kotlin/String // com.charleskorn.kaml/YamlPathSegment.AliasDefinition.name.<get-name>|<get-name>(){}[0]
+
+        final fun component1(): kotlin/String // com.charleskorn.kaml/YamlPathSegment.AliasDefinition.component1|component1(){}[0]
+        final fun component2(): com.charleskorn.kaml/Location // com.charleskorn.kaml/YamlPathSegment.AliasDefinition.component2|component2(){}[0]
+        final fun copy(kotlin/String = ..., com.charleskorn.kaml/Location = ...): com.charleskorn.kaml/YamlPathSegment.AliasDefinition // com.charleskorn.kaml/YamlPathSegment.AliasDefinition.copy|copy(kotlin.String;com.charleskorn.kaml.Location){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.charleskorn.kaml/YamlPathSegment.AliasDefinition.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.charleskorn.kaml/YamlPathSegment.AliasDefinition.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.charleskorn.kaml/YamlPathSegment.AliasDefinition.toString|toString(){}[0]
+    }
+
+    final class AliasReference : com.charleskorn.kaml/YamlPathSegment { // com.charleskorn.kaml/YamlPathSegment.AliasReference|null[0]
+        constructor <init>(kotlin/String, com.charleskorn.kaml/Location) // com.charleskorn.kaml/YamlPathSegment.AliasReference.<init>|<init>(kotlin.String;com.charleskorn.kaml.Location){}[0]
+
+        final val location // com.charleskorn.kaml/YamlPathSegment.AliasReference.location|{}location[0]
+            final fun <get-location>(): com.charleskorn.kaml/Location // com.charleskorn.kaml/YamlPathSegment.AliasReference.location.<get-location>|<get-location>(){}[0]
+        final val name // com.charleskorn.kaml/YamlPathSegment.AliasReference.name|{}name[0]
+            final fun <get-name>(): kotlin/String // com.charleskorn.kaml/YamlPathSegment.AliasReference.name.<get-name>|<get-name>(){}[0]
+
+        final fun component1(): kotlin/String // com.charleskorn.kaml/YamlPathSegment.AliasReference.component1|component1(){}[0]
+        final fun component2(): com.charleskorn.kaml/Location // com.charleskorn.kaml/YamlPathSegment.AliasReference.component2|component2(){}[0]
+        final fun copy(kotlin/String = ..., com.charleskorn.kaml/Location = ...): com.charleskorn.kaml/YamlPathSegment.AliasReference // com.charleskorn.kaml/YamlPathSegment.AliasReference.copy|copy(kotlin.String;com.charleskorn.kaml.Location){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.charleskorn.kaml/YamlPathSegment.AliasReference.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.charleskorn.kaml/YamlPathSegment.AliasReference.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.charleskorn.kaml/YamlPathSegment.AliasReference.toString|toString(){}[0]
+    }
+
+    final class Error : com.charleskorn.kaml/YamlPathSegment { // com.charleskorn.kaml/YamlPathSegment.Error|null[0]
+        constructor <init>(com.charleskorn.kaml/Location) // com.charleskorn.kaml/YamlPathSegment.Error.<init>|<init>(com.charleskorn.kaml.Location){}[0]
+
+        final val location // com.charleskorn.kaml/YamlPathSegment.Error.location|{}location[0]
+            final fun <get-location>(): com.charleskorn.kaml/Location // com.charleskorn.kaml/YamlPathSegment.Error.location.<get-location>|<get-location>(){}[0]
+
+        final fun component1(): com.charleskorn.kaml/Location // com.charleskorn.kaml/YamlPathSegment.Error.component1|component1(){}[0]
+        final fun copy(com.charleskorn.kaml/Location = ...): com.charleskorn.kaml/YamlPathSegment.Error // com.charleskorn.kaml/YamlPathSegment.Error.copy|copy(com.charleskorn.kaml.Location){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.charleskorn.kaml/YamlPathSegment.Error.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.charleskorn.kaml/YamlPathSegment.Error.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.charleskorn.kaml/YamlPathSegment.Error.toString|toString(){}[0]
+    }
+
+    final class ListEntry : com.charleskorn.kaml/YamlPathSegment { // com.charleskorn.kaml/YamlPathSegment.ListEntry|null[0]
+        constructor <init>(kotlin/Int, com.charleskorn.kaml/Location) // com.charleskorn.kaml/YamlPathSegment.ListEntry.<init>|<init>(kotlin.Int;com.charleskorn.kaml.Location){}[0]
+
+        final val index // com.charleskorn.kaml/YamlPathSegment.ListEntry.index|{}index[0]
+            final fun <get-index>(): kotlin/Int // com.charleskorn.kaml/YamlPathSegment.ListEntry.index.<get-index>|<get-index>(){}[0]
+        final val location // com.charleskorn.kaml/YamlPathSegment.ListEntry.location|{}location[0]
+            final fun <get-location>(): com.charleskorn.kaml/Location // com.charleskorn.kaml/YamlPathSegment.ListEntry.location.<get-location>|<get-location>(){}[0]
+
+        final fun component1(): kotlin/Int // com.charleskorn.kaml/YamlPathSegment.ListEntry.component1|component1(){}[0]
+        final fun component2(): com.charleskorn.kaml/Location // com.charleskorn.kaml/YamlPathSegment.ListEntry.component2|component2(){}[0]
+        final fun copy(kotlin/Int = ..., com.charleskorn.kaml/Location = ...): com.charleskorn.kaml/YamlPathSegment.ListEntry // com.charleskorn.kaml/YamlPathSegment.ListEntry.copy|copy(kotlin.Int;com.charleskorn.kaml.Location){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.charleskorn.kaml/YamlPathSegment.ListEntry.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.charleskorn.kaml/YamlPathSegment.ListEntry.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.charleskorn.kaml/YamlPathSegment.ListEntry.toString|toString(){}[0]
+    }
+
+    final class MapElementKey : com.charleskorn.kaml/YamlPathSegment { // com.charleskorn.kaml/YamlPathSegment.MapElementKey|null[0]
+        constructor <init>(kotlin/String, com.charleskorn.kaml/Location) // com.charleskorn.kaml/YamlPathSegment.MapElementKey.<init>|<init>(kotlin.String;com.charleskorn.kaml.Location){}[0]
+
+        final val key // com.charleskorn.kaml/YamlPathSegment.MapElementKey.key|{}key[0]
+            final fun <get-key>(): kotlin/String // com.charleskorn.kaml/YamlPathSegment.MapElementKey.key.<get-key>|<get-key>(){}[0]
+        final val location // com.charleskorn.kaml/YamlPathSegment.MapElementKey.location|{}location[0]
+            final fun <get-location>(): com.charleskorn.kaml/Location // com.charleskorn.kaml/YamlPathSegment.MapElementKey.location.<get-location>|<get-location>(){}[0]
+
+        final fun component1(): kotlin/String // com.charleskorn.kaml/YamlPathSegment.MapElementKey.component1|component1(){}[0]
+        final fun component2(): com.charleskorn.kaml/Location // com.charleskorn.kaml/YamlPathSegment.MapElementKey.component2|component2(){}[0]
+        final fun copy(kotlin/String = ..., com.charleskorn.kaml/Location = ...): com.charleskorn.kaml/YamlPathSegment.MapElementKey // com.charleskorn.kaml/YamlPathSegment.MapElementKey.copy|copy(kotlin.String;com.charleskorn.kaml.Location){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.charleskorn.kaml/YamlPathSegment.MapElementKey.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.charleskorn.kaml/YamlPathSegment.MapElementKey.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.charleskorn.kaml/YamlPathSegment.MapElementKey.toString|toString(){}[0]
+    }
+
+    final class MapElementValue : com.charleskorn.kaml/YamlPathSegment { // com.charleskorn.kaml/YamlPathSegment.MapElementValue|null[0]
+        constructor <init>(com.charleskorn.kaml/Location) // com.charleskorn.kaml/YamlPathSegment.MapElementValue.<init>|<init>(com.charleskorn.kaml.Location){}[0]
+
+        final val location // com.charleskorn.kaml/YamlPathSegment.MapElementValue.location|{}location[0]
+            final fun <get-location>(): com.charleskorn.kaml/Location // com.charleskorn.kaml/YamlPathSegment.MapElementValue.location.<get-location>|<get-location>(){}[0]
+
+        final fun component1(): com.charleskorn.kaml/Location // com.charleskorn.kaml/YamlPathSegment.MapElementValue.component1|component1(){}[0]
+        final fun copy(com.charleskorn.kaml/Location = ...): com.charleskorn.kaml/YamlPathSegment.MapElementValue // com.charleskorn.kaml/YamlPathSegment.MapElementValue.copy|copy(com.charleskorn.kaml.Location){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.charleskorn.kaml/YamlPathSegment.MapElementValue.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.charleskorn.kaml/YamlPathSegment.MapElementValue.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.charleskorn.kaml/YamlPathSegment.MapElementValue.toString|toString(){}[0]
+    }
+
+    final class Merge : com.charleskorn.kaml/YamlPathSegment { // com.charleskorn.kaml/YamlPathSegment.Merge|null[0]
+        constructor <init>(com.charleskorn.kaml/Location) // com.charleskorn.kaml/YamlPathSegment.Merge.<init>|<init>(com.charleskorn.kaml.Location){}[0]
+
+        final val location // com.charleskorn.kaml/YamlPathSegment.Merge.location|{}location[0]
+            final fun <get-location>(): com.charleskorn.kaml/Location // com.charleskorn.kaml/YamlPathSegment.Merge.location.<get-location>|<get-location>(){}[0]
+
+        final fun component1(): com.charleskorn.kaml/Location // com.charleskorn.kaml/YamlPathSegment.Merge.component1|component1(){}[0]
+        final fun copy(com.charleskorn.kaml/Location = ...): com.charleskorn.kaml/YamlPathSegment.Merge // com.charleskorn.kaml/YamlPathSegment.Merge.copy|copy(com.charleskorn.kaml.Location){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.charleskorn.kaml/YamlPathSegment.Merge.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.charleskorn.kaml/YamlPathSegment.Merge.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.charleskorn.kaml/YamlPathSegment.Merge.toString|toString(){}[0]
+    }
+
+    final object Root : com.charleskorn.kaml/YamlPathSegment // com.charleskorn.kaml/YamlPathSegment.Root|null[0]
+}
+
+final val com.charleskorn.kaml/yamlList // com.charleskorn.kaml/yamlList|@com.charleskorn.kaml.YamlNode{}yamlList[0]
+    final fun (com.charleskorn.kaml/YamlNode).<get-yamlList>(): com.charleskorn.kaml/YamlList // com.charleskorn.kaml/yamlList.<get-yamlList>|<get-yamlList>@com.charleskorn.kaml.YamlNode(){}[0]
+final val com.charleskorn.kaml/yamlMap // com.charleskorn.kaml/yamlMap|@com.charleskorn.kaml.YamlNode{}yamlMap[0]
+    final fun (com.charleskorn.kaml/YamlNode).<get-yamlMap>(): com.charleskorn.kaml/YamlMap // com.charleskorn.kaml/yamlMap.<get-yamlMap>|<get-yamlMap>@com.charleskorn.kaml.YamlNode(){}[0]
+final val com.charleskorn.kaml/yamlNull // com.charleskorn.kaml/yamlNull|@com.charleskorn.kaml.YamlNode{}yamlNull[0]
+    final fun (com.charleskorn.kaml/YamlNode).<get-yamlNull>(): com.charleskorn.kaml/YamlNull // com.charleskorn.kaml/yamlNull.<get-yamlNull>|<get-yamlNull>@com.charleskorn.kaml.YamlNode(){}[0]
+final val com.charleskorn.kaml/yamlScalar // com.charleskorn.kaml/yamlScalar|@com.charleskorn.kaml.YamlNode{}yamlScalar[0]
+    final fun (com.charleskorn.kaml/YamlNode).<get-yamlScalar>(): com.charleskorn.kaml/YamlScalar // com.charleskorn.kaml/yamlScalar.<get-yamlScalar>|<get-yamlScalar>@com.charleskorn.kaml.YamlNode(){}[0]
+final val com.charleskorn.kaml/yamlTaggedNode // com.charleskorn.kaml/yamlTaggedNode|@com.charleskorn.kaml.YamlNode{}yamlTaggedNode[0]
+    final fun (com.charleskorn.kaml/YamlNode).<get-yamlTaggedNode>(): com.charleskorn.kaml/YamlTaggedNode // com.charleskorn.kaml/yamlTaggedNode.<get-yamlTaggedNode>|<get-yamlTaggedNode>@com.charleskorn.kaml.YamlNode(){}[0]
