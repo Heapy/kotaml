@@ -28,6 +28,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.nullable
 import kotlinx.serialization.builtins.serializer
 
@@ -334,6 +335,28 @@ class YamlNullReadingTest :
                     test("deserializes node to null") {
                         result.node.shouldBeInstanceOf<YamlNull>()
                     }
+                }
+            }
+        }
+
+        context("a YAML parser parsing the Core Schema null spellings") {
+            listOf("null", "Null", "NULL", "~").forEach { input ->
+                test("reads '$input' as a null value") {
+                    Yaml.default.decodeFromString(String.serializer().nullable, input) shouldBe null
+                }
+
+                test("reads '$input' as a null node") {
+                    Yaml.default.parseToYamlNode(input).shouldBeInstanceOf<YamlNull>()
+                }
+
+                test("rejects '$input' as a map key") {
+                    val exception = shouldThrow<MalformedYamlException> { Yaml.default.decodeFromString(MapSerializer(String.serializer(), Int.serializer()), "$input: 1") }
+
+                    exception.message shouldBe "Property name must not be null. (To use '$input' as a property name, enclose it in quotes.)"
+                }
+
+                test("keeps quoted '$input' a string") {
+                    Yaml.default.decodeFromString(String.serializer().nullable, "\"$input\"") shouldBe input
                 }
             }
         }

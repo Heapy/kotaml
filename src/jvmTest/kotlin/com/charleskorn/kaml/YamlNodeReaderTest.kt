@@ -816,13 +816,13 @@ class YamlNodeReaderTest :
                 }
             }
 
-            mapOf(
-                "null" to "null value",
-                "~" to "shorthand null value",
-                "[]" to "list",
-                "{}" to "map",
-                "!thing hello" to "tagged value",
-            ).forEach { (value, description) ->
+            listOf(
+                Triple("null", "null value", "Property name must not be null. (To use 'null' as a property name, enclose it in quotes.)"),
+                Triple("~", "shorthand null value", "Property name must not be null. (To use '~' as a property name, enclose it in quotes.)"),
+                Triple("[]", "list", "Property name must be a scalar value."),
+                Triple("{}", "map", "Property name must be a scalar value."),
+                Triple("!thing hello", "tagged value", "Only !!str and ! tags are supported on property names."),
+            ).forEach { (value, description, expectedMessage) ->
                 context("given a map with a $description for a key") {
                     val input =
                         """
@@ -839,7 +839,7 @@ class YamlNodeReaderTest :
                                 }
 
                             exception.asClue {
-                                it.message shouldBe "Property name must not be a list, map, null or tagged value. (To use 'null' as a property name, enclose it in quotes.)"
+                                it.message shouldBe expectedMessage
                                 it.line shouldBe 2
                                 it.column shouldBe 1
                                 it.path shouldBe YamlPath.root.withError(Location(2, 1))

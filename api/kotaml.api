@@ -192,8 +192,12 @@ public final class com/charleskorn/kaml/YamlConfiguration {
 	public fun <init> ()V
 	public fun <init> (ZZLjava/lang/String;Lcom/charleskorn/kaml/PolymorphismStyle;Ljava/lang/String;IILcom/charleskorn/kaml/SequenceStyle;Lcom/charleskorn/kaml/SingleLineStringStyle;Lcom/charleskorn/kaml/MultiLineStringStyle;Lcom/charleskorn/kaml/AmbiguousQuoteStyle;ILcom/charleskorn/kaml/AnchorsAndAliases;Lcom/charleskorn/kaml/YamlNamingStrategy;Ljava/lang/Integer;Z)V
 	public synthetic fun <init> (ZZLjava/lang/String;Lcom/charleskorn/kaml/PolymorphismStyle;Ljava/lang/String;IILcom/charleskorn/kaml/SequenceStyle;Lcom/charleskorn/kaml/SingleLineStringStyle;Lcom/charleskorn/kaml/MultiLineStringStyle;Lcom/charleskorn/kaml/AmbiguousQuoteStyle;ILcom/charleskorn/kaml/AnchorsAndAliases;Lcom/charleskorn/kaml/YamlNamingStrategy;Ljava/lang/Integer;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (ZZLjava/lang/String;Lcom/charleskorn/kaml/PolymorphismStyle;Ljava/lang/String;IILcom/charleskorn/kaml/SequenceStyle;Lcom/charleskorn/kaml/SingleLineStringStyle;Lcom/charleskorn/kaml/MultiLineStringStyle;Lcom/charleskorn/kaml/AmbiguousQuoteStyle;ILcom/charleskorn/kaml/AnchorsAndAliases;Lcom/charleskorn/kaml/YamlNamingStrategy;Ljava/lang/Integer;ZLcom/charleskorn/kaml/YamlReadCompatibility;)V
+	public synthetic fun <init> (ZZLjava/lang/String;Lcom/charleskorn/kaml/PolymorphismStyle;Ljava/lang/String;IILcom/charleskorn/kaml/SequenceStyle;Lcom/charleskorn/kaml/SingleLineStringStyle;Lcom/charleskorn/kaml/MultiLineStringStyle;Lcom/charleskorn/kaml/AmbiguousQuoteStyle;ILcom/charleskorn/kaml/AnchorsAndAliases;Lcom/charleskorn/kaml/YamlNamingStrategy;Ljava/lang/Integer;ZLcom/charleskorn/kaml/YamlReadCompatibility;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun copy (ZZLjava/lang/String;Lcom/charleskorn/kaml/PolymorphismStyle;Ljava/lang/String;IILcom/charleskorn/kaml/SequenceStyle;Lcom/charleskorn/kaml/SingleLineStringStyle;Lcom/charleskorn/kaml/MultiLineStringStyle;Lcom/charleskorn/kaml/AmbiguousQuoteStyle;ILcom/charleskorn/kaml/AnchorsAndAliases;Lcom/charleskorn/kaml/YamlNamingStrategy;Ljava/lang/Integer;Z)Lcom/charleskorn/kaml/YamlConfiguration;
+	public final fun copy (ZZLjava/lang/String;Lcom/charleskorn/kaml/PolymorphismStyle;Ljava/lang/String;IILcom/charleskorn/kaml/SequenceStyle;Lcom/charleskorn/kaml/SingleLineStringStyle;Lcom/charleskorn/kaml/MultiLineStringStyle;Lcom/charleskorn/kaml/AmbiguousQuoteStyle;ILcom/charleskorn/kaml/AnchorsAndAliases;Lcom/charleskorn/kaml/YamlNamingStrategy;Ljava/lang/Integer;ZLcom/charleskorn/kaml/YamlReadCompatibility;)Lcom/charleskorn/kaml/YamlConfiguration;
 	public static synthetic fun copy$default (Lcom/charleskorn/kaml/YamlConfiguration;ZZLjava/lang/String;Lcom/charleskorn/kaml/PolymorphismStyle;Ljava/lang/String;IILcom/charleskorn/kaml/SequenceStyle;Lcom/charleskorn/kaml/SingleLineStringStyle;Lcom/charleskorn/kaml/MultiLineStringStyle;Lcom/charleskorn/kaml/AmbiguousQuoteStyle;ILcom/charleskorn/kaml/AnchorsAndAliases;Lcom/charleskorn/kaml/YamlNamingStrategy;Ljava/lang/Integer;ZILjava/lang/Object;)Lcom/charleskorn/kaml/YamlConfiguration;
+	public static synthetic fun copy$default (Lcom/charleskorn/kaml/YamlConfiguration;ZZLjava/lang/String;Lcom/charleskorn/kaml/PolymorphismStyle;Ljava/lang/String;IILcom/charleskorn/kaml/SequenceStyle;Lcom/charleskorn/kaml/SingleLineStringStyle;Lcom/charleskorn/kaml/MultiLineStringStyle;Lcom/charleskorn/kaml/AmbiguousQuoteStyle;ILcom/charleskorn/kaml/AnchorsAndAliases;Lcom/charleskorn/kaml/YamlNamingStrategy;Ljava/lang/Integer;ZLcom/charleskorn/kaml/YamlReadCompatibility;ILjava/lang/Object;)Lcom/charleskorn/kaml/YamlConfiguration;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -462,6 +466,52 @@ public final class com/charleskorn/kaml/YamlPathSegment$Root : com/charleskorn/k
 	public static final field INSTANCE Lcom/charleskorn/kaml/YamlPathSegment$Root;
 }
 
+public abstract class com/charleskorn/kaml/YamlReadCompatibility {
+}
+
+public final class com/charleskorn/kaml/YamlReadCompatibility$LegacyV0_110 : com/charleskorn/kaml/YamlReadCompatibility {
+	public fun <init> ()V
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public synthetic fun <init> (Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class com/charleskorn/kaml/YamlReadCompatibility$Strict : com/charleskorn/kaml/YamlReadCompatibility {
+	public static final field INSTANCE Lcom/charleskorn/kaml/YamlReadCompatibility$Strict;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/charleskorn/kaml/YamlReadCompatibilityIssue {
+	public fun <init> (Lcom/charleskorn/kaml/YamlReadCompatibilityReason;Lcom/charleskorn/kaml/YamlPath;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Lcom/charleskorn/kaml/YamlReadCompatibilityReason;
+	public final fun component2 ()Lcom/charleskorn/kaml/YamlPath;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun copy (Lcom/charleskorn/kaml/YamlReadCompatibilityReason;Lcom/charleskorn/kaml/YamlPath;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/charleskorn/kaml/YamlReadCompatibilityIssue;
+	public static synthetic fun copy$default (Lcom/charleskorn/kaml/YamlReadCompatibilityIssue;Lcom/charleskorn/kaml/YamlReadCompatibilityReason;Lcom/charleskorn/kaml/YamlPath;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/charleskorn/kaml/YamlReadCompatibilityIssue;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLocation ()Lcom/charleskorn/kaml/Location;
+	public final fun getOriginalValue ()Ljava/lang/String;
+	public final fun getPath ()Lcom/charleskorn/kaml/YamlPath;
+	public final fun getReason ()Lcom/charleskorn/kaml/YamlReadCompatibilityReason;
+	public final fun getReplacement ()Ljava/lang/String;
+	public final fun getTargetType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/charleskorn/kaml/YamlReadCompatibilityReason : java/lang/Enum {
+	public static final field LegacyFloatingPoint Lcom/charleskorn/kaml/YamlReadCompatibilityReason;
+	public static final field LegacyInteger Lcom/charleskorn/kaml/YamlReadCompatibilityReason;
+	public static final field LegacyNullKey Lcom/charleskorn/kaml/YamlReadCompatibilityReason;
+	public static final field LegacyNullValue Lcom/charleskorn/kaml/YamlReadCompatibilityReason;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/charleskorn/kaml/YamlReadCompatibilityReason;
+	public static fun values ()[Lcom/charleskorn/kaml/YamlReadCompatibilityReason;
+}
+
 public final class com/charleskorn/kaml/YamlScalar : com/charleskorn/kaml/YamlNode {
 	public static final field Companion Lcom/charleskorn/kaml/YamlScalar$Companion;
 	public fun <init> (Ljava/lang/String;Lcom/charleskorn/kaml/YamlPath;Z)V
@@ -480,12 +530,18 @@ public final class com/charleskorn/kaml/YamlScalar : com/charleskorn/kaml/YamlNo
 	public fun hashCode ()I
 	public final fun toBoolean ()Z
 	public final fun toByte ()B
+	public final fun toByte (Lcom/charleskorn/kaml/YamlReadCompatibility;)B
 	public final fun toChar ()C
 	public final fun toDouble ()D
+	public final fun toDouble (Lcom/charleskorn/kaml/YamlReadCompatibility;)D
 	public final fun toFloat ()F
+	public final fun toFloat (Lcom/charleskorn/kaml/YamlReadCompatibility;)F
 	public final fun toInt ()I
+	public final fun toInt (Lcom/charleskorn/kaml/YamlReadCompatibility;)I
 	public final fun toLong ()J
+	public final fun toLong (Lcom/charleskorn/kaml/YamlReadCompatibility;)J
 	public final fun toShort ()S
+	public final fun toShort (Lcom/charleskorn/kaml/YamlReadCompatibility;)S
 	public fun toString ()Ljava/lang/String;
 	public synthetic fun withPath (Lcom/charleskorn/kaml/YamlPath;)Lcom/charleskorn/kaml/YamlNode;
 	public fun withPath (Lcom/charleskorn/kaml/YamlPath;)Lcom/charleskorn/kaml/YamlScalar;

@@ -90,6 +90,19 @@ final enum class com.charleskorn.kaml/SingleLineStringStyle : kotlin/Enum<com.ch
     final fun values(): kotlin/Array<com.charleskorn.kaml/SingleLineStringStyle> // com.charleskorn.kaml/SingleLineStringStyle.values|values#static(){}[0]
 }
 
+final enum class com.charleskorn.kaml/YamlReadCompatibilityReason : kotlin/Enum<com.charleskorn.kaml/YamlReadCompatibilityReason> { // com.charleskorn.kaml/YamlReadCompatibilityReason|null[0]
+    enum entry LegacyFloatingPoint // com.charleskorn.kaml/YamlReadCompatibilityReason.LegacyFloatingPoint|null[0]
+    enum entry LegacyInteger // com.charleskorn.kaml/YamlReadCompatibilityReason.LegacyInteger|null[0]
+    enum entry LegacyNullKey // com.charleskorn.kaml/YamlReadCompatibilityReason.LegacyNullKey|null[0]
+    enum entry LegacyNullValue // com.charleskorn.kaml/YamlReadCompatibilityReason.LegacyNullValue|null[0]
+
+    final val entries // com.charleskorn.kaml/YamlReadCompatibilityReason.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.charleskorn.kaml/YamlReadCompatibilityReason> // com.charleskorn.kaml/YamlReadCompatibilityReason.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.charleskorn.kaml/YamlReadCompatibilityReason // com.charleskorn.kaml/YamlReadCompatibilityReason.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.charleskorn.kaml/YamlReadCompatibilityReason> // com.charleskorn.kaml/YamlReadCompatibilityReason.values|values#static(){}[0]
+}
+
 abstract fun interface com.charleskorn.kaml/YamlNamingStrategy { // com.charleskorn.kaml/YamlNamingStrategy|null[0]
     abstract fun serialNameForYaml(kotlin/String): kotlin/String // com.charleskorn.kaml/YamlNamingStrategy.serialNameForYaml|serialNameForYaml(kotlin.String){}[0]
 
@@ -245,8 +258,10 @@ final class com.charleskorn.kaml/Yaml : kotlinx.serialization/StringFormat { // 
 
 final class com.charleskorn.kaml/YamlConfiguration { // com.charleskorn.kaml/YamlConfiguration|null[0]
     constructor <init>(kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/String? = ..., com.charleskorn.kaml/PolymorphismStyle = ..., kotlin/String = ..., kotlin/Int = ..., kotlin/Int = ..., com.charleskorn.kaml/SequenceStyle = ..., com.charleskorn.kaml/SingleLineStringStyle = ..., com.charleskorn.kaml/MultiLineStringStyle = ..., com.charleskorn.kaml/AmbiguousQuoteStyle = ..., kotlin/Int = ..., com.charleskorn.kaml/AnchorsAndAliases = ..., com.charleskorn.kaml/YamlNamingStrategy? = ..., kotlin/Int? = ..., kotlin/Boolean = ...) // com.charleskorn.kaml/YamlConfiguration.<init>|<init>(kotlin.Boolean;kotlin.Boolean;kotlin.String?;com.charleskorn.kaml.PolymorphismStyle;kotlin.String;kotlin.Int;kotlin.Int;com.charleskorn.kaml.SequenceStyle;com.charleskorn.kaml.SingleLineStringStyle;com.charleskorn.kaml.MultiLineStringStyle;com.charleskorn.kaml.AmbiguousQuoteStyle;kotlin.Int;com.charleskorn.kaml.AnchorsAndAliases;com.charleskorn.kaml.YamlNamingStrategy?;kotlin.Int?;kotlin.Boolean){}[0]
+    constructor <init>(kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/String? = ..., com.charleskorn.kaml/PolymorphismStyle = ..., kotlin/String = ..., kotlin/Int = ..., kotlin/Int = ..., com.charleskorn.kaml/SequenceStyle = ..., com.charleskorn.kaml/SingleLineStringStyle = ..., com.charleskorn.kaml/MultiLineStringStyle = ..., com.charleskorn.kaml/AmbiguousQuoteStyle = ..., kotlin/Int = ..., com.charleskorn.kaml/AnchorsAndAliases = ..., com.charleskorn.kaml/YamlNamingStrategy? = ..., kotlin/Int? = ..., kotlin/Boolean = ..., com.charleskorn.kaml/YamlReadCompatibility = ...) // com.charleskorn.kaml/YamlConfiguration.<init>|<init>(kotlin.Boolean;kotlin.Boolean;kotlin.String?;com.charleskorn.kaml.PolymorphismStyle;kotlin.String;kotlin.Int;kotlin.Int;com.charleskorn.kaml.SequenceStyle;com.charleskorn.kaml.SingleLineStringStyle;com.charleskorn.kaml.MultiLineStringStyle;com.charleskorn.kaml.AmbiguousQuoteStyle;kotlin.Int;com.charleskorn.kaml.AnchorsAndAliases;com.charleskorn.kaml.YamlNamingStrategy?;kotlin.Int?;kotlin.Boolean;com.charleskorn.kaml.YamlReadCompatibility){}[0]
 
     final fun copy(kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/String? = ..., com.charleskorn.kaml/PolymorphismStyle = ..., kotlin/String = ..., kotlin/Int = ..., kotlin/Int = ..., com.charleskorn.kaml/SequenceStyle = ..., com.charleskorn.kaml/SingleLineStringStyle = ..., com.charleskorn.kaml/MultiLineStringStyle = ..., com.charleskorn.kaml/AmbiguousQuoteStyle = ..., kotlin/Int = ..., com.charleskorn.kaml/AnchorsAndAliases = ..., com.charleskorn.kaml/YamlNamingStrategy? = ..., kotlin/Int? = ..., kotlin/Boolean = ...): com.charleskorn.kaml/YamlConfiguration // com.charleskorn.kaml/YamlConfiguration.copy|copy(kotlin.Boolean;kotlin.Boolean;kotlin.String?;com.charleskorn.kaml.PolymorphismStyle;kotlin.String;kotlin.Int;kotlin.Int;com.charleskorn.kaml.SequenceStyle;com.charleskorn.kaml.SingleLineStringStyle;com.charleskorn.kaml.MultiLineStringStyle;com.charleskorn.kaml.AmbiguousQuoteStyle;kotlin.Int;com.charleskorn.kaml.AnchorsAndAliases;com.charleskorn.kaml.YamlNamingStrategy?;kotlin.Int?;kotlin.Boolean){}[0]
+    final fun copy(kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/String? = ..., com.charleskorn.kaml/PolymorphismStyle = ..., kotlin/String = ..., kotlin/Int = ..., kotlin/Int = ..., com.charleskorn.kaml/SequenceStyle = ..., com.charleskorn.kaml/SingleLineStringStyle = ..., com.charleskorn.kaml/MultiLineStringStyle = ..., com.charleskorn.kaml/AmbiguousQuoteStyle = ..., kotlin/Int = ..., com.charleskorn.kaml/AnchorsAndAliases = ..., com.charleskorn.kaml/YamlNamingStrategy? = ..., kotlin/Int? = ..., kotlin/Boolean = ..., com.charleskorn.kaml/YamlReadCompatibility = ...): com.charleskorn.kaml/YamlConfiguration // com.charleskorn.kaml/YamlConfiguration.copy|copy(kotlin.Boolean;kotlin.Boolean;kotlin.String?;com.charleskorn.kaml.PolymorphismStyle;kotlin.String;kotlin.Int;kotlin.Int;com.charleskorn.kaml.SequenceStyle;com.charleskorn.kaml.SingleLineStringStyle;com.charleskorn.kaml.MultiLineStringStyle;com.charleskorn.kaml.AmbiguousQuoteStyle;kotlin.Int;com.charleskorn.kaml.AnchorsAndAliases;com.charleskorn.kaml.YamlNamingStrategy?;kotlin.Int?;kotlin.Boolean;com.charleskorn.kaml.YamlReadCompatibility){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.charleskorn.kaml/YamlConfiguration.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.charleskorn.kaml/YamlConfiguration.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.charleskorn.kaml/YamlConfiguration.toString|toString(){}[0]
@@ -353,6 +368,33 @@ final class com.charleskorn.kaml/YamlPath { // com.charleskorn.kaml/YamlPath|nul
     }
 }
 
+final class com.charleskorn.kaml/YamlReadCompatibilityIssue { // com.charleskorn.kaml/YamlReadCompatibilityIssue|null[0]
+    constructor <init>(com.charleskorn.kaml/YamlReadCompatibilityReason, com.charleskorn.kaml/YamlPath, kotlin/String, kotlin/String?, kotlin/String) // com.charleskorn.kaml/YamlReadCompatibilityIssue.<init>|<init>(com.charleskorn.kaml.YamlReadCompatibilityReason;com.charleskorn.kaml.YamlPath;kotlin.String;kotlin.String?;kotlin.String){}[0]
+
+    final val location // com.charleskorn.kaml/YamlReadCompatibilityIssue.location|{}location[0]
+        final fun <get-location>(): com.charleskorn.kaml/Location // com.charleskorn.kaml/YamlReadCompatibilityIssue.location.<get-location>|<get-location>(){}[0]
+    final val originalValue // com.charleskorn.kaml/YamlReadCompatibilityIssue.originalValue|{}originalValue[0]
+        final fun <get-originalValue>(): kotlin/String // com.charleskorn.kaml/YamlReadCompatibilityIssue.originalValue.<get-originalValue>|<get-originalValue>(){}[0]
+    final val path // com.charleskorn.kaml/YamlReadCompatibilityIssue.path|{}path[0]
+        final fun <get-path>(): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/YamlReadCompatibilityIssue.path.<get-path>|<get-path>(){}[0]
+    final val reason // com.charleskorn.kaml/YamlReadCompatibilityIssue.reason|{}reason[0]
+        final fun <get-reason>(): com.charleskorn.kaml/YamlReadCompatibilityReason // com.charleskorn.kaml/YamlReadCompatibilityIssue.reason.<get-reason>|<get-reason>(){}[0]
+    final val replacement // com.charleskorn.kaml/YamlReadCompatibilityIssue.replacement|{}replacement[0]
+        final fun <get-replacement>(): kotlin/String // com.charleskorn.kaml/YamlReadCompatibilityIssue.replacement.<get-replacement>|<get-replacement>(){}[0]
+    final val targetType // com.charleskorn.kaml/YamlReadCompatibilityIssue.targetType|{}targetType[0]
+        final fun <get-targetType>(): kotlin/String? // com.charleskorn.kaml/YamlReadCompatibilityIssue.targetType.<get-targetType>|<get-targetType>(){}[0]
+
+    final fun component1(): com.charleskorn.kaml/YamlReadCompatibilityReason // com.charleskorn.kaml/YamlReadCompatibilityIssue.component1|component1(){}[0]
+    final fun component2(): com.charleskorn.kaml/YamlPath // com.charleskorn.kaml/YamlReadCompatibilityIssue.component2|component2(){}[0]
+    final fun component3(): kotlin/String // com.charleskorn.kaml/YamlReadCompatibilityIssue.component3|component3(){}[0]
+    final fun component4(): kotlin/String? // com.charleskorn.kaml/YamlReadCompatibilityIssue.component4|component4(){}[0]
+    final fun component5(): kotlin/String // com.charleskorn.kaml/YamlReadCompatibilityIssue.component5|component5(){}[0]
+    final fun copy(com.charleskorn.kaml/YamlReadCompatibilityReason = ..., com.charleskorn.kaml/YamlPath = ..., kotlin/String = ..., kotlin/String? = ..., kotlin/String = ...): com.charleskorn.kaml/YamlReadCompatibilityIssue // com.charleskorn.kaml/YamlReadCompatibilityIssue.copy|copy(com.charleskorn.kaml.YamlReadCompatibilityReason;com.charleskorn.kaml.YamlPath;kotlin.String;kotlin.String?;kotlin.String){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.charleskorn.kaml/YamlReadCompatibilityIssue.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.charleskorn.kaml/YamlReadCompatibilityIssue.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.charleskorn.kaml/YamlReadCompatibilityIssue.toString|toString(){}[0]
+}
+
 final class com.charleskorn.kaml/YamlScalar : com.charleskorn.kaml/YamlNode { // com.charleskorn.kaml/YamlScalar|null[0]
     constructor <init>(kotlin/String, com.charleskorn.kaml/YamlPath, kotlin/Boolean = ...) // com.charleskorn.kaml/YamlScalar.<init>|<init>(kotlin.String;com.charleskorn.kaml.YamlPath;kotlin.Boolean){}[0]
 
@@ -373,12 +415,18 @@ final class com.charleskorn.kaml/YamlScalar : com.charleskorn.kaml/YamlNode { //
     final fun hashCode(): kotlin/Int // com.charleskorn.kaml/YamlScalar.hashCode|hashCode(){}[0]
     final fun toBoolean(): kotlin/Boolean // com.charleskorn.kaml/YamlScalar.toBoolean|toBoolean(){}[0]
     final fun toByte(): kotlin/Byte // com.charleskorn.kaml/YamlScalar.toByte|toByte(){}[0]
+    final fun toByte(com.charleskorn.kaml/YamlReadCompatibility): kotlin/Byte // com.charleskorn.kaml/YamlScalar.toByte|toByte(com.charleskorn.kaml.YamlReadCompatibility){}[0]
     final fun toChar(): kotlin/Char // com.charleskorn.kaml/YamlScalar.toChar|toChar(){}[0]
     final fun toDouble(): kotlin/Double // com.charleskorn.kaml/YamlScalar.toDouble|toDouble(){}[0]
+    final fun toDouble(com.charleskorn.kaml/YamlReadCompatibility): kotlin/Double // com.charleskorn.kaml/YamlScalar.toDouble|toDouble(com.charleskorn.kaml.YamlReadCompatibility){}[0]
     final fun toFloat(): kotlin/Float // com.charleskorn.kaml/YamlScalar.toFloat|toFloat(){}[0]
+    final fun toFloat(com.charleskorn.kaml/YamlReadCompatibility): kotlin/Float // com.charleskorn.kaml/YamlScalar.toFloat|toFloat(com.charleskorn.kaml.YamlReadCompatibility){}[0]
     final fun toInt(): kotlin/Int // com.charleskorn.kaml/YamlScalar.toInt|toInt(){}[0]
+    final fun toInt(com.charleskorn.kaml/YamlReadCompatibility): kotlin/Int // com.charleskorn.kaml/YamlScalar.toInt|toInt(com.charleskorn.kaml.YamlReadCompatibility){}[0]
     final fun toLong(): kotlin/Long // com.charleskorn.kaml/YamlScalar.toLong|toLong(){}[0]
+    final fun toLong(com.charleskorn.kaml/YamlReadCompatibility): kotlin/Long // com.charleskorn.kaml/YamlScalar.toLong|toLong(com.charleskorn.kaml.YamlReadCompatibility){}[0]
     final fun toShort(): kotlin/Short // com.charleskorn.kaml/YamlScalar.toShort|toShort(){}[0]
+    final fun toShort(com.charleskorn.kaml/YamlReadCompatibility): kotlin/Short // com.charleskorn.kaml/YamlScalar.toShort|toShort(com.charleskorn.kaml.YamlReadCompatibility){}[0]
     final fun toString(): kotlin/String // com.charleskorn.kaml/YamlScalar.toString|toString(){}[0]
     final fun withPath(com.charleskorn.kaml/YamlPath): com.charleskorn.kaml/YamlScalar // com.charleskorn.kaml/YamlScalar.withPath|withPath(com.charleskorn.kaml.YamlPath){}[0]
 
@@ -598,6 +646,18 @@ sealed class com.charleskorn.kaml/YamlPathSegment { // com.charleskorn.kaml/Yaml
     }
 
     final object Root : com.charleskorn.kaml/YamlPathSegment // com.charleskorn.kaml/YamlPathSegment.Root|null[0]
+}
+
+sealed class com.charleskorn.kaml/YamlReadCompatibility { // com.charleskorn.kaml/YamlReadCompatibility|null[0]
+    final class LegacyV0_110 : com.charleskorn.kaml/YamlReadCompatibility { // com.charleskorn.kaml/YamlReadCompatibility.LegacyV0_110|null[0]
+        constructor <init>(kotlin/Function1<com.charleskorn.kaml/YamlReadCompatibilityIssue, kotlin/Unit>? = ...) // com.charleskorn.kaml/YamlReadCompatibility.LegacyV0_110.<init>|<init>(kotlin.Function1<com.charleskorn.kaml.YamlReadCompatibilityIssue,kotlin.Unit>?){}[0]
+    }
+
+    final object Strict : com.charleskorn.kaml/YamlReadCompatibility { // com.charleskorn.kaml/YamlReadCompatibility.Strict|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.charleskorn.kaml/YamlReadCompatibility.Strict.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.charleskorn.kaml/YamlReadCompatibility.Strict.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.charleskorn.kaml/YamlReadCompatibility.Strict.toString|toString(){}[0]
+    }
 }
 
 final val com.charleskorn.kaml/yamlList // com.charleskorn.kaml/yamlList|@com.charleskorn.kaml.YamlNode{}yamlList[0]

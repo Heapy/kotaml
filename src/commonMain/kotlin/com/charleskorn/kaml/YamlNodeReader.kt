@@ -19,6 +19,7 @@
 
 package com.charleskorn.kaml
 
+import com.charleskorn.kaml.internal.isNullLiteral
 import it.krzeminski.snakeyaml.engine.kmp.common.Anchor
 import it.krzeminski.snakeyaml.engine.kmp.events.AliasEvent
 import it.krzeminski.snakeyaml.engine.kmp.events.Event
@@ -31,6 +32,7 @@ internal class YamlNodeReader(
     private val parser: YamlParser,
     private val extensionDefinitionPrefix: String? = null,
     private val maxAliasCount: UInt? = 0u,
+    private val readCompatibility: YamlReadCompatibility = YamlReadCompatibility.Strict,
 ) {
     private val aliases = mutableMapOf<Anchor, WeightedNode>()
     private var aliasCount = 0u
@@ -77,7 +79,17 @@ internal class YamlNodeReader(
         event: ScalarEvent,
         path: YamlPath,
     ): YamlNode {
-        if ((event.value == "null" || event.value == "" || event.value == "~") && event.plain) {
+        // Explicit string tags take precedence over implicit null resolution and migration rules.
+        if (event.isExplicitString) {
+            return YamlScalar(event.value, path, plain = false)
+        }
+
+        if (event.plain && event.value in LEGACY_NULL_STRINGS && readCompatibility is YamlReadCompatibility.LegacyV0_110) {
+            readCompatibility.report(YamlReadCompatibilityReason.LegacyNullValue, path, event.value, null, "\"${event.value}\"")
+            return YamlScalar(event.value, path, plain = true)
+        }
+
+        if (event.value.isNullLiteral() && event.plain) {
             return YamlNull(path)
         } else {
             return YamlScalar(event.value, path, plain = event.plain)
@@ -123,7 +135,7 @@ internal class YamlNodeReader(
                     val keyLocation = parser.peekEvent(path).location
                     val keyEvent = readMapKey(path)
                     val key = keyEvent.value
-                    val keyNode = YamlScalar(key, path.withMapElementKey(key, keyLocation), plain = keyEvent.plain)
+                    val keyNode = YamlScalar(key, path.withMapElementKey(key, keyLocation), plain = keyEvent.plain && !keyEvent.isExplicitString)
 
                     val valueLocation = parser.peekEvent(keyNode.path).location
                     val valuePath = if (isMerge(keyNode)) path.withMerge(valueLocation) else keyNode.path.withMapElementValue(valueLocation)
@@ -149,10 +161,25 @@ internal class YamlNodeReader(
             Event.ID.Scalar -> {
                 parser.consumeEventOfType(Event.ID.Scalar, path)
                 val scalarEvent = event as ScalarEvent
-                val isNullKey = (scalarEvent.value == "null" || scalarEvent.value == "~") && scalarEvent.plain
+                val isNullKey = scalarEvent.value.isNullLiteral() && scalarEvent.plain && !scalarEvent.isExplicitString
 
-                if (scalarEvent.tag != null || isNullKey) {
+                if (scalarEvent.tag != null && !scalarEvent.isExplicitString) {
                     throw nonScalarMapKeyException(path, event)
+                }
+
+                if (isNullKey) {
+                    val isLegacyNullKey = scalarEvent.value.isEmpty() || scalarEvent.value in LEGACY_NULL_STRINGS
+                    if (!isLegacyNullKey || readCompatibility !is YamlReadCompatibility.LegacyV0_110) {
+                        throw nonScalarMapKeyException(path, event)
+                    }
+
+                    readCompatibility.report(
+                        YamlReadCompatibilityReason.LegacyNullKey,
+                        path.withMapElementKey(scalarEvent.value, event.location),
+                        scalarEvent.value,
+                        null,
+                        "\"${scalarEvent.value}\"",
+                    )
                 }
 
                 return scalarEvent
@@ -168,11 +195,19 @@ internal class YamlNodeReader(
         path: YamlPath,
         event: Event,
     ) = MalformedYamlException(
-        "Property name must not be a list, map, null or tagged value. (To use 'null' as a property name, enclose it in quotes.)",
+        when {
+            event !is ScalarEvent -> "Property name must be a scalar value."
+            event.tag != null -> "Only !!str and ! tags are supported on property names."
+            event.value.isEmpty() -> "Property name must not be null. (To use an empty string as a property name, write \"\".)"
+            else -> "Property name must not be null. (To use '${event.value}' as a property name, enclose it in quotes.)"
+        },
         path.withError(event.location),
     )
 
     private fun YamlNode.maybeToTaggedNode(tag: String?): YamlNode = tag?.let { YamlTaggedNode(it, this) } ?: this
+
+    private val ScalarEvent.isExplicitString: Boolean
+        get() = tag == STRING_TAG || tag == "!"
 
     private fun doMerges(items: Map<YamlScalar, YamlNode>): Map<YamlScalar, YamlNode> {
         val mergeEntries = items.entries.filter { (key, _) -> isMerge(key) }
@@ -290,3 +325,7 @@ private data class WeightedNode(
     val node: YamlNode,
     val weight: UInt,
 )
+
+private val LEGACY_NULL_STRINGS = setOf("Null", "NULL")
+
+private const val STRING_TAG = "tag:yaml.org,2002:str"

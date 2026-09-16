@@ -33,17 +33,17 @@ internal class YamlScalarInput(
 ) : YamlInput(scalar, yaml, context, configuration) {
     override fun decodeString(): String = scalar.content
 
-    override fun decodeInt(): Int = scalar.toInt()
+    override fun decodeInt(): Int = scalar.toInt(configuration.readCompatibility)
 
-    override fun decodeLong(): Long = scalar.toLong()
+    override fun decodeLong(): Long = scalar.toLong(configuration.readCompatibility)
 
-    override fun decodeShort(): Short = scalar.toShort()
+    override fun decodeShort(): Short = scalar.toShort(configuration.readCompatibility)
 
-    override fun decodeByte(): Byte = scalar.toByte()
+    override fun decodeByte(): Byte = scalar.toByte(configuration.readCompatibility)
 
-    override fun decodeDouble(): Double = scalar.toDouble()
+    override fun decodeDouble(): Double = scalar.toDouble(configuration.readCompatibility)
 
-    override fun decodeFloat(): Float = scalar.toFloat()
+    override fun decodeFloat(): Float = scalar.toFloat(configuration.readCompatibility)
 
     override fun decodeBoolean(): Boolean = scalar.toBoolean()
 

@@ -19,6 +19,12 @@
 
 package com.charleskorn.kaml
 
+import com.charleskorn.kaml.internal.ScalarKind
+import com.charleskorn.kaml.internal.classifyScalar
+import com.charleskorn.kaml.internal.readWithCompatibility
+import com.charleskorn.kaml.internal.toLegacyDoubleOrNull
+import com.charleskorn.kaml.internal.toLegacyFloatOrNull
+import com.charleskorn.kaml.internal.toLegacyIntegerOrNull
 import kotlinx.serialization.Serializable
 
 @Serializable(with = YamlNodeSerializer::class)
@@ -44,62 +50,94 @@ public sealed class YamlNode(
 public data class YamlScalar(
     val content: String,
     override val path: YamlPath,
+    /**
+     * Whether this scalar uses YAML plain-style semantics.
+     *
+     * Parsers set this from the scalar's source style, with explicit string tags forcing `false`.
+     * For manually constructed nodes, `true`
+     * allows implicit resolution under the YAML 1.2 Core Schema, while `false` always routes the
+     * content through the string encoder. This is not a resolved Kotlin type and does not require
+     * serialization to preserve the original quoting; output style is controlled by
+     * [SingleLineStringStyle].
+     */
     val plain: Boolean = true,
 ) : YamlNode(path) {
     override fun equivalentContentTo(other: YamlNode): Boolean = other is YamlScalar && this.content == other.content
 
     override fun contentToString(): String = "'$content'"
 
-    public fun toByte(): Byte = convertToIntegerLikeValue(String::toByte, "byte")
+    public fun toByte(): Byte = convertToIntegerLikeValue(String::toByteOrNull, "byte")
 
-    public fun toShort(): Short = convertToIntegerLikeValue(String::toShort, "short")
+    public fun toShort(): Short = convertToIntegerLikeValue(String::toShortOrNull, "short")
 
-    public fun toInt(): Int = convertToIntegerLikeValue(String::toInt, "integer")
+    public fun toInt(): Int = convertToIntegerLikeValue(String::toIntOrNull, "integer")
 
-    public fun toLong(): Long = convertToIntegerLikeValue(String::toLong, "long")
+    public fun toLong(): Long = convertToIntegerLikeValue(String::toLongOrNull, "long")
 
-    internal fun toLongOrNull(): Long? = convertToIntegerLikeValueOrNull(String::toLongOrNull)
+    /** Explicit migration support; [YamlReadCompatibility.LegacyV0_110] will be removed after the 0.111.0 upgrade period. */
+    public fun toByte(compatibility: YamlReadCompatibility): Byte = readWithCompatibility(compatibility, YamlReadCompatibilityReason.LegacyInteger, "Byte", { toByte() }) { content.toLegacyIntegerOrNull(String::toByteOrNull) }
 
-    private fun <T> convertToIntegerLikeValue(
-        converter: (String, Int) -> T,
+    /** Explicit migration support; [YamlReadCompatibility.LegacyV0_110] will be removed after the 0.111.0 upgrade period. */
+    public fun toShort(compatibility: YamlReadCompatibility): Short = readWithCompatibility(compatibility, YamlReadCompatibilityReason.LegacyInteger, "Short", { toShort() }) { content.toLegacyIntegerOrNull(String::toShortOrNull) }
+
+    /** Explicit migration support; [YamlReadCompatibility.LegacyV0_110] will be removed after the 0.111.0 upgrade period. */
+    public fun toInt(compatibility: YamlReadCompatibility): Int = readWithCompatibility(compatibility, YamlReadCompatibilityReason.LegacyInteger, "Int", { toInt() }) { content.toLegacyIntegerOrNull(String::toIntOrNull) }
+
+    /** Explicit migration support; [YamlReadCompatibility.LegacyV0_110] will be removed after the 0.111.0 upgrade period. */
+    public fun toLong(compatibility: YamlReadCompatibility): Long = readWithCompatibility(compatibility, YamlReadCompatibilityReason.LegacyInteger, "Long", { toLong() }) { content.toLegacyIntegerOrNull(String::toLongOrNull) }
+
+    /** Explicit migration support; [YamlReadCompatibility.LegacyV0_110] will be removed after the 0.111.0 upgrade period. */
+    public fun toFloat(compatibility: YamlReadCompatibility): Float = readWithCompatibility(compatibility, YamlReadCompatibilityReason.LegacyFloatingPoint, "Float", { toFloat() }) { content.toLegacyFloatOrNull() }
+
+    /** Explicit migration support; [YamlReadCompatibility.LegacyV0_110] will be removed after the 0.111.0 upgrade period. */
+    public fun toDouble(compatibility: YamlReadCompatibility): Double = readWithCompatibility(compatibility, YamlReadCompatibilityReason.LegacyFloatingPoint, "Double", { toDouble() }) { content.toLegacyDoubleOrNull() }
+
+    private fun <T : Any> convertToIntegerLikeValue(
+        converter: (String, Int) -> T?,
         description: String,
     ): T =
         convertToIntegerLikeValueOrNull(converter)
             ?: throw YamlScalarFormatException("Value '$content' is not a valid $description value.", path, content)
 
     private fun <T : Any> convertToIntegerLikeValueOrNull(converter: (String, Int) -> T?): T? =
-        try {
-            when {
-                content.startsWith("0x") -> converter(content.substring(2), 16)
-                content.startsWith("-0x") -> converter("-" + content.substring(3), 16)
-                content.startsWith("0o") -> converter(content.substring(2), 8)
-                content.startsWith("-0o") -> converter("-" + content.substring(3), 8)
-                else -> converter(content, 10)
-            }
-        } catch (_: NumberFormatException) {
-            null
-        }
-
-    public fun toFloat(): Float =
-        when (content) {
-            ".inf", ".Inf", ".INF" -> {
-                Float.POSITIVE_INFINITY
+        when (classifyScalar(content)) {
+            ScalarKind.INT_RADIX -> {
+                if (content.startsWith("0x")) converter(content.substring(2), 16) else converter(content.substring(2), 8)
             }
 
-            "-.inf", "-.Inf", "-.INF" -> {
-                Float.NEGATIVE_INFINITY
-            }
-
-            ".nan", ".NaN", ".NAN" -> {
-                Float.NaN
+            ScalarKind.INT_DECIMAL -> {
+                converter(content, 10)
             }
 
             else -> {
-                try {
-                    content.toFloat()
-                } catch (_: NumberFormatException) {
-                    throw YamlScalarFormatException("Value '$content' is not a valid floating point value.", path, content)
-                }
+                null
+            }
+        }
+
+    public fun toFloat(): Float =
+        toFloatOrNull()
+            ?: throw YamlScalarFormatException("Value '$content' is not a valid floating point value.", path, content)
+
+    internal fun toFloatOrNull(): Float? =
+        when (classifyScalar(content)) {
+            ScalarKind.INF_POSITIVE -> {
+                Float.POSITIVE_INFINITY
+            }
+
+            ScalarKind.INF_NEGATIVE -> {
+                Float.NEGATIVE_INFINITY
+            }
+
+            ScalarKind.NAN -> {
+                Float.NaN
+            }
+
+            ScalarKind.FLOAT_DECIMAL, ScalarKind.INT_DECIMAL -> {
+                parseValidatedDecimalOrNull(String::toFloat)
+            }
+
+            else -> {
+                null
             }
         }
 
@@ -108,26 +146,34 @@ public data class YamlScalar(
             ?: throw YamlScalarFormatException("Value '$content' is not a valid floating point value.", path, content)
 
     internal fun toDoubleOrNull(): Double? =
-        when (content) {
-            ".inf", ".Inf", ".INF" -> {
+        when (classifyScalar(content)) {
+            ScalarKind.INF_POSITIVE -> {
                 Double.POSITIVE_INFINITY
             }
 
-            "-.inf", "-.Inf", "-.INF" -> {
+            ScalarKind.INF_NEGATIVE -> {
                 Double.NEGATIVE_INFINITY
             }
 
-            ".nan", ".NaN", ".NAN" -> {
+            ScalarKind.NAN -> {
                 Double.NaN
             }
 
-            else -> {
-                try {
-                    content.toDouble()
-                } catch (_: NumberFormatException) {
-                    null
-                }
+            ScalarKind.FLOAT_DECIMAL, ScalarKind.INT_DECIMAL -> {
+                parseValidatedDecimalOrNull(String::toDouble)
             }
+
+            else -> {
+                null
+            }
+        }
+
+    // The nullable JVM parsers repeat syntax validation already performed by classifyScalar.
+    private inline fun <T> parseValidatedDecimalOrNull(converter: (String) -> T): T? =
+        try {
+            converter(content)
+        } catch (_: NumberFormatException) {
+            null
         }
 
     public fun toBoolean(): Boolean =
@@ -139,9 +185,9 @@ public data class YamlScalar(
             )
 
     internal fun toBooleanOrNull(): Boolean? =
-        when (content) {
-            "true", "True", "TRUE" -> true
-            "false", "False", "FALSE" -> false
+        when (classifyScalar(content)) {
+            ScalarKind.TRUE -> true
+            ScalarKind.FALSE -> false
             else -> null
         }
 

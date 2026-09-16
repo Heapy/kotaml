@@ -23,7 +23,6 @@ import io.kotest.assertions.asClue
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.test.Enabled.Companion.disabled
 import io.kotest.core.test.Enabled.Companion.enabled
-import io.kotest.core.test.EnabledOrReasonIf
 import io.kotest.matchers.doubles.shouldBeNaN
 import io.kotest.matchers.floats.shouldBeNaN
 import io.kotest.matchers.shouldBe
@@ -36,9 +35,19 @@ class YamlScalarTest :
                 "1" to 1,
                 "-1" to -1,
                 "0x11" to 17,
-                "-0x11" to -17,
+                "0xa" to 10,
+                "0xb" to 11,
+                "0xc" to 12,
+                "0xd" to 13,
+                "0xe" to 14,
+                "0xf" to 15,
+                "0xA" to 10,
+                "0xB" to 11,
+                "0xC" to 12,
+                "0xD" to 13,
+                "0xE" to 14,
+                "0xF" to 15,
                 "0o11" to 9,
-                "-0o11" to -9,
             ).forEach { (content, expectedValue) ->
                 context("given a scalar with the content '$content'") {
                     val scalar = YamlScalar(content, YamlPath.root)
@@ -87,6 +96,12 @@ class YamlScalarTest :
                     "+",
                     "0x",
                     "0o",
+                    "-0x11",
+                    "-0o11",
+                    "9223372036854775808",
+                    "-9223372036854775809",
+                    "0x8000000000000000",
+                    "0o1000000000000000000000",
                     "",
                 ).forEach { content ->
                     context("given a scalar with the content '$content'") {
@@ -155,7 +170,15 @@ class YamlScalarTest :
             context("when converting values to doubles") {
                 mapOf(
                     "1" to 1.0,
+                    "-0" to -0.0,
+                    "-0.0" to -0.0,
                     ".5" to 0.5,
+                    "1." to 1.0,
+                    "1.e3" to 1000.0,
+                    "+007.E-2" to 0.07,
+                    "+1.5" to 1.5,
+                    "007.5" to 7.5,
+                    "+.inf" to Double.POSITIVE_INFINITY,
                     "1.5" to 1.5,
                     "1.5e2" to 150.0,
                     "1.5E2" to 150.0,
@@ -164,6 +187,14 @@ class YamlScalarTest :
                     "-1.5e2" to -150.0,
                     "-1.5e+2" to -150.0,
                     "-1.5e-2" to -0.015,
+                    "1e309" to Double.POSITIVE_INFINITY,
+                    "-1e309" to Double.NEGATIVE_INFINITY,
+                    "1e-400" to 0.0,
+                    "-1e-400" to -0.0,
+                    "4.9406564584124654e-324" to Double.MIN_VALUE,
+                    "1.7976931348623157e308" to Double.MAX_VALUE,
+                    "9007199254740993" to 9007199254740992.0,
+                    "1.0000000000000001" to 1.0,
                     ".nan" to Double.NaN,
                     ".NaN" to Double.NaN,
                     ".NAN" to Double.NaN,
@@ -186,7 +217,7 @@ class YamlScalarTest :
                                     // as they must not be compared via == / equals()
                                     result.shouldBeNaN()
                                 } else {
-                                    result shouldBe expectedResult
+                                    result.toBits() shouldBe expectedResult.toBits()
                                 }
                             }
                         }
@@ -197,7 +228,15 @@ class YamlScalarTest :
             context("when converting values to floats") {
                 mapOf(
                     "1" to 1.0f,
+                    "-0" to -0.0f,
+                    "-0.0" to -0.0f,
                     ".5" to 0.5f,
+                    "1." to 1.0f,
+                    "1.e3" to 1000.0f,
+                    "+007.E-2" to 0.07f,
+                    "+1.5" to 1.5f,
+                    "007.5" to 7.5f,
+                    "+.inf" to Float.POSITIVE_INFINITY,
                     "1.5" to 1.5f,
                     "1.5e2" to 150f,
                     "1.5E2" to 150f,
@@ -228,7 +267,7 @@ class YamlScalarTest :
                                     // as they must not be compared via == / equals()
                                     result.shouldBeNaN()
                                 } else {
-                                    result shouldBe expectedResult
+                                    result.toBits() shouldBe expectedResult.toBits()
                                 }
                             }
                         }
@@ -247,55 +286,36 @@ class YamlScalarTest :
                     "+",
                     "",
                 ).forEach { content ->
-
-                    val floatingPointTestCondition: EnabledOrReasonIf = {
-                        when (kotlinTarget) {
-                            KotlinTarget.JS -> {
-                                if (content in setOf("0x2", "0o2")) {
-                                    disabled("$content is a valid floating value for JS due to dynamic cast")
-                                } else {
-                                    enabled
-                                }
-                            }
-
-                            else -> {
-                                enabled
-                            }
-                        }
-                    }
-
                     context("given a scalar with the content '$content'") {
                         val path = YamlPath.root.withListEntry(1, Location(2, 4))
                         val scalar = YamlScalar(content, path)
 
                         context("retrieving the value as a float") {
-                            test("throws an appropriate exception")
-                                .config(enabledOrReasonIf = floatingPointTestCondition) {
-                                    val exception = shouldThrow<YamlScalarFormatException> { scalar.toFloat() }
+                            test("throws an appropriate exception") {
+                                val exception = shouldThrow<YamlScalarFormatException> { scalar.toFloat() }
 
-                                    exception.asClue {
-                                        it.message shouldBe "Value '$content' is not a valid floating point value."
-                                        it.line shouldBe 2
-                                        it.column shouldBe 4
-                                        it.path shouldBe path
-                                        it.originalValue shouldBe content
-                                    }
+                                exception.asClue {
+                                    it.message shouldBe "Value '$content' is not a valid floating point value."
+                                    it.line shouldBe 2
+                                    it.column shouldBe 4
+                                    it.path shouldBe path
+                                    it.originalValue shouldBe content
                                 }
+                            }
                         }
 
                         context("retrieving the value as a double") {
-                            test("throws an appropriate exception")
-                                .config(enabledOrReasonIf = floatingPointTestCondition) {
-                                    val exception = shouldThrow<YamlScalarFormatException> { scalar.toDouble() }
+                            test("throws an appropriate exception") {
+                                val exception = shouldThrow<YamlScalarFormatException> { scalar.toDouble() }
 
-                                    exception.asClue {
-                                        it.message shouldBe "Value '$content' is not a valid floating point value."
-                                        it.line shouldBe 2
-                                        it.column shouldBe 4
-                                        it.path shouldBe path
-                                        it.originalValue shouldBe content
-                                    }
+                                exception.asClue {
+                                    it.message shouldBe "Value '$content' is not a valid floating point value."
+                                    it.line shouldBe 2
+                                    it.column shouldBe 4
+                                    it.path shouldBe path
+                                    it.originalValue shouldBe content
                                 }
+                            }
                         }
                     }
                 }

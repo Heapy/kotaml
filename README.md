@@ -79,6 +79,61 @@ println(
 )
 ```
 
+When a parsed `YamlNode` is serialized, plain numeric and boolean scalars keep their
+source text, including `007`, `0x7`, `1E+003` and `True`. This preserves numeric
+precision and distinct mapping keys. String quoting and document formatting follow
+the writer configuration.
+
+### Temporary reader compatibility when upgrading to 0.111.0
+
+`LegacyV0_110` is intended **only for a quick upgrade to 0.111.0** and **will be removed
+in a future release**. Use its diagnostics to migrate existing YAML, then remove the
+option and return to the default strict reader.
+
+```kotlin
+val compatibility = YamlReadCompatibility.LegacyV0_110(
+    onUse = { issue ->
+        println("${issue.reason} at ${issue.path.toHumanReadableString()} " +
+            "(${issue.location.line}:${issue.location.column}): " +
+            "replace ${issue.originalValue} with ${issue.replacement}")
+    }
+)
+val yaml = Yaml(configuration = YamlConfiguration(readCompatibility = compatibility))
+```
+
+The mode accepts legacy signed radix integers (`-0x11`, `-0o11`), Unicode integer
+digits, floating point suffixes (`1f`, `1d`), `Infinity` / `-Infinity` / `NaN`,
+hexadecimal floats (`0x1p3`), and radix integers as floats (`0x2`, `0o2`, `0b10`).
+These forms are supported on every platform, including forms previously accepted
+only by JVM or JS. Integer range checks still apply.
+
+Unquoted `Null` and `NULL` remain strings in values and keys, including nullable
+string fields. Their diagnostics occur during parsing; numeric diagnostics occur
+when decoding a numeric type. Ordinary string values such as `Infinity` do not
+trigger numeric diagnostics. The callback is optional, runs synchronously, and
+may receive events before a later document error. Callback exceptions propagate.
+
+**Breaking in 0.111.0:** strict reading rejects empty plain mapping keys, just as it
+rejects `null` and `~` keys. To use an empty string key, quote it:
+
+```yaml
+? ""
+: 1
+```
+
+`LegacyV0_110` preserves empty plain keys as empty strings and reports `LegacyNullKey`
+with `""` as the replacement. Empty values still resolve to null in both modes.
+
+Use this configured `Yaml` instance for both `parseToYamlNode` and typed decoding;
+an already resolved `YamlNull` cannot recover its original spelling. Direct scalar
+conversions require an explicit argument, for example `node.yamlScalar.toInt(compatibility)`.
+The parameterless scalar conversions remain strict.
+
+Encoding continues to use the new format. A typical migration reads a typed object
+with compatibility enabled, writes it back, and verifies that the strict reader
+can load the result. Parsing an untyped `YamlNode` does not infer numeric types for
+legacy numeric strings.
+
 ## Referencing kotaml
 
 Add the following to your Gradle build script:

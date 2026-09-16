@@ -34,7 +34,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
  * * [encodingIndentationSize]: number of spaces to use as indentation when encoding objects as YAML
  * * [breakScalarsAt]: maximum length of scalars when encoding objects as YAML (scalars exceeding this length will be split into multiple lines)
  * * [sequenceStyle]: how sequences (aka lists and arrays) should be formatted. See [SequenceStyle] for an example of each
- * * [singleLineStringStyle]: the style in which a single line String value is written. Can be overruled for a specific field with the [YamlSingleLineStringStyle] annotation.
+ * * [singleLineStringStyle]: the style in which single-line String values, Char values and enum names are written. Can be overruled for a specific field with the [YamlSingleLineStringStyle] annotation.
  * * [multiLineStringStyle]: the style in which a multi line String value is written. Can be overruled for a specific field with the [YamlMultiLineStringStyle] annotation.
  * * [ambiguousQuoteStyle]: how strings should be escaped when [singleLineStringStyle] is [SingleLineStringStyle.PlainExceptAmbiguous] and the value is ambiguous
  * * [sequenceBlockIndent]: number of spaces to use as indentation for sequences, if [sequenceStyle] set to [SequenceStyle.Block]
@@ -42,7 +42,9 @@ import kotlinx.serialization.ExperimentalSerializationApi
  * * [yamlNamingStrategy]: The system that converts the field names in to the names used in the Yaml.
  * * [codePointLimit]: the maximum amount of code points allowed in the input YAML document (defaults to 3 MB)
  * * [decodeEnumCaseInsensitive]: set to true to allow case-insensitive decoding of enums (defaults to `false`)
+ * * [readCompatibility]: temporary migration support for a quick upgrade to 0.111.0; legacy mode will be removed in a future release (defaults to [YamlReadCompatibility.Strict])
  */
+@OptIn(ExperimentalVersionOverloading::class)
 public data class YamlConfiguration(
     internal val encodeDefaults: Boolean = true,
     internal val strictMode: Boolean = true,
@@ -61,6 +63,8 @@ public data class YamlConfiguration(
     internal val codePointLimit: Int? = null,
     @ExperimentalSerializationApi
     internal val decodeEnumCaseInsensitive: Boolean = false,
+    @IntroducedAt("0.111.0")
+    internal val readCompatibility: YamlReadCompatibility = YamlReadCompatibility.Strict,
 )
 
 public enum class PolymorphismStyle {
@@ -100,6 +104,8 @@ public enum class MultiLineStringStyle {
 public enum class SingleLineStringStyle {
     DoubleQuoted,
     SingleQuoted,
+
+    /** Uses plain style where possible, quoting null-like text so it remains readable as a string. */
     Plain,
 
     /**
