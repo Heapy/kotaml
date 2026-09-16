@@ -140,8 +140,8 @@ Add the following to your Gradle build script:
 
 ```kotlin
 plugins {
-    kotlin("jvm").version("2.4.10")
-    kotlin("plugin.serialization").version("2.4.10")
+    kotlin("jvm").version("2.4.20")
+    kotlin("plugin.serialization").version("2.4.20")
 }
 
 dependencies {
