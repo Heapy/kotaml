@@ -19,6 +19,9 @@
 
 package com.charleskorn.kaml
 
+import com.charleskorn.kaml.internal.ScalarKind
+import com.charleskorn.kaml.internal.classifyScalar
+import com.charleskorn.kaml.internal.isNullLiteral
 import it.krzeminski.snakeyaml.engine.kmp.api.DumpSettings
 import it.krzeminski.snakeyaml.engine.kmp.api.StreamDataWriter
 import it.krzeminski.snakeyaml.engine.kmp.comments.CommentType
@@ -84,11 +87,11 @@ internal class YamlOutput(
 
     override fun encodeByte(value: Byte) = emitPlainScalar(value.toString())
 
-    override fun encodeChar(value: Char) = emitQuotedScalar(value.toString(), configuration.singleLineStringStyle.scalarStyle)
+    override fun encodeChar(value: Char) = emitStringScalar(value.toString())
 
-    override fun encodeDouble(value: Double) = emitPlainScalar(value.toString())
+    override fun encodeDouble(value: Double) = emitPlainScalar(value.toYamlText())
 
-    override fun encodeFloat(value: Float) = emitPlainScalar(value.toString())
+    override fun encodeFloat(value: Float) = emitPlainScalar(value.toYamlText())
 
     override fun encodeInt(value: Int) = emitPlainScalar(value.toString())
 
@@ -99,22 +102,23 @@ internal class YamlOutput(
     private var forcedSingleLineScalarStyle: SingleLineStringStyle? = null
     private var forcedMultiLineScalarStyle: MultiLineStringStyle? = null
 
-    override fun encodeString(value: String) {
+    override fun encodeString(value: String) = encodeString(value, scalarKind = null)
+
+    internal fun encodeString(
+        value: String,
+        scalarKind: ScalarKind?,
+    ) {
         if (shouldReadTypeName) {
             currentTypeName = value
             shouldReadTypeName = false
         } else {
-            val singleLineScalarStyle = forcedSingleLineScalarStyle ?.scalarStyle ?: configuration.singleLineStringStyle.scalarStyle
             val multiLineScalarStyle = forcedMultiLineScalarStyle ?.scalarStyle ?: configuration.multiLineStringStyle.scalarStyle
             when {
                 value.contains('\n')
                 -> emitScalar(value, multiLineScalarStyle)
 
-                configuration.singleLineStringStyle == SingleLineStringStyle.PlainExceptAmbiguous && value.isAmbiguous()
-                -> emitQuotedScalar(value, configuration.ambiguousQuoteStyle.scalarStyle)
-
                 else
-                -> emitScalar(value, singleLineScalarStyle)
+                -> emitStringScalar(value, scalarKind)
             }
         }
     }
@@ -122,9 +126,26 @@ internal class YamlOutput(
     override fun encodeEnum(
         enumDescriptor: SerialDescriptor,
         index: Int,
-    ) = emitQuotedScalar(enumDescriptor.getElementName(index), configuration.singleLineStringStyle.scalarStyle)
+    ) = emitStringScalar(enumDescriptor.getElementName(index))
+
+    private fun emitStringScalar(
+        value: String,
+        scalarKind: ScalarKind? = null,
+    ) {
+        val style = forcedSingleLineScalarStyle ?: configuration.singleLineStringStyle
+        val scalarStyle = style.scalarStyle
+        // Plain null spellings lose their text in the reader, including enum values and map keys.
+        val quoteNull = scalarStyle == ScalarStyle.PLAIN && value.isNullLiteral()
+        val quoteAmbiguous = !quoteNull && style == SingleLineStringStyle.PlainExceptAmbiguous && value.isAmbiguous(scalarKind)
+        emitScalar(value, if (quoteNull || quoteAmbiguous) configuration.ambiguousQuoteStyle.scalarStyle else scalarStyle)
+    }
 
     private fun emitPlainScalar(value: String) = emitScalar(value, ScalarStyle.PLAIN)
+
+    private fun emitPropertyName(value: String) = if (value.isNullLiteral()) emitQuotedScalar(value, ScalarStyle.DOUBLE_QUOTED) else emitPlainScalar(value)
+
+    /** Writes [value] unchanged, for text that already is the scalar the document should carry. */
+    internal fun encodeVerbatimScalar(value: String) = emitPlainScalar(value)
 
     private fun emitQuotedScalar(
         value: String,
@@ -145,7 +166,7 @@ internal class YamlOutput(
         if (descriptor.kind is StructureKind.CLASS) {
             val elementName = descriptor.getElementName(index)
             val serializedName = configuration.yamlNamingStrategy?.serialNameForYaml(elementName) ?: elementName
-            emitPlainScalar(serializedName)
+            emitPropertyName(serializedName)
         }
 
         // If this field was annotated we overrule the used ScalarStyle with the annotation
@@ -178,7 +199,7 @@ internal class YamlOutput(
                         emitter.emit(MappingStartEvent(null, null, true, FlowStyle.BLOCK))
 
                         if (typeName != null) {
-                            emitPlainScalar(configuration.polymorphismPropertyName)
+                            emitPropertyName(configuration.polymorphismPropertyName)
                             emitQuotedScalar(typeName, SingleLineStringStyle.DoubleQuoted.scalarStyle)
                         }
                     }
@@ -251,57 +272,36 @@ internal class YamlOutput(
         return typeName
     }
 
-    private fun String.isAmbiguous(): Boolean =
+    // The Core Schema spells these .inf and .nan; Double.toString spells them Infinity and NaN,
+    // which resolve back as strings.
+    private fun Double.toYamlText(): String =
         when {
-            isEmpty() -> {
-                true
-            }
-
-            startsWith("0x") -> {
-                true
-            }
-
-            startsWith("0o") -> {
-                true
-            }
-
-            toDoubleOrNull() != null -> {
-                true
-            }
-
-            startsWith("#") -> {
-                true
-            }
-
-            else -> {
-                this in
-                    listOf(
-                        "~",
-                        "-",
-                        ".inf",
-                        ".Inf",
-                        ".INF",
-                        "-.inf",
-                        "-.Inf",
-                        "-.INF",
-                        ".nan",
-                        ".NaN",
-                        ".NAN",
-                        "-.nan",
-                        "-.NaN",
-                        "-.NAN",
-                        "null",
-                        "Null",
-                        "NULL",
-                        "true",
-                        "True",
-                        "TRUE",
-                        "false",
-                        "False",
-                        "FALSE",
-                    )
-            }
+            isNaN() -> ".nan"
+            this == Double.POSITIVE_INFINITY -> ".inf"
+            this == Double.NEGATIVE_INFINITY -> "-.inf"
+            else -> toString().toFloatText(isNegativeZero = this == 0.0 && 1.0 / this < 0.0)
         }
+
+    private fun Float.toYamlText(): String =
+        if (isFinite()) {
+            // Converting finite floats to Double before formatting would expose extra decimal digits.
+            toString().toFloatText(isNegativeZero = this == 0.0f && 1.0f / this < 0.0f)
+        } else {
+            toDouble().toYamlText()
+        }
+
+    // Kotlin/JS renders an integral double as "1" and negative zero as "0"; neither resolves to a
+    // float under the Core Schema.
+    private fun String.toFloatText(isNegativeZero: Boolean): String {
+        val signed = if (isNegativeZero && !startsWith('-')) "-$this" else this
+
+        return if (signed.any { it == '.' || it == 'e' || it == 'E' }) signed else "$signed.0"
+    }
+
+    private fun String.isAmbiguous(scalarKind: ScalarKind?): Boolean =
+        startsWith('#') ||
+            this == "-" ||
+            (scalarKind ?: classifyScalar(this)) != ScalarKind.STRING
 
     private val SequenceStyle.flowStyle: FlowStyle
         get() =

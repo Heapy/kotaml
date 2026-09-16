@@ -21,6 +21,8 @@
 
 package com.charleskorn.kaml
 
+import com.charleskorn.kaml.internal.ScalarKind
+import com.charleskorn.kaml.internal.classifyScalar
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
@@ -72,12 +74,20 @@ internal object YamlScalarSerializer : KSerializer<YamlScalar> {
         encoder: Encoder,
         value: YamlScalar,
     ) {
-        encoder.asYamlOutput()
-        value.toBooleanOrNull()?.also { return encoder.encodeBoolean(it) }
-        value.toLongOrNull()?.also { return encoder.encodeLong(it) }
-        value.toDoubleOrNull()?.also { return encoder.encodeDouble(it) }
-        value.toCharOrNull()?.also { return encoder.encodeChar(it) }
-        encoder.encodeString(value.content)
+        val output = encoder.asYamlOutput()
+
+        if (!value.plain) return output.encodeString(value.content)
+
+        when (classifyScalar(value.content)) {
+            ScalarKind.STRING -> {
+                output.encodeString(value.content, ScalarKind.STRING)
+            }
+
+            else -> {
+                // Numeric conversion can round values or merge distinct map keys such as 7 and 007.
+                output.encodeVerbatimScalar(value.content)
+            }
+        }
     }
 
     override fun deserialize(decoder: Decoder): YamlScalar {

@@ -35,7 +35,7 @@ public annotation class YamlComment(
 )
 
 /**
- * Write a String value if it is a single line in the specified ScalarStyle.
+ * Writes single-line String values, Char values and enum names in the specified scalar style.
  * This overrides the value specified in the [YamlConfiguration].
  */
 @OptIn(ExperimentalSerializationApi::class)
