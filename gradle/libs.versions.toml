@@ -5,7 +5,7 @@ kotlinx-coroutines = "1.11.0"
 kotlinx-io = "0.9.1"
 snakeyaml-engine-kmp = "4.0.1"
 okio = "3.18.2"
-kotest = "6.2.4"
+kotest = "6.2.5"
 ksp = "2.3.12"
 spotless = "8.10.2"
 
