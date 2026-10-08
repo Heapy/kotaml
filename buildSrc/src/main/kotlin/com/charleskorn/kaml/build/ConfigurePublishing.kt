@@ -34,16 +34,22 @@ import org.gradle.kotlin.dsl.withType
 import org.gradle.plugins.signing.SigningExtension
 import org.gradle.plugins.signing.SigningPlugin
 
-fun Project.configurePublishing() {
+fun Project.configurePublishing(
+    pomName: String,
+    pomDescription: String,
+) {
     apply<MavenPublishPlugin>()
     apply<SigningPlugin>()
 
-    createPublishingTasks()
+    createPublishingTasks(pomName, pomDescription)
     createSigningTasks()
     pruneGeneratedChecksums()
 }
 
-private fun Project.createPublishingTasks() {
+private fun Project.createPublishingTasks(
+    pomName: String,
+    pomDescription: String,
+) {
     configure<PublishingExtension> {
         publications.withType<MavenPublication> {
             // HACK: this is a workaround while we're waiting to get Dokka set up correctly
@@ -53,14 +59,14 @@ private fun Project.createPublishingTasks() {
             val javadocTask =
                 tasks.register<Jar>(this.name + "JavadocJar") {
                     archiveClassifier.set("javadoc")
-                    archiveBaseName.set("kaml-$publicationName")
+                    archiveBaseName.set("${project.name}-$publicationName")
                 }
 
             artifact(javadocTask)
 
             pom {
-                name.set("kotaml")
-                description.set("YAML support for kotlinx.serialization")
+                name.set(pomName)
+                description.set(pomDescription)
                 url.set("https://github.com/Heapy/kotaml")
 
                 licenses {

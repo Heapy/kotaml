@@ -134,6 +134,9 @@ java {
 }
 
 configureAssemble()
-configurePublishing()
+configurePublishing(
+    pomName = "kotaml",
+    pomDescription = "YAML support for kotlinx.serialization",
+)
 configureSpotless()
 configureTesting()
