@@ -1,0 +1,24 @@
+public final class com/charleskorn/kaml/json/JsonToYamlKt {
+	public static final fun toYamlNode (Lkotlinx/serialization/json/JsonElement;Lcom/charleskorn/kaml/YamlPath;)Lcom/charleskorn/kaml/YamlNode;
+	public static synthetic fun toYamlNode$default (Lkotlinx/serialization/json/JsonElement;Lcom/charleskorn/kaml/YamlPath;ILjava/lang/Object;)Lcom/charleskorn/kaml/YamlNode;
+}
+
+public final class com/charleskorn/kaml/json/NonFiniteNumberException : com/charleskorn/kaml/YamlException {
+	public fun <init> (Ljava/lang/String;Lcom/charleskorn/kaml/YamlPath;)V
+	public final fun getContent ()Ljava/lang/String;
+}
+
+public final class com/charleskorn/kaml/json/NonFiniteNumbers : java/lang/Enum {
+	public static final field AS_NULL Lcom/charleskorn/kaml/json/NonFiniteNumbers;
+	public static final field AS_STRING Lcom/charleskorn/kaml/json/NonFiniteNumbers;
+	public static final field THROW Lcom/charleskorn/kaml/json/NonFiniteNumbers;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/charleskorn/kaml/json/NonFiniteNumbers;
+	public static fun values ()[Lcom/charleskorn/kaml/json/NonFiniteNumbers;
+}
+
+public final class com/charleskorn/kaml/json/YamlToJsonKt {
+	public static final fun toJsonElement (Lcom/charleskorn/kaml/YamlNode;Lcom/charleskorn/kaml/json/NonFiniteNumbers;)Lkotlinx/serialization/json/JsonElement;
+	public static synthetic fun toJsonElement$default (Lcom/charleskorn/kaml/YamlNode;Lcom/charleskorn/kaml/json/NonFiniteNumbers;ILjava/lang/Object;)Lkotlinx/serialization/json/JsonElement;
+}
+

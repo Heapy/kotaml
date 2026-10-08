@@ -1,0 +1,29 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, watchosArm32, watchosArm64, watchosSimulatorArm64, watchosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.heapy.kotaml:kotaml-json>
+final enum class com.charleskorn.kaml.json/NonFiniteNumbers : kotlin/Enum<com.charleskorn.kaml.json/NonFiniteNumbers> { // com.charleskorn.kaml.json/NonFiniteNumbers|null[0]
+    enum entry AS_NULL // com.charleskorn.kaml.json/NonFiniteNumbers.AS_NULL|null[0]
+    enum entry AS_STRING // com.charleskorn.kaml.json/NonFiniteNumbers.AS_STRING|null[0]
+    enum entry THROW // com.charleskorn.kaml.json/NonFiniteNumbers.THROW|null[0]
+
+    final val entries // com.charleskorn.kaml.json/NonFiniteNumbers.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.charleskorn.kaml.json/NonFiniteNumbers> // com.charleskorn.kaml.json/NonFiniteNumbers.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.charleskorn.kaml.json/NonFiniteNumbers // com.charleskorn.kaml.json/NonFiniteNumbers.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.charleskorn.kaml.json/NonFiniteNumbers> // com.charleskorn.kaml.json/NonFiniteNumbers.values|values#static(){}[0]
+}
+
+final class com.charleskorn.kaml.json/NonFiniteNumberException : com.charleskorn.kaml/YamlException { // com.charleskorn.kaml.json/NonFiniteNumberException|null[0]
+    constructor <init>(kotlin/String, com.charleskorn.kaml/YamlPath) // com.charleskorn.kaml.json/NonFiniteNumberException.<init>|<init>(kotlin.String;com.charleskorn.kaml.YamlPath){}[0]
+
+    final val content // com.charleskorn.kaml.json/NonFiniteNumberException.content|{}content[0]
+        final fun <get-content>(): kotlin/String // com.charleskorn.kaml.json/NonFiniteNumberException.content.<get-content>|<get-content>(){}[0]
+}
+
+final fun (com.charleskorn.kaml/YamlNode).com.charleskorn.kaml.json/toJsonElement(com.charleskorn.kaml.json/NonFiniteNumbers = ...): kotlinx.serialization.json/JsonElement // com.charleskorn.kaml.json/toJsonElement|toJsonElement@com.charleskorn.kaml.YamlNode(com.charleskorn.kaml.json.NonFiniteNumbers){}[0]
+final fun (kotlinx.serialization.json/JsonElement).com.charleskorn.kaml.json/toYamlNode(com.charleskorn.kaml/YamlPath = ...): com.charleskorn.kaml/YamlNode // com.charleskorn.kaml.json/toYamlNode|toYamlNode@kotlinx.serialization.json.JsonElement(com.charleskorn.kaml.YamlPath){}[0]
