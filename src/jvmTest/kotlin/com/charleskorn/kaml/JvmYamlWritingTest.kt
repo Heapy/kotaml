@@ -22,6 +22,7 @@ package com.charleskorn.kaml
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import java.io.ByteArrayOutputStream
 
@@ -29,6 +30,38 @@ class JvmYamlWritingTest :
     DescribeSpec({
         describe("JVM-specific extensions for YAML writing") {
             describe("writing to a stream") {
+                for (style in listOf(MultiLineStringStyle.Literal, MultiLineStringStyle.Folded)) {
+                    val yaml = Yaml(configuration = YamlConfiguration(multiLineStringStyle = style))
+
+                    for (trailingLineFeeds in 0..3) {
+                        val value = "first\nlast" + "\n".repeat(trailingLineFeeds)
+
+                        it("preserves a root $style scalar with $trailingLineFeeds trailing line feeds consistently with string output") {
+                            val stream = ByteArrayOutputStream()
+                            yaml.encodeToStream(String.serializer(), value, stream)
+                            val streamText = stream.toString(Charsets.UTF_8)
+                            val stringText = yaml.encodeToString(String.serializer(), value)
+
+                            stringText shouldBe streamText
+                            yaml.decodeFromString(String.serializer(), streamText) shouldBe value
+                            yaml.decodeFromString(String.serializer(), stringText) shouldBe value
+                        }
+
+                        it("preserves a final $style mapping value with $trailingLineFeeds trailing line feeds consistently with string output") {
+                            val serializer = MapSerializer(String.serializer(), String.serializer())
+                            val input = mapOf("value" to value)
+                            val stream = ByteArrayOutputStream()
+                            yaml.encodeToStream(serializer, input, stream)
+                            val streamText = stream.toString(Charsets.UTF_8)
+                            val stringText = yaml.encodeToString(serializer, input)
+
+                            stringText shouldBe streamText
+                            yaml.decodeFromString(serializer, streamText) shouldBe input
+                            yaml.decodeFromString(serializer, stringText) shouldBe input
+                        }
+                    }
+                }
+
                 it("returns the value serialized in the expected YAML form") {
                     val output = ByteArrayOutputStream()
                     Yaml.default.encodeToStream(String.serializer(), "hello world", output)

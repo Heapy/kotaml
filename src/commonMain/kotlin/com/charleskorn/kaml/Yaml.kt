@@ -97,13 +97,22 @@ public class Yaml(
         encodeToBufferedSink(serializer, value, sink.buffer())
     }
 
+    /** Encodes [value] as YAML, preserving trailing line breaks that belong to block scalar values. */
     override fun <T> encodeToString(
         serializer: SerializationStrategy<T>,
         value: T,
     ): String {
         val buffer = Buffer()
-        encodeToBufferedSink(serializer, value, buffer)
-        return buffer.readUtf8().trimEnd()
+        val lastScalarWasBlock =
+            BufferedSinkDataWriter(buffer).use { writer ->
+                YamlOutput(writer, serializersModule, configuration).use { output ->
+                    output.encodeSerializableValue(serializer, value)
+                    output.lastScalarWasBlock
+                }
+            }
+        val text = buffer.readUtf8()
+        // Only a non-block scalar guarantees that the final line break is structural.
+        return if (lastScalarWasBlock) text else text.removeSuffix("\n")
     }
 
     public inline fun <reified T> encodeToBufferedSink(
