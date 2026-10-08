@@ -9,7 +9,7 @@ updates:
         patterns:
           - "*"
   # Keep full commit SHA pins and same-line release comments in update PRs.
-  # Review these PRs before merging; see .github/README.md.
+  # Review these PRs before merging; see .github/ACTIONS.md.
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
