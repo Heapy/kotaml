@@ -18,3 +18,5 @@
 */
 
 rootProject.name = "kotaml"
+
+include(":kotaml-json")

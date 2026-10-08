@@ -146,6 +146,9 @@ plugins {
 
 dependencies {
     implementation("io.heapy.kotaml:kotaml:0.111.0")
+
+    // Optional kotlinx-serialization-json integration
+    implementation("io.heapy.kotaml:kotaml-json:0.111.0")
 }
 ```
 
@@ -243,6 +246,70 @@ to reference the library in other build systems.
   Specify the extension prefix by setting `YamlConfiguration.extensionDefinitionPrefix` when creating an instance of `Yaml` (eg. `"x-"` for the example above).
 
   Extensions can only be defined at the top level of a document, and only if the top level element is a map or object. Any key starting with the extension prefix must have an anchor defined (`&...`) and will not be included in the deserialised value.
+
+### Converting a YamlNode tree to a JsonElement tree
+
+The separate `kotaml-json` artifact converts a parsed YAML tree into a
+[kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization) `JsonElement` tree. It is a separate
+artifact so that projects that do not need it do not take a dependency on `kotlinx-serialization-json`.
+
+```kotlin
+val input = """
+    name: "123"
+    port: 8080
+    ratio: 1.10
+    enabled: true
+""".trimIndent()
+
+val json = Yaml.default.parseToYamlNode(input).toJsonElement()
+
+// {"name":"123","port":8080,"ratio":1.10,"enabled":true}
+println(Json.encodeToString(JsonElement.serializer(), json))
+```
+
+A quoted scalar without an explicit type tag becomes a JSON string, so `"123"` stays the string `"123"`. A plain scalar is resolved
+with the YAML 1.2 core schema, so `8080` becomes a number and `enabled: true` becomes a boolean. Numbers keep
+their original text wherever JSON allows it, so `1.10` does not become `1.1` and an integer too large for a
+`Long` keeps every digit.
+
+Plain `null`, `Null`, `NULL`, `~` and empty content become JSON null, including in manually constructed
+nodes: `YamlScalar("", path)` becomes null, while `YamlScalar("", path, plain = false)` stays an empty
+string. In YAML text, `value:` therefore becomes `{"value":null}`, and `value: ""` becomes `{"value":""}`.
+The converter always uses the Core Schema, including for plain scalars retained by legacy parsing.
+
+Explicit `!!int`, `!!bool` and `!!float` tags determine the type even when the scalar is quoted:
+`!!int "8080"` becomes the JSON number `8080`, `!!bool "false"` becomes `false`, and `!!float "1.50"`
+becomes the number `1.50`. Values incompatible with their tag, such as `!!int "hello"` or `!!int "1.5"`,
+throw `YamlException` with the value's path. `!!str` produces a string and `!!null` produces JSON null;
+other tags are discarded before converting their contents.
+
+`.inf`, `-.inf` and `.nan` have no JSON representation. By default the conversion throws
+`NonFiniteNumberException`; pass `NonFiniteNumbers.AS_STRING` or `NonFiniteNumbers.AS_NULL` to convert them
+anyway.
+
+Both conversions are annotated with `@ExperimentalSerializationApi`. `toJsonElement` uses
+`JsonUnquotedLiteral` to preserve the exact text of numbers, and `toYamlNode` carries the same marker so
+that the pair stays opt-in together.
+
+### Converting a JsonElement tree to a YamlNode tree
+
+The same artifact converts the other way with `toYamlNode()`.
+
+```kotlin
+val json = Json.parseToJsonElement("""{"name":"123","port":8080}""")
+
+val node = json.toYamlNode()
+
+println(node.yamlMap.getScalar("port")!!.content) // 8080
+```
+
+This direction always succeeds. A JSON string becomes a quoted scalar, so it stays a string, and a JSON
+number or boolean becomes a plain scalar carrying its exact original text. Converting a valid JSON tree
+to YAML and back to JSON returns an equal JSON tree. Starting from YAML can normalize scalar text:
+for example, `007` becomes `7` after conversion to JSON and back.
+
+Nodes built this way are given the location line 1, column 1, because there is no source document behind
+them. Their paths identify a position in the tree, not in any text.
 
 ## Contributing to kotaml
 
