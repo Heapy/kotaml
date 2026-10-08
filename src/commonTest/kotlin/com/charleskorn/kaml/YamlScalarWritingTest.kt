@@ -20,6 +20,8 @@
 package com.charleskorn.kaml
 
 import io.kotest.matchers.shouldBe
+import it.krzeminski.snakeyaml.engine.kmp.nodes.Tag
+import it.krzeminski.snakeyaml.engine.kmp.resolver.CoreScalarResolver
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.decodeFromString
 
@@ -163,13 +165,25 @@ class YamlScalarWritingTest :
         }
 
         context("serializing floating point values under the Core Schema") {
+            val resolver = CoreScalarResolver(supportMerge = false)
+
             mapOf(
                 Double.POSITIVE_INFINITY to ".inf",
                 Double.NEGATIVE_INFINITY to "-.inf",
                 Double.NaN to ".nan",
             ).forEach { (value, expected) ->
-                test("writes the double $expected") {
-                    Yaml.default.encodeToString(Double.serializer(), value) shouldBe expected
+                test("writes and round trips the double $expected as a Core Schema float") {
+                    val text = Yaml.default.encodeToString(Double.serializer(), value)
+
+                    text shouldBe expected
+                    resolver.resolve(text, implicit = true) shouldBe Tag.FLOAT
+
+                    val decoded = Yaml.default.decodeFromString(Double.serializer(), text)
+                    if (value.isNaN()) {
+                        decoded.isNaN() shouldBe true
+                    } else {
+                        decoded shouldBe value
+                    }
                 }
             }
 
@@ -178,8 +192,18 @@ class YamlScalarWritingTest :
                 Float.NEGATIVE_INFINITY to "-.inf",
                 Float.NaN to ".nan",
             ).forEach { (value, expected) ->
-                test("writes the float $expected") {
-                    Yaml.default.encodeToString(Float.serializer(), value) shouldBe expected
+                test("writes and round trips the float $expected as a Core Schema float") {
+                    val text = Yaml.default.encodeToString(Float.serializer(), value)
+
+                    text shouldBe expected
+                    resolver.resolve(text, implicit = true) shouldBe Tag.FLOAT
+
+                    val decoded = Yaml.default.decodeFromString(Float.serializer(), text)
+                    if (value.isNaN()) {
+                        decoded.isNaN() shouldBe true
+                    } else {
+                        decoded shouldBe value
+                    }
                 }
             }
 
@@ -192,20 +216,12 @@ class YamlScalarWritingTest :
                 1e-7,
                 Double.MIN_VALUE,
                 Double.MAX_VALUE,
-                Double.POSITIVE_INFINITY,
-                Double.NEGATIVE_INFINITY,
             ).forEach { value ->
                 test("round trips the double $value") {
                     val text = Yaml.default.encodeToString(Double.serializer(), value)
 
                     Yaml.default.decodeFromString(Double.serializer(), text) shouldBe value
                 }
-            }
-
-            test("round trips a not-a-number double") {
-                val text = Yaml.default.encodeToString(Double.serializer(), Double.NaN)
-
-                Yaml.default.decodeFromString(Double.serializer(), text).isNaN() shouldBe true
             }
 
             test("keeps the sign of negative zero") {
