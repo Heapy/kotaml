@@ -142,7 +142,7 @@ internal class YamlOutput(
 
     private fun emitPlainScalar(value: String) = emitScalar(value, ScalarStyle.PLAIN)
 
-    private fun emitPropertyName(value: String) = if (value.isNullLiteral()) emitQuotedScalar(value, ScalarStyle.DOUBLE_QUOTED) else emitPlainScalar(value)
+    private fun emitPropertyName(value: String) = if (value.isNullLiteral() || value == "<<") emitQuotedScalar(value, ScalarStyle.DOUBLE_QUOTED) else emitPlainScalar(value)
 
     /** Writes [value] unchanged, for text that already is the scalar the document should carry. */
     internal fun encodeVerbatimScalar(value: String) = emitPlainScalar(value)
