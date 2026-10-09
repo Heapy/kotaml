@@ -242,7 +242,7 @@ class YamlReadCompatibilityTest :
             issues.clear()
 
             val output = yaml.encodeToString(value)
-            output shouldBe "count: -17\nrate: .inf\nname: \"Null\"\n\"Null\": 7"
+            output shouldBe "count: -17\nrate: .inf\nname: \"Null\"\n\"Null\": 7\n"
             Yaml.default.decodeFromString<LegacyDocument>(output) shouldBe value
             yaml.decodeFromString<LegacyDocument>(output) shouldBe value
             issues shouldBe emptyList()

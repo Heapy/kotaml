@@ -69,7 +69,7 @@ class YamlNullLikeTextWritingTest :
                     for ((kind, spelling) in spellings) {
                         val value = EnumProperty(kind)
                         val output = yaml.encodeToString(value)
-                        output shouldBe "kind: $quote$spelling$quote"
+                        output shouldBe "kind: $quote$spelling$quote\n"
                         Yaml.default.decodeFromString<EnumProperty>(output) shouldBe value
 
                         val nullable = NullableEnumProperty(kind)
@@ -78,7 +78,7 @@ class YamlNullLikeTextWritingTest :
                         val map = mapOf(kind to 1)
                         val mapOutput = yaml.encodeToString(map)
                         Yaml.default.decodeFromString<Map<NullLikeKind, Int>>(mapOutput) shouldBe map
-                        mapOutput shouldBe if (spelling.isEmpty()) "? $quote$quote\n: 1" else "$quote$spelling$quote: 1"
+                        mapOutput shouldBe (if (spelling.isEmpty()) "? $quote$quote\n: 1" else "$quote$spelling$quote: 1") + "\n"
                     }
                 }
 
@@ -88,7 +88,7 @@ class YamlNullLikeTextWritingTest :
                         val output = yaml.encodeToString(map)
                         Yaml.default.decodeFromString<Map<String, String>>(output) shouldBe map
                         Yaml.default.decodeFromString<Map<String, String?>>(output) shouldBe map
-                        output shouldBe if (spelling.isEmpty()) "? $quote$quote\n: $quote$quote" else "$quote$spelling$quote: $quote$spelling$quote"
+                        output shouldBe (if (spelling.isEmpty()) "? $quote$quote\n: $quote$quote" else "$quote$spelling$quote: $quote$spelling$quote") + "\n"
 
                         val scalarOutput = yaml.encodeToString(spelling)
                         Yaml.default.decodeFromString<String>(scalarOutput) shouldBe spelling
@@ -98,14 +98,14 @@ class YamlNullLikeTextWritingTest :
 
                 test("round trips a null-like character as a value and a map key with $style and $quoteStyle") {
                     val output = yaml.encodeToString(mapOf('~' to '~'))
-                    output shouldBe "$quote~$quote: $quote~$quote"
+                    output shouldBe "$quote~$quote: $quote~$quote\n"
                     Yaml.default.decodeFromString<Map<Char, Char>>(output) shouldBe mapOf('~' to '~')
                 }
 
                 test("round trips null-like YamlNode text with $style and $quoteStyle") {
                     val node = Yaml.default.parseToYamlNode("\"NULL\": \"Null\"")
                     val output = yaml.encodeToString(YamlNode.serializer(), node)
-                    output shouldBe "${quote}NULL$quote: ${quote}Null$quote"
+                    output shouldBe "${quote}NULL$quote: ${quote}Null$quote\n"
                     Yaml.default.parseToYamlNode(output).equivalentContentTo(node) shouldBe true
                 }
             }
@@ -114,7 +114,7 @@ class YamlNullLikeTextWritingTest :
         test("keeps real nulls distinct from null-like enum and string values") {
             val yaml = Yaml(configuration = YamlConfiguration(singleLineStringStyle = SingleLineStringStyle.Plain))
             val value = NullableEnumProperty(null)
-            yaml.encodeToString(value) shouldBe "kind: null"
+            yaml.encodeToString(value) shouldBe "kind: null\n"
             Yaml.default.decodeFromString<NullableEnumProperty>(yaml.encodeToString(value)) shouldBe value
             val strings = listOf("NULL", null, "Null", "null", "~", "")
             Yaml.default.decodeFromString<List<String?>>(yaml.encodeToString(strings)) shouldBe strings
@@ -122,11 +122,11 @@ class YamlNullLikeTextWritingTest :
 
         test("uses PlainExceptAmbiguous quoting for numeric and boolean enum names and characters") {
             val yaml = Yaml(configuration = YamlConfiguration(singleLineStringStyle = SingleLineStringStyle.PlainExceptAmbiguous, ambiguousQuoteStyle = AmbiguousQuoteStyle.SingleQuoted))
-            yaml.encodeToString(OtherKind.Number) shouldBe "'123'"
-            yaml.encodeToString(OtherKind.Boolean) shouldBe "'true'"
-            yaml.encodeToString(OtherKind.Ordinary) shouldBe "Ordinary"
-            yaml.encodeToString('1') shouldBe "'1'"
-            yaml.encodeToString('A') shouldBe "A"
+            yaml.encodeToString(OtherKind.Number) shouldBe "'123'\n"
+            yaml.encodeToString(OtherKind.Boolean) shouldBe "'true'\n"
+            yaml.encodeToString(OtherKind.Ordinary) shouldBe "Ordinary\n"
+            yaml.encodeToString('1') shouldBe "'1'\n"
+            yaml.encodeToString('A') shouldBe "A\n"
         }
     })
 

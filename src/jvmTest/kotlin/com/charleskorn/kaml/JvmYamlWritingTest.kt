@@ -67,6 +67,7 @@ class JvmYamlWritingTest :
                     Yaml.default.encodeToStream(String.serializer(), "hello world", output)
 
                     output.toString(Charsets.UTF_8) shouldBe "\"hello world\"\n"
+                    Yaml.default.encodeToString(String.serializer(), "hello world") shouldBe output.toString(Charsets.UTF_8)
                 }
 
                 it("should support block literal style output for multiline strings when configured") {

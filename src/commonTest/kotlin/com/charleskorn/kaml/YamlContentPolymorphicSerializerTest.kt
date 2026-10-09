@@ -155,7 +155,7 @@ class YamlContentPolymorphicSerializerTest :
                         """.trimIndent()
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe expectedYaml
+                        output shouldBe expectedYaml + "\n"
                     }
                 }
 
@@ -187,7 +187,7 @@ class YamlContentPolymorphicSerializerTest :
                         """.trimIndent()
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe expectedYaml
+                        output shouldBe expectedYaml + "\n"
                     }
                 }
             }

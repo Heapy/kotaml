@@ -134,7 +134,7 @@ private inline fun <reified T> Yaml.shouldRoundTripAnnotatedStyles(
         plain: ${expected.getValue(SingleLineStringStyle.Plain)}
         ambiguous: ${expected.getValue(SingleLineStringStyle.PlainExceptAmbiguous)}
         after: ${expected.getValue(configuredStyle)}
-        """.trimIndent()
+        """.trimIndent() + "\n"
     decodeFromString<AnnotatedScalarStyles<T>>(output) shouldBe value
 }
 

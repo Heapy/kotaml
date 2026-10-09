@@ -80,19 +80,33 @@ class YamlBlockScalarWritingTest :
                     val sequenceYaml = Yaml(configuration = yaml.configuration.copy(sequenceStyle = sequenceStyle))
                     val input = listOf("first", "last\n\n\n")
                     val output = sequenceYaml.encodeToString(ListSerializer(String.serializer()), input)
+                    val sink = Buffer()
+                    sequenceYaml.encodeToSink(ListSerializer(String.serializer()), input, sink)
 
+                    output shouldBe sink.readUtf8()
                     sequenceYaml.decodeFromString<List<String>>(output) shouldBe input
                 }
             }
 
-            test("omits the structural final line feed after a scalar following a $style block") {
+            test("preserves the structural final line feed after a scalar following a $style block") {
                 val input = listOf("first\n\n\n", "last")
                 val sink = Buffer()
                 yaml.encodeToSink(ListSerializer(String.serializer()), input, sink)
                 val output = yaml.encodeToString(ListSerializer(String.serializer()), input)
 
-                output + "\n" shouldBe sink.readUtf8()
+                output shouldBe sink.readUtf8()
                 yaml.decodeFromString<List<String>>(output) shouldBe input
+            }
+
+            test("preserves the final line feed after an empty collection following a $style block") {
+                val serializer = ListSerializer(ListSerializer(String.serializer()))
+                val input = listOf(listOf("first\n\n\n"), emptyList())
+                val sink = Buffer()
+                yaml.encodeToSink(serializer, input, sink)
+                val output = yaml.encodeToString(serializer, input)
+
+                output shouldBe sink.readUtf8()
+                yaml.decodeFromString(serializer, output) shouldBe input
             }
         }
 

@@ -71,11 +71,6 @@ internal class YamlOutput(
     private var shouldReadTypeName = false
     private var currentTypeName: String? = null
 
-    // The emitter can fall back to quoting a requested block scalar. Be conservative:
-    // its final line break may belong to the value, so string output must retain it.
-    internal var lastScalarWasBlock: Boolean = false
-        private set
-
     init {
         emitter.emit(StreamStartEvent())
         emitter.emit(DocumentStartEvent(false, null, emptyMap()))
@@ -269,7 +264,6 @@ internal class YamlOutput(
 
         val implicit = if (tag != null) ALL_EXPLICIT else ALL_IMPLICIT
         emitter.emit(ScalarEvent(null, tag, implicit, value, style))
-        lastScalarWasBlock = style == ScalarStyle.LITERAL || style == ScalarStyle.FOLDED
     }
 
     private fun getAndClearTypeName(): String? {

@@ -32,7 +32,7 @@ class YamlScalarWritingTest :
                 test("keeps non-plain scalar '$content' as a string") {
                     val scalar = YamlScalar(content, YamlPath.root, plain = false)
 
-                    Yaml.default.encodeToString(YamlScalar.serializer(), scalar) shouldBe "\"$content\""
+                    Yaml.default.encodeToString(YamlScalar.serializer(), scalar) shouldBe "\"$content\"\n"
                 }
             }
 
@@ -46,14 +46,14 @@ class YamlScalarWritingTest :
                         YamlPath.root,
                     )
 
-                Yaml.default.encodeToString(YamlMap.serializer(), map) shouldBe "\"123\": \"value\""
+                Yaml.default.encodeToString(YamlMap.serializer(), map) shouldBe "\"123\": \"value\"\n"
             }
 
             listOf("1f", "1d", "1F", "1D", "0x1p3", "Infinity", "NaN", "٣", "３", "1_000").forEach { content ->
                 test("keeps non-Core plain scalar '$content' as a string") {
                     val scalar = YamlScalar(content, YamlPath.root, plain = true)
 
-                    Yaml.default.encodeToString(YamlScalar.serializer(), scalar) shouldBe "\"$content\""
+                    Yaml.default.encodeToString(YamlScalar.serializer(), scalar) shouldBe "\"$content\"\n"
                 }
             }
 
@@ -61,7 +61,7 @@ class YamlScalarWritingTest :
                 test("preserves Core plain scalar '$content'") {
                     val scalar = YamlScalar(content, YamlPath.root, plain = true)
 
-                    Yaml.default.encodeToString(YamlScalar.serializer(), scalar) shouldBe content
+                    Yaml.default.encodeToString(YamlScalar.serializer(), scalar) shouldBe content + "\n"
                 }
             }
 
@@ -77,7 +77,7 @@ class YamlScalarWritingTest :
                 test("keeps the text of Core scalar '$content', which Long and Double cannot hold") {
                     val scalar = YamlScalar(content, YamlPath.root, plain = true)
 
-                    Yaml.default.encodeToString(YamlScalar.serializer(), scalar) shouldBe content
+                    Yaml.default.encodeToString(YamlScalar.serializer(), scalar) shouldBe content + "\n"
                 }
             }
 
@@ -90,7 +90,7 @@ class YamlScalarWritingTest :
                 test("preserves scalar resolution when parsing and serializing '$input'") {
                     val parsed = Yaml.default.parseToYamlNode(input)
 
-                    Yaml.default.encodeToString(YamlNode.serializer(), parsed) shouldBe expected
+                    Yaml.default.encodeToString(YamlNode.serializer(), parsed) shouldBe expected + "\n"
                 }
             }
 
@@ -104,7 +104,7 @@ class YamlScalarWritingTest :
                     )
                 val scalar = YamlScalar("123", YamlPath.root, plain = false)
 
-                yaml.encodeToString(YamlScalar.serializer(), scalar) shouldBe "123"
+                yaml.encodeToString(YamlScalar.serializer(), scalar) shouldBe "123\n"
             }
 
             for (quoteStyle in AmbiguousQuoteStyle.entries) {
@@ -124,7 +124,7 @@ class YamlScalarWritingTest :
 
                         val output = yaml.encodeToString(YamlNode.serializer(), node)
 
-                        output shouldBe "value: $expected"
+                        output shouldBe "value: $expected\n"
                         yaml.decodeFromString<Map<String, String?>>(output) shouldBe mapOf("value" to content)
                     }
                 }
@@ -142,13 +142,13 @@ class YamlScalarWritingTest :
 
             listOf("123", "true", "1.2", "0x11", ".inf", "null").forEach { content ->
                 test("quotes ambiguous string '$content'") {
-                    yaml.encodeToString(String.serializer(), content) shouldBe "\"$content\""
+                    yaml.encodeToString(String.serializer(), content) shouldBe "\"$content\"\n"
                 }
             }
 
             listOf("1f", "0x1p3", "٣", "３").forEach { content ->
                 test("leaves non-Core string '$content' plain") {
-                    yaml.encodeToString(String.serializer(), content) shouldBe content
+                    yaml.encodeToString(String.serializer(), content) shouldBe content + "\n"
                 }
             }
 
@@ -159,7 +159,7 @@ class YamlScalarWritingTest :
                 "-" to "\"-\"",
             ).forEach { (content, expected) ->
                 test("quotes syntactically dangerous string '$content'") {
-                    yaml.encodeToString(String.serializer(), content) shouldBe expected
+                    yaml.encodeToString(String.serializer(), content) shouldBe expected + "\n"
                 }
             }
         }
@@ -175,8 +175,13 @@ class YamlScalarWritingTest :
                 test("writes and round trips the double $expected as a Core Schema float") {
                     val text = Yaml.default.encodeToString(Double.serializer(), value)
 
-                    text shouldBe expected
-                    resolver.resolve(text, implicit = true) shouldBe Tag.FLOAT
+                    text shouldBe expected + "\n"
+                    resolver.resolve(
+                        Yaml.default
+                            .parseToYamlNode(text)
+                            .yamlScalar.content,
+                        implicit = true,
+                    ) shouldBe Tag.FLOAT
 
                     val decoded = Yaml.default.decodeFromString(Double.serializer(), text)
                     if (value.isNaN()) {
@@ -195,8 +200,13 @@ class YamlScalarWritingTest :
                 test("writes and round trips the float $expected as a Core Schema float") {
                     val text = Yaml.default.encodeToString(Float.serializer(), value)
 
-                    text shouldBe expected
-                    resolver.resolve(text, implicit = true) shouldBe Tag.FLOAT
+                    text shouldBe expected + "\n"
+                    resolver.resolve(
+                        Yaml.default
+                            .parseToYamlNode(text)
+                            .yamlScalar.content,
+                        implicit = true,
+                    ) shouldBe Tag.FLOAT
 
                     val decoded = Yaml.default.decodeFromString(Float.serializer(), text)
                     if (value.isNaN()) {
@@ -239,7 +249,7 @@ class YamlScalarWritingTest :
                 test("keeps '$input' a float when the node is re-serialized") {
                     val node = Yaml.default.parseToYamlNode(input)
 
-                    Yaml.default.encodeToString(YamlNode.serializer(), node) shouldBe expected
+                    Yaml.default.encodeToString(YamlNode.serializer(), node) shouldBe expected + "\n"
                 }
             }
         }

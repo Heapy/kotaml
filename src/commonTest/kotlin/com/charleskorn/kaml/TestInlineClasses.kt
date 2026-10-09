@@ -41,7 +41,7 @@ class TestInlineClasses :
 
                 test("serializing it to YAML produces the expected output") {
                     val result = Yaml.default.encodeToString(TestInlineString.serializer(), value)
-                    result shouldBe yaml
+                    result shouldBe yaml + "\n"
                 }
 
                 test("deserializing it from YAML produces the expected object") {
@@ -56,7 +56,7 @@ class TestInlineClasses :
 
                 test("serializing it to YAML produces the expected output") {
                     val result = Yaml.default.encodeToString(TestInlineInt.serializer(), value)
-                    result shouldBe yaml
+                    result shouldBe yaml + "\n"
                 }
 
                 test("deserializing it from YAML produces the expected object") {
@@ -71,7 +71,7 @@ class TestInlineClasses :
 
                 test("serializing it to YAML produces the expected output") {
                     val result = Yaml.default.encodeToString(TestInlineBoolean.serializer(), value)
-                    result shouldBe yaml
+                    result shouldBe yaml + "\n"
                 }
 
                 test("deserializing it from YAML produces the expected object") {
@@ -86,7 +86,7 @@ class TestInlineClasses :
 
                 test("serializing it to YAML produces the expected output") {
                     val result = Yaml.default.encodeToString(TestInlineDouble.serializer(), value)
-                    result shouldBe yaml
+                    result shouldBe yaml + "\n"
                 }
 
                 test("deserializing it from YAML produces the expected object") {
@@ -105,7 +105,7 @@ class TestInlineClasses :
 
                 test("serializing it to YAML produces the expected output") {
                     val result = Yaml.default.encodeToString(TestInlineList.serializer(), value)
-                    result shouldBe yaml
+                    result shouldBe yaml + "\n"
                 }
 
                 test("deserializing it from YAML produces the expected object") {
@@ -124,7 +124,7 @@ class TestInlineClasses :
 
                 test("serializing it to YAML produces the expected output") {
                     val result = Yaml.default.encodeToString(TestInlineMap.serializer(), value)
-                    result shouldBe yaml
+                    result shouldBe yaml + "\n"
                 }
 
                 test("deserializing it from YAML produces the expected object") {
@@ -151,7 +151,7 @@ class TestInlineClasses :
 
                 test("serializing it to YAML produces the expected output") {
                     val result = Yaml.default.encodeToString(TestInlineClass.serializer(), value)
-                    result shouldBe yaml
+                    result shouldBe yaml + "\n"
                 }
 
                 test("deserializing it from YAML produces the expected object") {
@@ -169,7 +169,7 @@ class TestInlineClasses :
                     """.trimIndent()
                 test("serializing it to YAML produces the expected output") {
                     val result = Yaml.default.encodeToString(TestInlineSealedInterface.serializer(), value)
-                    result shouldBe yaml
+                    result shouldBe yaml + "\n"
                 }
                 test("deserializing it from YAML produces the expected object") {
                     val result = Yaml.default.decodeFromString(TestInlineSealedInterface.serializer(), yaml)
