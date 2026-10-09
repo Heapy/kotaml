@@ -37,7 +37,7 @@ class YamlPropertyNameWritingTest :
 
                     val text = yaml.encodeToString(value)
 
-                    text shouldBe "\"<<\": 1\nordinary: 2"
+                    text shouldBe "\"<<\": 1\nordinary: 2\n"
                     yaml.decodeFromString<MergeNamedProperty<Int>>(text) shouldBe value
                 }
 
@@ -46,7 +46,7 @@ class YamlPropertyNameWritingTest :
 
                     val text = yaml.encodeToString(value)
 
-                    text shouldBe "\"<<\":\n  \"<<\": 1\n  ordinary: 2\nordinary: 3"
+                    text shouldBe "\"<<\":\n  \"<<\": 1\n  ordinary: 2\nordinary: 3\n"
                     yaml.decodeFromString<MergeNamedProperty<MergeNamedProperty<Int>>>(text) shouldBe value
                 }
 
@@ -64,7 +64,7 @@ class YamlPropertyNameWritingTest :
 
                     val text = yamlWithNamingStrategy.encodeToString(value)
 
-                    text shouldBe "\"<<\": 1\nordinary: 2"
+                    text shouldBe "\"<<\": 1\nordinary: 2\n"
                     yamlWithNamingStrategy.decodeFromString<StrategyNamedProperty<Int>>(text) shouldBe value
                 }
 
@@ -73,7 +73,7 @@ class YamlPropertyNameWritingTest :
 
                     val text = yamlWithNamingStrategy.encodeToString(value)
 
-                    text shouldBe "\"<<\":\n  \"<<\": 1\n  ordinary: 2\nordinary: 3"
+                    text shouldBe "\"<<\":\n  \"<<\": 1\n  ordinary: 2\nordinary: 3\n"
                     yamlWithNamingStrategy.decodeFromString<StrategyNamedProperty<StrategyNamedProperty<Int>>>(text) shouldBe value
                 }
             }
