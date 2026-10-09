@@ -43,11 +43,27 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.nullable
 import kotlinx.serialization.builtins.serializer
+import okio.Buffer
 
 class YamlWritingTest :
     FlatFunSpec({
         context("a YAML serializer") {
             val yamlWithCustomisedIndentation = Yaml(configuration = YamlConfiguration(encodingIndentationSize = 3))
+
+            test("string and sink output preserve the same final line feed for quoted, plain and empty scalars") {
+                for (style in SingleLineStringStyle.entries) {
+                    val yaml = Yaml(configuration = YamlConfiguration(singleLineStringStyle = style))
+                    for (value in listOf("hello", "", "trailing spaces  ")) {
+                        val sink = Buffer()
+                        yaml.encodeToSink(String.serializer(), value, sink)
+                        val output = yaml.encodeToString(String.serializer(), value)
+
+                        output shouldBe sink.readUtf8()
+                        output.endsWith('\n') shouldBe true
+                        yaml.decodeFromString(String.serializer(), output) shouldBe value
+                    }
+                }
+            }
 
             context("serializing null values") {
                 val input = null as String?
@@ -56,7 +72,7 @@ class YamlWritingTest :
                     val output = Yaml.default.encodeToString(String.serializer().nullable, input)
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe "null"
+                        output shouldBe "null\n"
                     }
                 }
             }
@@ -66,7 +82,7 @@ class YamlWritingTest :
                     val output = Yaml.default.encodeToString(Boolean.serializer(), true)
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe "true"
+                        output shouldBe "true\n"
                     }
                 }
 
@@ -74,7 +90,7 @@ class YamlWritingTest :
                     val output = Yaml.default.encodeToString(Boolean.serializer(), false)
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe "false"
+                        output shouldBe "false\n"
                     }
                 }
             }
@@ -83,7 +99,7 @@ class YamlWritingTest :
                 val output = Yaml.default.encodeToString(Byte.serializer(), 12)
 
                 test("returns the value serialized in the expected YAML form") {
-                    output shouldBe "12"
+                    output shouldBe "12\n"
                 }
             }
 
@@ -92,7 +108,7 @@ class YamlWritingTest :
                     val output = Yaml.default.encodeToString(Char.serializer(), 'A')
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe """"A""""
+                        output shouldBe """"A"""" + "\n"
                     }
                 }
 
@@ -100,7 +116,7 @@ class YamlWritingTest :
                     val output = Yaml.default.encodeToString(Char.serializer(), '"')
 
                     test("returns the value serialized in the expected YAML form, escaping the double-quote character") {
-                        output shouldBe """"\"""""
+                        output shouldBe """"\""""" + "\n"
                     }
                 }
 
@@ -108,7 +124,7 @@ class YamlWritingTest :
                     val output = Yaml.default.encodeToString(Char.serializer(), '\n')
 
                     test("returns the value serialized in the expected YAML form, escaping the newline character") {
-                        output shouldBe """"\n""""
+                        output shouldBe """"\n"""" + "\n"
                     }
                 }
             }
@@ -117,7 +133,7 @@ class YamlWritingTest :
                 val output = Yaml.default.encodeToString(Double.serializer(), 12.3)
 
                 test("returns the value serialized in the expected YAML form") {
-                    output shouldBe "12.3"
+                    output shouldBe "12.3\n"
                 }
             }
 
@@ -125,7 +141,7 @@ class YamlWritingTest :
                 val output = Yaml.default.encodeToString(Float.serializer(), 45.6f)
 
                 test("returns the value serialized in the expected YAML form") {
-                    output shouldBe "45.6"
+                    output shouldBe "45.6\n"
                 }
             }
 
@@ -133,7 +149,7 @@ class YamlWritingTest :
                 val output = Yaml.default.encodeToString(Int.serializer(), 12)
 
                 test("returns the value serialized in the expected YAML form") {
-                    output shouldBe "12"
+                    output shouldBe "12\n"
                 }
             }
 
@@ -141,7 +157,7 @@ class YamlWritingTest :
                 val output = Yaml.default.encodeToString(Long.serializer(), 12)
 
                 test("returns the value serialized in the expected YAML form") {
-                    output shouldBe "12"
+                    output shouldBe "12\n"
                 }
             }
 
@@ -149,7 +165,7 @@ class YamlWritingTest :
                 val output = Yaml.default.encodeToString(Short.serializer(), 12)
 
                 test("returns the value serialized in the expected YAML form") {
-                    output shouldBe "12"
+                    output shouldBe "12\n"
                 }
             }
 
@@ -158,7 +174,7 @@ class YamlWritingTest :
                     val output = Yaml.default.encodeToString(String.serializer(), "hello world")
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe """"hello world""""
+                        output shouldBe """"hello world"""" + "\n"
                     }
                 }
 
@@ -168,7 +184,7 @@ class YamlWritingTest :
                     // The '---' is necessary as explained here:
                     // https://bitbucket.org/asomov/snakeyaml-engine/issues/23/emitting-only-an-empty-string-adds-to
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe """--- """""
+                        output shouldBe """--- """"" + "\n"
                     }
                 }
 
@@ -176,7 +192,7 @@ class YamlWritingTest :
                     val output = Yaml.default.encodeToString(String.serializer(), "null")
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe """"null""""
+                        output shouldBe """"null"""" + "\n"
                     }
                 }
 
@@ -184,7 +200,7 @@ class YamlWritingTest :
                     val output = Yaml.default.encodeToString(String.serializer(), "This is line 1\nThis is line 2")
 
                     test("returns the value serialized in the expected YAML form, escaping the newline character") {
-                        output shouldBe """"This is line 1\nThis is line 2""""
+                        output shouldBe """"This is line 1\nThis is line 2"""" + "\n"
                     }
                 }
 
@@ -192,7 +208,7 @@ class YamlWritingTest :
                     val output = Yaml.default.encodeToString(String.serializer(), """They said "hello" to me""")
 
                     test("returns the value serialized in the expected YAML form, escaping the double-quote characters") {
-                        output shouldBe """"They said \"hello\" to me""""
+                        output shouldBe """"They said \"hello\" to me"""" + "\n"
                     }
                 }
 
@@ -209,7 +225,7 @@ class YamlWritingTest :
                             """
                         |"Hello world this is a string that is much, much, much (ok, not that much) longer\
                         |  \ than 80 characters"
-                            """.trimMargin()
+                            """.trimMargin() + "\n"
                     }
                 }
 
@@ -224,7 +240,7 @@ class YamlWritingTest :
                     val output = yaml.encodeToString(String.serializer(), "12")
 
                     test("returns the value serialized in the expected YAML form, escaping the integer") {
-                        output shouldBe """"12""""
+                        output shouldBe """"12"""" + "\n"
                     }
                 }
 
@@ -239,7 +255,7 @@ class YamlWritingTest :
                     val output = yaml.encodeToString(String.serializer(), "true")
 
                     test("returns the value serialized in the expected YAML form, escaping the boolean") {
-                        output shouldBe """"true""""
+                        output shouldBe """"true"""" + "\n"
                     }
                 }
 
@@ -254,7 +270,7 @@ class YamlWritingTest :
                     val output = yaml.encodeToString(String.serializer(), "1.2")
 
                     test("returns the value serialized in the expected YAML form, escaping the float") {
-                        output shouldBe """"1.2""""
+                        output shouldBe """"1.2"""" + "\n"
                     }
                 }
 
@@ -269,7 +285,7 @@ class YamlWritingTest :
                     val output = yaml.encodeToString(String.serializer(), "1.2.3")
 
                     test("returns the value serialized in the expected YAML form, without being escaped") {
-                        output shouldBe "1.2.3"
+                        output shouldBe "1.2.3\n"
                     }
                 }
 
@@ -284,7 +300,7 @@ class YamlWritingTest :
                     val output = yaml.encodeToString(Int.serializer(), 123)
 
                     test("returns the value serialized in the expected YAML form, without being escaped") {
-                        output shouldBe "123"
+                        output shouldBe "123\n"
                     }
                 }
 
@@ -299,7 +315,7 @@ class YamlWritingTest :
                     val output = yaml.encodeToString(Float.serializer(), 1.2f)
 
                     test("returns the value serialized in the expected YAML form, without being escaped") {
-                        output shouldBe "1.2"
+                        output shouldBe "1.2\n"
                     }
                 }
 
@@ -314,7 +330,7 @@ class YamlWritingTest :
                     val output = yaml.encodeToString(Boolean.serializer(), true)
 
                     test("returns the value serialized in the expected YAML form, without being escaped") {
-                        output shouldBe "true"
+                        output shouldBe "true\n"
                     }
                 }
 
@@ -331,7 +347,7 @@ class YamlWritingTest :
                         ).encodeToString(String.serializer(), "12")
 
                     test("returns the value serialized in the expected YAML form, escaping the integer with single-quotes") {
-                        output shouldBe """'12'"""
+                        output shouldBe """'12'""" + "\n"
                     }
                 }
 
@@ -348,7 +364,7 @@ class YamlWritingTest :
                         ).encodeToString(String.serializer(), "true")
 
                     test("returns the value serialized in the expected YAML form, escaping the boolean with single-quotes") {
-                        output shouldBe """'true'"""
+                        output shouldBe """'true'""" + "\n"
                     }
                 }
 
@@ -365,7 +381,7 @@ class YamlWritingTest :
                         ).encodeToString(String.serializer(), "1.2")
 
                     test("returns the value serialized in the expected YAML form, escaping the float with single-quotes") {
-                        output shouldBe """'1.2'"""
+                        output shouldBe """'1.2'""" + "\n"
                     }
                 }
             }
@@ -382,7 +398,7 @@ class YamlWritingTest :
                     val output = Yaml.default.encodeToString(TestClassWithNestedScalar.serializer(), value)
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe expectedOutput
+                        output shouldBe expectedOutput + "\n"
                     }
                 }
 
@@ -397,7 +413,7 @@ class YamlWritingTest :
                     val output = Yaml.default.encodeToString(TestClassWithNestedNode.serializer(), value)
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe expectedOutput
+                        output shouldBe expectedOutput + "\n"
                     }
                 }
 
@@ -412,7 +428,7 @@ class YamlWritingTest :
                     val output = Yaml.default.encodeToString(TestClassWithNestedNode.serializer(), value)
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe expectedOutput
+                        output shouldBe expectedOutput + "\n"
                     }
                 }
 
@@ -427,7 +443,7 @@ class YamlWritingTest :
                     val output = Yaml.default.encodeToString(TestClassWithNestedNode.serializer(), value)
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe expectedOutput
+                        output shouldBe expectedOutput + "\n"
                     }
                 }
 
@@ -442,7 +458,7 @@ class YamlWritingTest :
                     val output = Yaml.default.encodeToString(TestClassWithNestedNode.serializer(), value)
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe expectedOutput
+                        output shouldBe expectedOutput + "\n"
                     }
                 }
 
@@ -457,7 +473,7 @@ class YamlWritingTest :
                     val output = Yaml.default.encodeToString(TestClassWithNestedNode.serializer(), value)
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe expectedOutput
+                        output shouldBe expectedOutput + "\n"
                     }
                 }
 
@@ -472,7 +488,7 @@ class YamlWritingTest :
                     val output = Yaml.default.encodeToString(TestClassWithNestedNode.serializer(), value)
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe expectedOutput
+                        output shouldBe expectedOutput + "\n"
                     }
                 }
             }
@@ -490,7 +506,7 @@ class YamlWritingTest :
                         ).encodeToString(NamingStrategyTestData.serializer(), NamingStrategyTestData("value"))
 
                     test("returns the serial name serialized in snake_case") {
-                        output shouldBe """serial_name: "value""""
+                        output shouldBe """serial_name: "value"""" + "\n"
                     }
                 }
 
@@ -501,7 +517,7 @@ class YamlWritingTest :
                         ).encodeToString(NamingStrategyTestData.serializer(), NamingStrategyTestData("value"))
 
                     test("returns the serial name serialized in PascalCase") {
-                        output shouldBe """SerialName: "value""""
+                        output shouldBe """SerialName: "value"""" + "\n"
                     }
                 }
 
@@ -512,7 +528,7 @@ class YamlWritingTest :
                         ).encodeToString(NamingStrategyTestData.serializer(), NamingStrategyTestData("value"))
 
                     test("returns the serial name serialized in camelCase") {
-                        output shouldBe """serialName: "value""""
+                        output shouldBe """serialName: "value"""" + "\n"
                     }
                 }
 
@@ -523,7 +539,7 @@ class YamlWritingTest :
                         ).encodeToString(NamingStrategyTestData.serializer(), NamingStrategyTestData("value"))
 
                     test("returns the serial name serialized in camelCase") {
-                        output shouldBe """serial-name: "value""""
+                        output shouldBe """serial-name: "value"""" + "\n"
                     }
                 }
 
@@ -534,7 +550,7 @@ class YamlWritingTest :
                         ).encodeToString(NamingStrategyTestData.serializer(), NamingStrategyTestData("value_with_several_words"))
 
                     test("returns only the name serialized in PascalCase and not the value too") {
-                        output shouldBe """SerialName: "value_with_several_words""""
+                        output shouldBe """SerialName: "value_with_several_words"""" + "\n"
                     }
                 }
 
@@ -549,7 +565,7 @@ class YamlWritingTest :
                         ).encodeToString(LongSerialName.serializer(), LongSerialName("value"))
 
                     test("returns the name serialized correctly") {
-                        output shouldBe """really_long_serial_name: "value""""
+                        output shouldBe """really_long_serial_name: "value"""" + "\n"
                     }
                 }
 
@@ -564,7 +580,7 @@ class YamlWritingTest :
                         ).encodeToString(OneCharacterSerialName.serializer(), OneCharacterSerialName("value"))
 
                     test("returns the name serialized correctly") {
-                        output shouldBe """A: "value""""
+                        output shouldBe """A: "value"""" + "\n"
                     }
                 }
 
@@ -579,7 +595,7 @@ class YamlWritingTest :
                         ).encodeToString(OneWordSerialName.serializer(), OneWordSerialName("value"))
 
                     test("returns the name serialized correctly") {
-                        output shouldBe """Name: "value""""
+                        output shouldBe """Name: "value"""" + "\n"
                     }
                 }
             }
@@ -588,7 +604,7 @@ class YamlWritingTest :
                 val output = Yaml.default.encodeToString(TestEnum.serializer(), TestEnum.Value1)
 
                 test("returns the value serialized in the expected YAML form") {
-                    output shouldBe """"Value1""""
+                    output shouldBe """"Value1"""" + "\n"
                 }
             }
 
@@ -602,7 +618,7 @@ class YamlWritingTest :
                             - 1
                             - 2
                             - 3
-                            """.trimIndent()
+                            """.trimIndent() + "\n"
                     }
                 }
                 context("serializing a list of integers in flow form") {
@@ -611,7 +627,7 @@ class YamlWritingTest :
                             .encodeToString(ListSerializer(Int.serializer()), listOf(1, 2, 3))
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe "[1, 2, 3]"
+                        output shouldBe "[1, 2, 3]\n"
                     }
                 }
 
@@ -624,7 +640,7 @@ class YamlWritingTest :
                             - 1
                             - null
                             - 3
-                            """.trimIndent()
+                            """.trimIndent() + "\n"
                     }
                 }
 
@@ -634,7 +650,7 @@ class YamlWritingTest :
                             .encodeToString(ListSerializer(Int.serializer()), listOf(1, 2, 3))
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe "[1, 2, 3]"
+                        output shouldBe "[1, 2, 3]\n"
                     }
                 }
 
@@ -649,7 +665,7 @@ class YamlWritingTest :
                         |- 1
                         |- 2
                         |- 3
-                            """.trimMargin()
+                            """.trimMargin() + "\n"
                     }
                 }
 
@@ -664,7 +680,7 @@ class YamlWritingTest :
                         |  - 1
                         |  - 2
                         |  - 3
-                            """.trimMargin()
+                            """.trimMargin() + "\n"
                     }
                 }
 
@@ -682,7 +698,7 @@ class YamlWritingTest :
                         output shouldBe
                             """
                         |  - bar: "baz"
-                            """.trimMargin()
+                            """.trimMargin() + "\n"
                     }
                 }
 
@@ -692,7 +708,7 @@ class YamlWritingTest :
                             .encodeToString(ListSerializer(Int.serializer().nullable), listOf(1, null, 3))
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe "[1, null, 3]"
+                        output shouldBe "[1, null, 3]\n"
                     }
                 }
 
@@ -704,7 +720,7 @@ class YamlWritingTest :
                             """
                             - "item1"
                             - "item2"
-                            """.trimIndent()
+                            """.trimIndent() + "\n"
                     }
                 }
 
@@ -714,7 +730,7 @@ class YamlWritingTest :
                             .encodeToString(ListSerializer(String.serializer()), listOf("item1", "item2"))
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe """["item1", "item2"]"""
+                        output shouldBe """["item1", "item2"]""" + "\n"
                     }
                 }
 
@@ -734,7 +750,7 @@ class YamlWritingTest :
                         |- "item1"
                         |- "Hello world this is a string that is much, much, much (ok, not that much) longer\
                         |  \ than 80 characters"
-                            """.trimMargin()
+                            """.trimMargin() + "\n"
                     }
                 }
 
@@ -756,7 +772,7 @@ class YamlWritingTest :
                             """
                             ["item1", "Hello world this is a string that is much, much, much (ok, not that much)\
                                 \ longer than 80 characters"]
-                            """.trimIndent()
+                            """.trimIndent() + "\n"
                     }
                 }
 
@@ -777,7 +793,7 @@ class YamlWritingTest :
                               - 3
                             - - 4
                               - 5
-                            """.trimIndent()
+                            """.trimIndent() + "\n"
                     }
                 }
 
@@ -793,7 +809,7 @@ class YamlWritingTest :
                             .encodeToString(ListSerializer(ListSerializer(Int.serializer())), input)
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe """[[1, 2, 3], [4, 5]]"""
+                        output shouldBe """[[1, 2, 3], [4, 5]]""" + "\n"
                     }
                 }
 
@@ -818,7 +834,7 @@ class YamlWritingTest :
                             - "key1": "value1"
                               "key2": "value2"
                             - "key3": "value3"
-                            """.trimIndent()
+                            """.trimIndent() + "\n"
                     }
                 }
 
@@ -836,7 +852,7 @@ class YamlWritingTest :
                             """
                             - name: "name1"
                             - name: "name2"
-                            """.trimIndent()
+                            """.trimIndent() + "\n"
                     }
                 }
                 context("serializing a list of objects in flow form") {
@@ -854,7 +870,7 @@ class YamlWritingTest :
                         output shouldBe
                             """
                             [{name: "name1"}, {name: "name2"}]
-                            """.trimIndent()
+                            """.trimIndent() + "\n"
                     }
                 }
             }
@@ -881,7 +897,7 @@ class YamlWritingTest :
                     val output = Yaml.default.encodeToString(TestClassWithNestedList.serializer(), value)
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe expectedOutput
+                        output shouldBe expectedOutput + "\n"
                     }
                 }
 
@@ -890,7 +906,7 @@ class YamlWritingTest :
                     val output = Yaml.default.encodeToString(TestClassWithNestedNode.serializer(), value)
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe expectedOutput
+                        output shouldBe expectedOutput + "\n"
                     }
                 }
             }
@@ -910,7 +926,7 @@ class YamlWritingTest :
                             """
                             "key1": "value1"
                             "key2": "value2"
-                            """.trimIndent()
+                            """.trimIndent() + "\n"
                     }
                 }
 
@@ -939,7 +955,7 @@ class YamlWritingTest :
                               "key2": "value2"
                             "map2":
                               "key3": "value3"
-                            """.trimIndent()
+                            """.trimIndent() + "\n"
                     }
                 }
 
@@ -964,7 +980,7 @@ class YamlWritingTest :
                             - 4
                             - 5
                             - 6
-                            """.trimIndent()
+                            """.trimIndent() + "\n"
                     }
                 }
 
@@ -985,7 +1001,7 @@ class YamlWritingTest :
                               name: "name1"
                             "item2":
                               name: "name2"
-                            """.trimIndent()
+                            """.trimIndent() + "\n"
                     }
                 }
             }
@@ -1018,7 +1034,7 @@ class YamlWritingTest :
                     val output = Yaml.default.encodeToString(TestClassWithNestedMap.serializer(), value)
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe expectedOutput
+                        output shouldBe expectedOutput + "\n"
                     }
                 }
 
@@ -1027,7 +1043,7 @@ class YamlWritingTest :
                     val output = Yaml.default.encodeToString(TestClassWithNestedNode.serializer(), value)
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe expectedOutput
+                        output shouldBe expectedOutput + "\n"
                     }
                 }
             }
@@ -1041,7 +1057,7 @@ class YamlWritingTest :
                         output shouldBe
                             """
                             name: "The name"
-                            """.trimIndent()
+                            """.trimIndent() + "\n"
                     }
                 }
 
@@ -1062,7 +1078,7 @@ class YamlWritingTest :
                                   name: "name1"
                                 secondPerson:
                                   name: "name2"
-                                """.trimIndent()
+                                """.trimIndent() + "\n"
                         }
                     }
 
@@ -1076,7 +1092,7 @@ class YamlWritingTest :
                                    name: "name1"
                                 secondPerson:
                                    name: "name2"
-                                """.trimIndent()
+                                """.trimIndent() + "\n"
                         }
                     }
                 }
@@ -1093,7 +1109,7 @@ class YamlWritingTest :
                                 members:
                                 - "name1"
                                 - "name2"
-                                """.trimIndent()
+                                """.trimIndent() + "\n"
                         }
                     }
 
@@ -1106,7 +1122,7 @@ class YamlWritingTest :
                                 members:
                                 - "name1"
                                 - "name2"
-                                """.trimIndent()
+                                """.trimIndent() + "\n"
                         }
                     }
                 }
@@ -1128,7 +1144,7 @@ class YamlWritingTest :
                             variables:
                               "var1": "value1"
                               "var2": "value2"
-                            """.trimIndent()
+                            """.trimIndent() + "\n"
                     }
                 }
             }
@@ -1147,7 +1163,7 @@ class YamlWritingTest :
                             """.trimIndent()
 
                         test("returns the value serialized in the expected YAML form") {
-                            output shouldBe expectedYaml
+                            output shouldBe expectedYaml + "\n"
                         }
                     }
 
@@ -1160,7 +1176,7 @@ class YamlWritingTest :
                             """.trimIndent()
 
                         test("returns the value serialized in the expected YAML form") {
-                            output shouldBe expectedYaml
+                            output shouldBe expectedYaml + "\n"
                         }
                     }
 
@@ -1174,7 +1190,7 @@ class YamlWritingTest :
                             """.trimIndent()
 
                         test("returns the value serialized in the expected YAML form") {
-                            output shouldBe expectedYaml
+                            output shouldBe expectedYaml + "\n"
                         }
                     }
 
@@ -1187,7 +1203,7 @@ class YamlWritingTest :
                             """.trimIndent()
 
                         test("returns the value serialized in the expected YAML form") {
-                            output shouldBe expectedYaml
+                            output shouldBe expectedYaml + "\n"
                         }
                     }
 
@@ -1201,7 +1217,7 @@ class YamlWritingTest :
                             """.trimIndent()
 
                         test("returns the value serialized in the expected YAML form") {
-                            output shouldBe expectedYaml
+                            output shouldBe expectedYaml + "\n"
                         }
                     }
 
@@ -1214,7 +1230,7 @@ class YamlWritingTest :
                             """.trimIndent()
 
                         test("returns the value serialized in the expected YAML form") {
-                            output shouldBe expectedYaml
+                            output shouldBe expectedYaml + "\n"
                         }
                     }
 
@@ -1246,7 +1262,7 @@ class YamlWritingTest :
                             """.trimIndent()
 
                         test("returns the value serialized in the expected YAML form") {
-                            output shouldBe expectedYaml
+                            output shouldBe expectedYaml + "\n"
                         }
                     }
                 }
@@ -1264,7 +1280,7 @@ class YamlWritingTest :
                             """.trimIndent()
 
                         test("returns the value serialized in the expected YAML form") {
-                            output shouldBe expectedYaml
+                            output shouldBe expectedYaml + "\n"
                         }
                     }
 
@@ -1278,7 +1294,7 @@ class YamlWritingTest :
                             """.trimIndent()
 
                         test("returns the value serialized in the expected YAML form") {
-                            output shouldBe expectedYaml
+                            output shouldBe expectedYaml + "\n"
                         }
                     }
 
@@ -1302,7 +1318,7 @@ class YamlWritingTest :
                             """.trimIndent()
 
                         test("returns the value serialized in the expected YAML form") {
-                            output shouldBe expectedYaml
+                            output shouldBe expectedYaml + "\n"
                         }
                     }
 
@@ -1332,7 +1348,7 @@ class YamlWritingTest :
                             """.trimIndent()
 
                         test("returns the value serialized in the expected YAML form") {
-                            output shouldBe expectedYaml
+                            output shouldBe expectedYaml + "\n"
                         }
                     }
                 }
@@ -1350,7 +1366,7 @@ class YamlWritingTest :
                             """.trimIndent()
 
                         test("returns the value serialized in the expected YAML form") {
-                            output shouldBe expectedYaml
+                            output shouldBe expectedYaml + "\n"
                         }
                     }
 
@@ -1364,7 +1380,7 @@ class YamlWritingTest :
                             """.trimIndent()
 
                         test("returns the value serialized in the expected YAML form") {
-                            output shouldBe expectedYaml
+                            output shouldBe expectedYaml + "\n"
                         }
                     }
 
@@ -1388,7 +1404,7 @@ class YamlWritingTest :
                             """.trimIndent()
 
                         test("returns the value serialized in the expected YAML form") {
-                            output shouldBe expectedYaml
+                            output shouldBe expectedYaml + "\n"
                         }
                     }
 
@@ -1418,7 +1434,7 @@ class YamlWritingTest :
                             """.trimIndent()
 
                         test("returns the value serialized in the expected YAML form") {
-                            output shouldBe expectedYaml
+                            output shouldBe expectedYaml + "\n"
                         }
                     }
                 }
@@ -1436,7 +1452,7 @@ class YamlWritingTest :
                     val output = Yaml.default.encodeToString(TestClassWithNestedTaggedNode.serializer(), value)
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe expectedOutput
+                        output shouldBe expectedOutput + "\n"
                     }
                 }
 
@@ -1445,7 +1461,7 @@ class YamlWritingTest :
                     val output = Yaml.default.encodeToString(TestClassWithNestedNode.serializer(), value)
 
                     test("returns the value serialized in the expected YAML form") {
-                        output shouldBe expectedOutput
+                        output shouldBe expectedOutput + "\n"
                     }
                 }
             }
@@ -1458,7 +1474,7 @@ class YamlWritingTest :
                         val input = SimpleStructure("name1")
 
                         test("is always written") {
-                            defaultEncoder.encodeToString(SimpleStructure.serializer(), input) shouldBe """name: "name1""""
+                            defaultEncoder.encodeToString(SimpleStructure.serializer(), input) shouldBe """name: "name1"""" + "\n"
                         }
                     }
 
@@ -1466,7 +1482,7 @@ class YamlWritingTest :
                         val input = SimpleStructureWithDefault()
 
                         test("is written") {
-                            defaultEncoder.encodeToString(SimpleStructureWithDefault.serializer(), input) shouldBe """name: "default""""
+                            defaultEncoder.encodeToString(SimpleStructureWithDefault.serializer(), input) shouldBe """name: "default"""" + "\n"
                         }
                     }
 
@@ -1474,7 +1490,7 @@ class YamlWritingTest :
                         val input = SimpleStructureWithDefault("name1")
 
                         test("is written") {
-                            defaultEncoder.encodeToString(SimpleStructureWithDefault.serializer(), input) shouldBe """name: "name1""""
+                            defaultEncoder.encodeToString(SimpleStructureWithDefault.serializer(), input) shouldBe """name: "name1"""" + "\n"
                         }
                     }
                 }
@@ -1486,7 +1502,7 @@ class YamlWritingTest :
                         val input = SimpleStructure("name1")
 
                         test("is always written") {
-                            noDefaultEncoder.encodeToString(SimpleStructure.serializer(), input) shouldBe """name: "name1""""
+                            noDefaultEncoder.encodeToString(SimpleStructure.serializer(), input) shouldBe """name: "name1"""" + "\n"
                         }
                     }
 
@@ -1494,7 +1510,7 @@ class YamlWritingTest :
                         val input = SimpleStructureWithDefault()
 
                         test("is not written") {
-                            noDefaultEncoder.encodeToString(SimpleStructureWithDefault.serializer(), input) shouldBe """{}"""
+                            noDefaultEncoder.encodeToString(SimpleStructureWithDefault.serializer(), input) shouldBe """{}""" + "\n"
                         }
                     }
 
@@ -1502,7 +1518,7 @@ class YamlWritingTest :
                         val input = SimpleStructureWithDefault("name1")
 
                         test("is written") {
-                            noDefaultEncoder.encodeToString(SimpleStructureWithDefault.serializer(), input) shouldBe """name: "name1""""
+                            noDefaultEncoder.encodeToString(SimpleStructureWithDefault.serializer(), input) shouldBe """name: "name1"""" + "\n"
                         }
                     }
                 }
@@ -1521,7 +1537,7 @@ class YamlWritingTest :
                             # Testing
                             # multiline
                             test: "justTest"
-                            """.trimIndent()
+                            """.trimIndent() + "\n"
                     }
                 }
             }

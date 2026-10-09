@@ -94,7 +94,7 @@ class YamlScalarTextPreservationTest :
 
                     val output = Yaml.default.encodeToString(YamlNode.serializer(), node)
 
-                    output shouldBe expected
+                    output shouldBe expected + "\n"
                     Yaml.default.parseToYamlNode(output).equivalentContentTo(node) shouldBe true
                 }
             }
@@ -106,7 +106,7 @@ class YamlScalarTextPreservationTest :
             val output = Yaml.default.encodeToString(YamlNode.serializer(), node)
 
             Yaml.default.decodeFromString<Map<String, String>>(output) shouldBe mapOf("7" to "a", "007" to "b")
-            output shouldBe "7: \"a\"\n007: \"b\""
+            output shouldBe "7: \"a\"\n007: \"b\"\n"
         }
 
         for (keys in listOf(
@@ -126,7 +126,7 @@ class YamlScalarTextPreservationTest :
                 val output = Yaml.default.encodeToString(YamlNode.serializer(), node)
 
                 Yaml.default.decodeFromString<Map<String, Int>>(output) shouldBe expected
-                output shouldBe input
+                output shouldBe input + "\n"
             }
         }
     })

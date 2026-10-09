@@ -44,7 +44,7 @@ class YamlPropertyNameWritingTest :
                         ? ""
                         : 5
                         ordinary: 6
-                        """.trimIndent()
+                        """.trimIndent() + "\n"
                 }
             }
 
@@ -63,7 +63,7 @@ class YamlPropertyNameWritingTest :
                     val text = yaml.encodeToString(NamedProperty.serializer(), value)
 
                     yaml.decodeFromString(NamedProperty.serializer(), text) shouldBe value
-                    text shouldBe "$encodedKey: 1"
+                    text shouldBe "$encodedKey: 1\n"
                 }
 
                 test("round trips '$name' as the polymorphism property name") {
@@ -80,7 +80,7 @@ class YamlPropertyNameWritingTest :
                     val text = yaml.encodeToString(TestSealedStructure.serializer(), value)
 
                     yaml.decodeFromString(TestSealedStructure.serializer(), text) shouldBe value
-                    text shouldBe "$encodedKey: \"sealedInt\"\nvalue: 1"
+                    text shouldBe "$encodedKey: \"sealedInt\"\nvalue: 1\n"
                 }
             }
         }
