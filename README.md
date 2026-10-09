@@ -56,12 +56,6 @@ val result = Yaml.default.encodeToString(Team.serializer(), input)
 println(result)
 ```
 
-`encodeToString` preserves the emitter's output, including its final line break,
-just like `encodeToSink` and `encodeToStream`. Earlier versions removed the final
-line break for non-block output. When upgrading, update exact string comparisons,
-snapshots, and any hashes or signatures based on the serialized text. Parsed YAML
-values are unchanged.
-
 ### Parsing into YamlNode
 
 It is possible to parse a string or an InputStream directly into a YamlNode, for example
