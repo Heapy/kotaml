@@ -233,7 +233,7 @@ internal class YamlNodeReader(
         }
     }
 
-    private fun isMerge(key: YamlNode): Boolean = key is YamlScalar && key.content == "<<"
+    private fun isMerge(key: YamlNode): Boolean = key is YamlScalar && key.plain && key.content == "<<"
 
     private fun doMerges(
         original: Map<YamlScalar, YamlNode>,

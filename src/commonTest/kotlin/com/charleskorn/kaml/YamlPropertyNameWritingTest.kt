@@ -23,9 +23,62 @@ import com.charleskorn.kaml.testobjects.TestSealedStructure
 import io.kotest.matchers.shouldBe
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 
 class YamlPropertyNameWritingTest :
     FlatFunSpec({
+        context("serializing merge-like property names") {
+            SingleLineStringStyle.entries.forEach { style ->
+                val yaml = Yaml(configuration = YamlConfiguration(singleLineStringStyle = style))
+
+                test("round trips a merge-like serial name with $style strings") {
+                    val value = MergeNamedProperty(1, 2)
+
+                    val text = yaml.encodeToString(value)
+
+                    text shouldBe "\"<<\": 1\nordinary: 2\n"
+                    yaml.decodeFromString<MergeNamedProperty<Int>>(text) shouldBe value
+                }
+
+                test("round trips nested merge-like serial names with $style strings") {
+                    val value = MergeNamedProperty(MergeNamedProperty(1, 2), 3)
+
+                    val text = yaml.encodeToString(value)
+
+                    text shouldBe "\"<<\":\n  \"<<\": 1\n  ordinary: 2\nordinary: 3\n"
+                    yaml.decodeFromString<MergeNamedProperty<MergeNamedProperty<Int>>>(text) shouldBe value
+                }
+
+                val yamlWithNamingStrategy =
+                    Yaml(
+                        configuration =
+                            YamlConfiguration(
+                                singleLineStringStyle = style,
+                                yamlNamingStrategy = YamlNamingStrategy { name -> if (name == "renamed") "<<" else name },
+                            ),
+                    )
+
+                test("round trips a merge-like name produced by a naming strategy with $style strings") {
+                    val value = StrategyNamedProperty(1, 2)
+
+                    val text = yamlWithNamingStrategy.encodeToString(value)
+
+                    text shouldBe "\"<<\": 1\nordinary: 2\n"
+                    yamlWithNamingStrategy.decodeFromString<StrategyNamedProperty<Int>>(text) shouldBe value
+                }
+
+                test("round trips nested merge-like names produced by a naming strategy with $style strings") {
+                    val value = StrategyNamedProperty(StrategyNamedProperty(1, 2), 3)
+
+                    val text = yamlWithNamingStrategy.encodeToString(value)
+
+                    text shouldBe "\"<<\":\n  \"<<\": 1\n  ordinary: 2\nordinary: 3\n"
+                    yamlWithNamingStrategy.decodeFromString<StrategyNamedProperty<StrategyNamedProperty<Int>>>(text) shouldBe value
+                }
+            }
+        }
+
         context("serializing null-like property names") {
             SingleLineStringStyle.entries.forEach { style ->
                 test("round trips null-like serial names with $style strings") {
@@ -99,4 +152,16 @@ private data class NullLikePropertyNames(
 @Serializable
 private data class NamedProperty(
     val value: Int,
+)
+
+@Serializable
+private data class MergeNamedProperty<T>(
+    @SerialName("<<") val value: T,
+    val ordinary: Int,
+)
+
+@Serializable
+private data class StrategyNamedProperty<T>(
+    @SerialName("renamed") val value: T,
+    val ordinary: Int,
 )
