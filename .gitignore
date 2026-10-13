@@ -13,3 +13,5 @@ publish.sh
 
 # macOS
 .DS_Store
+# ktc-plugins managed entries
+/.ktc-plugins/
