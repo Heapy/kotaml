@@ -5,7 +5,7 @@
 // - Show manifest properties: true
 // - Show declarations: true
 
-// Library unique name: <io.heapy.kotaml:kotaml-json>
+// Library unique name: <kotaml-json>
 final enum class com.charleskorn.kaml.json/NonFiniteNumbers : kotlin/Enum<com.charleskorn.kaml.json/NonFiniteNumbers> { // com.charleskorn.kaml.json/NonFiniteNumbers|null[0]
     enum entry AS_NULL // com.charleskorn.kaml.json/NonFiniteNumbers.AS_NULL|null[0]
     enum entry AS_STRING // com.charleskorn.kaml.json/NonFiniteNumbers.AS_STRING|null[0]

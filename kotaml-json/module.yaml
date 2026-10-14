@@ -16,30 +16,3 @@ plugins:
     formats:
       kotlin:
         licenseHeaderFile: ../license-header.txt
-
-# Preserve the module suffix in published JVM internal/synthetic signatures.
-settings@jvm:
-  kotlin:
-    freeCompilerArgs:
-      - -module-name=io_heapy_kotaml_kotaml_json
-
-# Retain the KLib identity used by existing published releases.
-settings@native:
-  kotlin:
-    freeCompilerArgs:
-      - -module-name=io.heapy.kotaml:kotaml-json
-
-settings@web:
-  kotlin:
-    freeCompilerArgs:
-      - -Xir-module-name=io.heapy.kotaml:kotaml-json
-
-test-settings@native:
-  kotlin:
-    freeCompilerArgs:
-      - -module-name=io.heapy.kotaml:kotaml-json-test
-
-test-settings@web:
-  kotlin:
-    freeCompilerArgs:
-      - -Xir-module-name=io.heapy.kotaml:kotaml-json-test

@@ -350,6 +350,10 @@ Wasm publication names now use the toolchain's `-wasmjs` suffix instead of `-was
 Dependencies on `kotaml` and `kotaml-json` select these artifacts through module metadata;
 only consumers declaring the platform artifacts directly need to update their coordinates.
 
+The migration adopts Toolchain default compiler module names. Native libraries previously compiled
+against kotaml may need rebuilding before they can be used with this release. JVM internal method
+suffixes also change; Maven coordinates and Kotlin package names remain unchanged.
+
 `ktlint`, `bcv`, `kotest`, `spotless`, `dokka` and `kover` are installed through `ktc-plugins` in `downloaded` mode.
 Only the manifest, commit-pinned lockfile and module registration are committed. Run `./ktc-plugins sync`
 after cloning or updating the checkout and before invoking `./kotlin`; CI does this automatically.
