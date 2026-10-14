@@ -5,6 +5,13 @@
 [![Pipeline](https://github.com/Heapy/kotaml/actions/workflows/build.yml/badge.svg)](https://github.com/Heapy/kotaml/actions/workflows/build.yml)
 [![License](https://img.shields.io/github/license/Heapy/kotaml.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Maven Central](https://img.shields.io/maven-central/v/io.heapy.kotaml/kotaml.svg?label=maven%20central)](https://central.sonatype.com/artifact/io.heapy.kotaml/kotaml)
+[![kotaml JVM lines](https://heapy.github.io/kotaml/badges/kotaml-lines.svg)](https://heapy.github.io/kotaml/coverage/kotaml/)
+[![kotaml JVM branches](https://heapy.github.io/kotaml/badges/kotaml-branches.svg)](https://heapy.github.io/kotaml/coverage/kotaml/)
+[![kotaml-json JVM lines](https://heapy.github.io/kotaml/badges/kotaml-json-lines.svg)](https://heapy.github.io/kotaml/coverage/kotaml-json/)
+[![kotaml-json JVM branches](https://heapy.github.io/kotaml/badges/kotaml-json-branches.svg)](https://heapy.github.io/kotaml/coverage/kotaml-json/)
+
+[API documentation and coverage reports](https://heapy.github.io/kotaml/) are published after successful CI on `main`.
+Coverage badges measure JVM lines and branches for each module; report pages identify the commit and generation time.
 
 ## What is this?
 
@@ -315,11 +322,73 @@ them. Their paths identify a position in the tree, not in any text.
 
 Pull requests and bug reports are always welcome!
 
-kotaml uses Gradle for builds and testing:
+kotaml uses Kotlin Toolchain 0.13.0 and Kotlin 2.4.20. The committed wrappers provision the
+compiler and JDK. Node.js 24 or newer is required for the Kotest JS/Wasm checks.
+Install their Chromium runtime once with `npx --yes playwright@1.61.0 install chromium`
+(use `install --with-deps chromium` on Linux). Both Node and Chromium run in each web check.
 
-* To build the library: `./gradlew assemble`
-* To run the tests and static analysis tools: `./gradlew check`
-* To run the tests and static analysis tools continuously: `./gradlew --continuous check`
+* Restore locked plugins before the first build: `./ktc-plugins sync` (`.\ktc-plugins.bat sync` on Windows).
+* Build a selected platform: `./kotlin build --platform jvm`.
+* Run JVM tests, including local plugin tests: `./kotlin test --platform jvm`.
+* Run native tests on your host, for example: `./kotlin test --platform macosArm64`.
+* Run lint, Spotless, JVM/KLib ABI, JS/Wasm tests and JVM coverage on macOS/Linux: `./kotlin check --skip tests`.
+* Generate API documentation: `./kotlin do dokkaHtml -m kotaml -m kotaml-json`.
+* Generate JVM coverage reports on macOS/Linux: `./kotlin check koverCheck -m kotaml -m kotaml-json`.
+* Format Kotlin: `./kotlin do ktlintFormat -m kotaml -m kotaml-json`.
+* Update license headers and text whitespace: `./kotlin do spotlessApply`.
+* Verify downloaded plugins: `./ktc-plugins verify`.
+
+The library still targets JVM 11. All previous publication targets are retained except
+`watchosX64`, which Kotlin Toolchain 0.13 does not support. Select runnable platforms
+explicitly: a general `build` also links tests for device targets, including the legacy
+watchOS ARM32 target that current Xcode versions cannot link.
+
+Sources use `src`, `test`, `src@jvm` and `test@jvm`. Shared settings are in
+`library.module-template.yaml`; `libs.versions.toml` contains dependency versions.
+Consumers can continue using the Gradle dependency declarations shown above.
+Wasm publication names now use the toolchain's `-wasmjs` suffix instead of `-wasm-js`.
+Dependencies on `kotaml` and `kotaml-json` select these artifacts through module metadata;
+only consumers declaring the platform artifacts directly need to update their coordinates.
+
+`ktlint`, `bcv`, `kotest`, `spotless`, `dokka` and `kover` are installed through `ktc-plugins` in `downloaded` mode.
+Only the manifest, commit-pinned lockfile and module registration are committed. Run `./ktc-plugins sync`
+after cloning or updating the checkout and before invoking `./kotlin`; CI does this automatically.
+Sources and preserved licenses are restored under ignored `plugins/` directories and verified against the lockfile.
+`sync` does not update versions; use `./ktc-plugins update` for an intentional update.
+[BCV](https://github.com/Heapy/ktc-bcv) automatically validates
+JVM/KLib targets and selects Kotlin reader dependencies from each module's settings.
+[Kotest](https://github.com/Heapy/ktc-kotest) supplies the shared test template and
+JS/Wasm checks in Node and Chromium. [Spotless](https://github.com/Heapy/ktc-spotless)
+checks license headers and text whitespace using the upstream Spotless engine.
+See the plugins' READMEs for limits and maintenance commands.
+
+[Dokka](https://github.com/Heapy/ktc-dokka) generates a separate KMP API site for each library,
+including common, shared and platform source sets, public/protected declarations and links configured for Java 11.
+Open `build/tasks/_kotaml_dokkaHtml@dokka/html/index.html` or
+`build/tasks/_kotaml-json_dokkaHtml@dokka/html/index.html`. The adapter uses offline mode,
+so external API links may be unavailable. These HTML sites are CI artifacts; they are not
+an aggregated multi-module site or attached to Maven publications. Types from local dependencies
+are resolved, but navigation between the two sites is not configured.
+
+[Kover](https://github.com/Heapy/ktc-kover) runs the existing JVM tests with instrumentation
+and reports each library's own classes. HTML and XML are under
+`build/tasks/_<module>_koverReport@kover/` (`html/index.html` and `coverage.xml`).
+The initial minimum is 0% to collect a baseline; failed tests and empty reports still fail.
+There are no class exclusions. This is JVM coverage, not Native/JS coverage or a combined
+report across modules. Kover reruns JVM tests even with `check --skip tests`; it supports
+macOS/Linux hosts, and CI runs it on Linux. On Windows, select supported checks explicitly,
+as in the CI matrix. CI uploads `api-documentation` and `jvm-coverage` artifacts.
+On `main`, after the entire CI matrix and workflow checks pass, GitHub Pages also publishes
+the Dokka sites, Kover reports and four SVG badges generated directly from XML report totals.
+Pull requests validate site generation without publishing. No external coverage or badge service is used.
+The generator is `.github/scripts/build-pages.main.kts`; its regression checks run in CI.
+
+KLib checks compile only main libraries for targets supported by the current host.
+`./kotlin do klibApiDump` updates only those target baselines and preserves the others;
+run it on the other CI hosts when intentionally changing a shared API. JVM snapshots
+are updated with `./kotlin do apiDump`. Review all baseline changes before committing.
+The JVM BCV snapshot includes the existing protected `YamlNode.replacePathOnChild`
+method, which the previous Gradle validator omitted; the library bytecode API is retained.
 
 ## Reference links
 

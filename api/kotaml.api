@@ -310,6 +310,7 @@ public abstract class com/charleskorn/kaml/YamlNode {
 	public abstract fun equivalentContentTo (Lcom/charleskorn/kaml/YamlNode;)Z
 	public final fun getLocation ()Lcom/charleskorn/kaml/Location;
 	public fun getPath ()Lcom/charleskorn/kaml/YamlPath;
+	protected final fun replacePathOnChild (Lcom/charleskorn/kaml/YamlNode;Lcom/charleskorn/kaml/YamlPath;)Lcom/charleskorn/kaml/YamlPath;
 	public abstract fun withPath (Lcom/charleskorn/kaml/YamlPath;)Lcom/charleskorn/kaml/YamlNode;
 }
 

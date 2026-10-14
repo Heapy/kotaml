@@ -1,0 +1,69 @@
+apply:
+  - //plugins/kotest/kotest.module-template.yaml
+
+settings:
+  kotlin:
+    version: 2.4.20
+    explicitApi: strict
+  jvm:
+    release: 11
+    jdk:
+      version: 25
+  publishing:
+    enabled: true
+    group: io.heapy.kotaml
+    version: 0.111.0
+    publishSources: true
+    signArtifacts: true
+    mavenCentral:
+      enabled: true
+      publishingMode: manual
+    pom:
+      url: https://github.com/Heapy/kotaml
+      scm:
+        url: https://github.com/Heapy/kotaml
+        connection: scm:git:git://github.com/Heapy/kotaml.git
+        developerConnection: scm:git:ssh://github.com:Heapy/kotaml.git
+      licenses:
+        - name: The Apache License, Version 2.0
+          url: https://www.apache.org/licenses/LICENSE-2.0.txt
+      developers:
+        - id: charleskorn
+          name: Charles Korn
+          email: me@charleskorn.com
+        - id: ruslan.ibrahimau
+          name: Ruslan Ibrahimau
+          email: ruslan@heapy.io
+
+repositories:
+  - url: mavenLocal
+    publish: true
+
+settings@wasmJs:
+  kotlin:
+    freeCompilerArgs:
+      - -Xwasm-enable-array-range-checks
+
+plugins:
+  ktlint:
+    enabled: true
+    includes: ['src/**/*.kt', 'src@*/**/*.kt', 'test/**/*.kt', 'test@*/**/*.kt']
+  spotless:
+    enabled: true
+    excludes: ['plugins/**', 'publish.sh']
+    formats:
+      kotlin:
+        includes: ['**/*.kt']
+        licenseHeaderFile: license-header.txt
+      misc:
+        includes: ['**/*.md', '**/*.yaml', '**/*.yml', '**/*.sh', '**/.gitignore', '**/Dockerfile']
+  bcv:
+    enabled: true
+  dokka:
+    enabled: true
+    jdkVersion: 11
+    documentedVisibilities: [public, protected]
+  kover:
+    enabled: true
+    # Collect the initial baseline before introducing a minimum coverage policy.
+    minimumLineCoverage: 0

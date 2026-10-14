@@ -1,0 +1,12 @@
+[versions]
+kotlin = "2.4.20"
+kotlinx-serialization = "1.11.0"
+snakeyaml-engine-kmp = "5.0.0"
+okio = "3.18.2"
+
+[libraries]
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+snakeyaml-engine-kmp = { module = "it.krzeminski:snakeyaml-engine-kmp", version.ref = "snakeyaml-engine-kmp" }
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
+
