@@ -5,7 +5,7 @@
 // - Show manifest properties: true
 // - Show declarations: true
 
-// Library unique name: <kotaml>
+// Library unique name: <io.heapy.kotaml:kotaml>
 open annotation class com.charleskorn.kaml/YamlComment : kotlin/Annotation { // com.charleskorn.kaml/YamlComment|null[0]
     constructor <init>(kotlin/Array<out kotlin/String>...) // com.charleskorn.kaml/YamlComment.<init>|<init>(kotlin.Array<out|kotlin.String>...){}[0]
 

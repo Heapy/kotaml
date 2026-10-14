@@ -15,3 +15,30 @@ dependencies:
 settings:
   kotlin:
     serialization: enabled
+
+# Preserve the module suffix in published JVM internal/synthetic signatures.
+settings@jvm:
+  kotlin:
+    freeCompilerArgs:
+      - -module-name=io_heapy_kotaml_kotaml
+
+# Retain the KLib identity used by existing published releases.
+settings@native:
+  kotlin:
+    freeCompilerArgs:
+      - -module-name=io.heapy.kotaml:kotaml
+
+settings@web:
+  kotlin:
+    freeCompilerArgs:
+      - -Xir-module-name=io.heapy.kotaml:kotaml
+
+test-settings@native:
+  kotlin:
+    freeCompilerArgs:
+      - -module-name=io.heapy.kotaml:kotaml-test
+
+test-settings@web:
+  kotlin:
+    freeCompilerArgs:
+      - -Xir-module-name=io.heapy.kotaml:kotaml-test

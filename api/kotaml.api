@@ -12,7 +12,7 @@ public abstract class com/charleskorn/kaml/AnchorsAndAliases {
 public final class com/charleskorn/kaml/AnchorsAndAliases$Forbidden : com/charleskorn/kaml/AnchorsAndAliases {
 	public static final field INSTANCE Lcom/charleskorn/kaml/AnchorsAndAliases$Forbidden;
 	public fun equals (Ljava/lang/Object;)Z
-	public synthetic fun getMaxAliasCount-0hXNFcg$kotaml ()Lkotlin/UInt;
+	public synthetic fun getMaxAliasCount-0hXNFcg$io_heapy_kotaml_kotaml ()Lkotlin/UInt;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
