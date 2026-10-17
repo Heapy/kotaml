@@ -1,13 +1,13 @@
 [versions]
-kotlin = "2.4.20"
+kotlin = "2.4.21"
 kotlinx-serialization = "1.11.0"
 kotlinx-coroutines = "1.11.0"
 kotlinx-io = "0.9.1"
 snakeyaml-engine-kmp = "5.0.0"
 okio = "3.18.2"
-kotest = "6.2.5"
+kotest = "6.2.6"
 ksp = "2.3.12"
-spotless = "8.10.3"
+spotless = "8.10.4"
 
 [libraries]
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
