@@ -1,0 +1,3 @@
+# Keep source and wrapper line endings consistent on every CI host.
+* text=auto eol=lf
+*.bat text eol=crlf

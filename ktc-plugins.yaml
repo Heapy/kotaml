@@ -1,0 +1,32 @@
+schemaVersion: 1
+plugins:
+  'ktlint':
+    repository: 'Heapy/ktc-ktlint'
+    ref:
+      commit: '0caaf46060d0f2ee57e06e97406a021c4dcec994'
+    mode: downloaded
+  'bcv':
+    repository: 'Heapy/ktc-bcv'
+    ref:
+      commit: 'e02709f8c1dd3f30bf8c3111f2c7c96d19c2f515'
+    mode: downloaded
+  'kotest':
+    repository: 'Heapy/ktc-kotest'
+    ref:
+      commit: 'ba55086e7dbf6a42cfc73b5970499df13f7a284d'
+    mode: downloaded
+  'spotless':
+    repository: 'Heapy/ktc-spotless'
+    ref:
+      commit: 'dc78332a19ac7d1cf2669b4bfc1432c669cbe0e8'
+    mode: downloaded
+  'dokka':
+    repository: 'Heapy/ktc-dokka'
+    ref:
+      commit: 'c1c7f9727dde212668268442cf34d20c82300ae4'
+    mode: downloaded
+  'kover':
+    repository: 'Heapy/ktc-kover'
+    ref:
+      tag: 'v0.2.1'
+    mode: downloaded

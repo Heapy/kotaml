@@ -8,12 +8,9 @@ on:
     branches:
       - main
 
-env:
-  GRADLE_OPTS: "-Dorg.gradle.internal.launcher.welcomeMessageEnabled=false"
-
 concurrency:
   cancel-in-progress: true
-  group: build-${{ github.event.pull_request.number || github.event.after }}
+  group: build-${{ github.event.pull_request.number || github.ref }}
 
 jobs:
   workflow-lint:
@@ -27,10 +24,14 @@ jobs:
       - name: Set up Kotlin scripting
         uses: Heapy/setup-main-kts@b0858237748f325b825e752bbac2ec2eb1fb9419 # v1.0.1
         with:
-          kotlin-version: '2.4.20'
+          kotlin-version: '2.4.21'
+          kotlin-sha256: '7cc140e76daf416a0424a5557f99afd7ca89ebd463ea1101261e3e01c33e75cd'
           java-version: '25'
       - name: Check action pins
         run: kotlinr .github/scripts/check-action-pins.main.kts
+
+      - name: Test coverage site generator
+        run: kotlinr .github/scripts/test-build-pages.main.kts
 
   test-matrix:
     strategy:
@@ -38,38 +39,140 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            tasks: check
+            platforms: --platform linuxX64
+            checks: apiCheck klibApiCheck ktlintCheck spotlessCheck kotestJs kotestWasm
           - os: windows-latest
-            tasks: mingwX64Test
+            platforms: --platform mingwX64
+            checks: klibApiCheck
           - os: macos-latest
-            tasks: macosX64Test macosArm64Test iosX64Test iosSimulatorArm64Test tvosX64Test tvosSimulatorArm64Test watchosX64Test watchosSimulatorArm64Test
+            # Intel iOS/tvOS simulators cannot run on the ARM host; klibApiCheck still compiles their ABI.
+            platforms: --platform macosX64 --platform macosArm64 --platform iosSimulatorArm64
+            checks: klibApiCheck
     runs-on: ${{ matrix.os }}
     name: Test on ${{ matrix.os }}
+    permissions:
+      contents: read
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Check out code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Restore and verify locked plugins
+        uses: Heapy/setup-ktc-plugins@5de74f161cb07ad74e72ee28bfad228f4cce3bb4 # v1.0.0
+
+      - name: Set up Kotlin Toolchain
+        uses: Heapy/setup-ktc@e0a603c477110083db0b44f302deb188d4991ea0 # v1.1.0
         with:
-          fetch-depth: 0
+          version: auto
 
-      - name: Validate Gradle wrapper
-        uses: gradle/actions/wrapper-validation@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
-
-      - name: Set up JDK
-        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+      - name: Set up Node for Kotest web runners
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          java-version: 25
-          distribution: temurin
+          node-version: '24'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
-
-      - name: Cache konan dependencies
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      - name: Set up Kotlin scripting
+        if: runner.os != 'Windows'
+        uses: Heapy/setup-main-kts@b0858237748f325b825e752bbac2ec2eb1fb9419 # v1.0.1
         with:
-          path: ~/.konan
-          key: ${{ runner.os }}-gradle-${{ hashFiles('*.gradle.kts') }}
-          restore-keys: |
-              ${{ runner.os }}-gradle-
+          kotlin-version: '2.4.21'
+          kotlin-sha256: '7cc140e76daf416a0424a5557f99afd7ca89ebd463ea1101261e3e01c33e75cd'
+          java-version: '25'
 
-      - name: Build
-        run: ./gradlew ${{ matrix.tasks }}
+      - name: Install Chromium for web tests
+        if: runner.os == 'Linux'
+        run: npx --yes playwright@1.61.0 install --with-deps chromium
+
+      - name: Run library JVM tests with coverage
+        if: runner.os == 'Linux'
+        run: kotlinr plugins/kover/coverage.main.kts -m kotaml -m kotaml-json
+
+      - name: Run plugin JVM tests
+        if: runner.os == 'Linux'
+        run: ./kotlin test --platform jvm --exclude-module kotaml --exclude-module kotaml-json
+
+      - name: Run native tests
+        if: runner.os != 'Windows'
+        run: ./kotlin test ${{ matrix.platforms }}
+
+      - name: Run tests on Windows
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: ./kotlin.bat test ${{ matrix.platforms }}
+
+      - name: Run plugin checks
+        if: runner.os != 'Windows'
+        run: ./kotlin check ${{ matrix.checks }}
+
+      - name: Run plugin checks on Windows
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: ./kotlin.bat check ${{ matrix.checks }}
+
+      - name: Generate API documentation
+        if: runner.os == 'Linux'
+        run: ./kotlin 'do' dokkaHtml -m kotaml -m kotaml-json
+
+      - name: Run tvOS and watchOS tests in simulator runtimes
+        if: runner.os == 'macOS'
+        run: kotlinr .github/scripts/test-apple-simulators.main.kts
+
+      - name: Build coverage badges and documentation site
+        if: runner.os == 'Linux'
+        run: kotlinr .github/scripts/build-pages.main.kts build/tasks build/pages "$GITHUB_SHA"
+
+      - name: Upload GitHub Pages artifact
+        if: runner.os == 'Linux' && github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'Heapy/kotaml'
+        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
+        with:
+          path: build/pages
+
+      - name: Upload API documentation
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: api-documentation
+          path: build/tasks/*_dokkaHtml@dokka/html/
+          if-no-files-found: error
+
+      - name: Upload JVM coverage reports
+        if: always() && runner.os == 'Linux'
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: jvm-coverage
+          path: |
+            build/tasks/*_koverReport@kover/coverage.xml
+            build/tasks/*_koverReport@kover/html/
+          if-no-files-found: warn
+
+      - name: Upload test reports and plugin diagnostics
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: test-reports-${{ matrix.os }}
+          path: |
+            build/**/TEST-*.xml
+            build/tasks/*@kotest/*.log
+            build/tasks/*@bcv/current.klib.api
+            build/simulator-tests/*.log
+          if-no-files-found: warn
+
+  deploy-pages:
+    name: Publish documentation and coverage
+    needs: [workflow-lint, test-matrix]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'Heapy/kotaml'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: github-pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4

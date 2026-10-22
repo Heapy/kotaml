@@ -1,0 +1,15 @@
+modules:
+  - kotaml-json
+  - plugins/bcv
+  - plugins/dokka
+  - plugins/kotest
+  - plugins/kover
+  - plugins/ktlint
+  - plugins/spotless
+plugins:
+  - //plugins/bcv
+  - //plugins/dokka
+  - //plugins/kotest
+  - //plugins/kover
+  - //plugins/ktlint
+  - //plugins/spotless
