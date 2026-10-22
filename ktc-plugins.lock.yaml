@@ -128,13 +128,13 @@ plugins:
         executable: false
   'kover':
     repository: 'Heapy/ktc-kover'
-    declarationSha256: 'f22e430ca9ac7f4dc1324121d6157420f6e7abb52edda6deb9cb6c62f7581335'
-    commit: 'e575c9e215b955b5737303af627bb683f591eb97'
+    declarationSha256: 'dfbb0c271807ee3b263a95611e937448f6c29d4b641aad02dded19375be42455'
+    commit: '39305c2b699f6980776dd2dbc554e4b2648d170a'
     sourcePath: 'plugins/kover'
     destination: 'plugins/kover'
     mode: 'downloaded'
     pluginId: 'kover'
-    treeSha256: '6f82da11b6c1f98171a5eccf78cbd7d01b83a2971be493ac540ae26074e0ba79'
+    treeSha256: 'af7d26d4915d0ffb66e549640d40e9317be6121c14fb84846dd86a5459c93345'
     producer:
       path: ktc-plugin.yaml
       sha256: 'a37925fda206e4af2ee20a460c2b5b0609b700058cac443ff0f0afbca34c5b4a'
@@ -143,20 +143,38 @@ plugins:
       '.ktc-licenses/LICENSE':
         sha256: 'cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30'
         executable: false
+      'coverage.main.kts':
+        sha256: '05cd117f217c4a301da30191a7d261d9cbcd046ca09672ffde090ecdc4d3d57e'
+        executable: false
       'module.yaml':
-        sha256: 'e645e4c8c34dbd6347acd671d16a8d77c4cf2df87eaf0ec9c73ccc256462f700'
+        sha256: '8251f30b479c355af748ecbbf824c24c4eb9abb463417bbeb36bdc252c181a4d'
         executable: false
       'plugin.yaml':
-        sha256: '461e4123d2e14ebdfeccababf4cc33ecf82d11eadb19465ad63b94336e1c2040'
+        sha256: '7ab901f1e43987223b441322075217f79d3640c6cf85145fd39270496a946517'
+        executable: false
+      'src/CoverageSession.kt':
+        sha256: 'c6147f62722e929409aed419d76491a7ff6e97ce0c1c8c3ade20105a5e4b8ff3'
         executable: false
       'src/Kover.kt':
-        sha256: '9a638eff06dc46149a72ac76d8f1bb644664fb939fde9e6d1ca8935d88983afb'
+        sha256: '991b33de05a4c3ef7ff8c56d2a242de8982b962aa2197d87e4103d6ed2e6dc7d'
         executable: false
       'src/KoverSettings.kt':
-        sha256: '6df47529c66bebb36c1e4e7e0641fdaf775d86f609e3a2d18ebceece7d534182'
+        sha256: 'f39754f867b333b1638b6cc35e0a4b3f5a15eb4a25b2ae0013f969fc582934cf'
+        executable: false
+      'src/ProcessOutput.kt':
+        sha256: '6580d8a1b80af2706059862c17f8a7fd73ab8c54242ab5eb26cdaf8a7559d75d'
+        executable: false
+      'test/CoverageSessionTest.kt':
+        sha256: 'fa494373ae372ee1bc014e04032cac43272fefa6a0ce9b7e397925bda1b9b0f3'
         executable: false
       'test/KoverTest.kt':
         sha256: '4d14dbad71114861f6c973f5b2217ec248961dbe8ed9ea6b21ea5939c0044bd1'
+        executable: false
+      'test/KoverVersionTest.kt':
+        sha256: 'bc19991f036dae9909141b679fdad4b6529593c882e3a284a294d33b3364c699'
+        executable: false
+      'test/ProcessesTest.kt':
+        sha256: '85ac6e0ef01452104e776bb4fb69d53435969849b4484290eed00317a43bad0e'
         executable: false
   'ktlint':
     repository: 'Heapy/ktc-ktlint'

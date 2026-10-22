@@ -331,9 +331,10 @@ Install their Chromium runtime once with `npx --yes playwright@1.61.0 install ch
 * Build a selected platform: `./kotlin build --platform jvm`.
 * Run JVM tests, including local plugin tests: `./kotlin test --platform jvm`.
 * Run native tests on your host, for example: `./kotlin test --platform macosArm64`.
-* Run lint, Spotless, JVM/KLib ABI, JS/Wasm tests and JVM coverage on macOS/Linux: `./kotlin check --skip tests`.
+* Run lint, Spotless, JVM/KLib ABI and JS/Wasm tests on macOS/Linux: `./kotlin check apiCheck klibApiCheck ktlintCheck spotlessCheck kotestJs kotestWasm`.
 * Generate API documentation: `./kotlin do dokkaHtml -m kotaml -m kotaml-json`.
-* Generate JVM coverage reports on macOS/Linux: `./kotlin check koverCheck -m kotaml -m kotaml-json`.
+* Run library JVM tests with coverage on macOS/Linux: `kotlinr plugins/kover/coverage.main.kts -m kotaml -m kotaml-json` (JDK 25 and Kotlin 2.4.21+).
+* Run the remaining plugin JVM tests after coverage: `./kotlin test --platform jvm --exclude-module kotaml --exclude-module kotaml-json`.
 * Format Kotlin: `./kotlin do ktlintFormat -m kotaml -m kotaml-json`.
 * Update license headers and text whitespace: `./kotlin do spotlessApply`.
 * Verify downloaded plugins: `./ktc-plugins verify`.
@@ -370,14 +371,22 @@ so external API links may be unavailable. These HTML sites are CI artifacts; the
 an aggregated multi-module site or attached to Maven publications. Types from local dependencies
 are resolved, but navigation between the two sites is not configured.
 
-[Kover](https://github.com/Heapy/ktc-kover) runs the existing JVM tests with instrumentation
+[Kover](https://github.com/Heapy/ktc-kover) v0.2.1 runs the existing JVM tests with instrumentation
 and reports each library's own classes. HTML and XML are under
 `build/tasks/_<module>_koverReport@kover/` (`html/index.html` and `coverage.xml`).
 The initial minimum is 0% to collect a baseline; failed tests and empty reports still fail.
 There are no class exclusions. This is JVM coverage, not Native/JS coverage or a combined
-report across modules. Kover reruns JVM tests even with `check --skip tests`; it supports
-macOS/Linux hosts, and CI runs it on Linux. On Windows, select supported checks explicitly,
-as in the CI matrix. CI uploads `api-documentation` and `jvm-coverage` artifacts.
+report across modules. The sequential runner executes each selected module's JVM tests once
+in the normal build directory, reusing compilation outputs. It requires JDK 25 and a
+Kotlin 2.4.21+ script runner (`kotlinr`); the libraries still compile with Kotlin 2.4.20.
+CI uses this runner on Linux, then runs plugin JVM tests and native/web tests separately.
+JUnit diagnostics are retained in `build/tasks/*_koverPrepare@kover/test-results/`, including
+reports from failed tests, and uploaded with the other test reports.
+The standalone `./kotlin check koverCheck` command remains available but runs another
+instrumented test build. Do not follow the sequential runner with `koverCheck`, an
+unfiltered `./kotlin check`, or another library JVM test run unless intentionally rerunning tests.
+On Windows, select supported checks explicitly, as in the CI matrix.
+CI uploads `api-documentation` and `jvm-coverage` artifacts.
 On `main`, after the entire CI matrix and workflow checks pass, GitHub Pages also publishes
 the Dokka sites, Kover reports and four SVG badges generated directly from XML report totals.
 Pull requests validate site generation without publishing. No external coverage or badge service is used.

@@ -28,5 +28,5 @@ plugins:
   'kover':
     repository: 'Heapy/ktc-kover'
     ref:
-      commit: 'e575c9e215b955b5737303af627bb683f591eb97'
+      tag: 'v0.2.1'
     mode: downloaded

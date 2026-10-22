@@ -24,7 +24,8 @@ jobs:
       - name: Set up Kotlin scripting
         uses: Heapy/setup-main-kts@b0858237748f325b825e752bbac2ec2eb1fb9419 # v1.0.1
         with:
-          kotlin-version: '2.4.20'
+          kotlin-version: '2.4.21'
+          kotlin-sha256: '7cc140e76daf416a0424a5557f99afd7ca89ebd463ea1101261e3e01c33e75cd'
           java-version: '25'
       - name: Check action pins
         run: kotlinr .github/scripts/check-action-pins.main.kts
@@ -38,8 +39,8 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            platforms: --platform jvm --platform linuxX64
-            checks: apiCheck klibApiCheck ktlintCheck spotlessCheck kotestJs kotestWasm koverCheck
+            platforms: --platform linuxX64
+            checks: apiCheck klibApiCheck ktlintCheck spotlessCheck kotestJs kotestWasm
           - os: windows-latest
             platforms: --platform mingwX64
             checks: klibApiCheck
@@ -71,11 +72,27 @@ jobs:
         with:
           node-version: '24'
 
+      - name: Set up Kotlin scripting
+        if: runner.os != 'Windows'
+        uses: Heapy/setup-main-kts@b0858237748f325b825e752bbac2ec2eb1fb9419 # v1.0.1
+        with:
+          kotlin-version: '2.4.21'
+          kotlin-sha256: '7cc140e76daf416a0424a5557f99afd7ca89ebd463ea1101261e3e01c33e75cd'
+          java-version: '25'
+
       - name: Install Chromium for web tests
         if: runner.os == 'Linux'
         run: npx --yes playwright@1.61.0 install --with-deps chromium
 
-      - name: Run tests
+      - name: Run library JVM tests with coverage
+        if: runner.os == 'Linux'
+        run: kotlinr plugins/kover/coverage.main.kts -m kotaml -m kotaml-json
+
+      - name: Run plugin JVM tests
+        if: runner.os == 'Linux'
+        run: ./kotlin test --platform jvm --exclude-module kotaml --exclude-module kotaml-json
+
+      - name: Run native tests
         if: runner.os != 'Windows'
         run: ./kotlin test ${{ matrix.platforms }}
 
@@ -96,13 +113,6 @@ jobs:
       - name: Generate API documentation
         if: runner.os == 'Linux'
         run: ./kotlin 'do' dokkaHtml -m kotaml -m kotaml-json
-
-      - name: Set up Kotlin scripting
-        if: runner.os != 'Windows'
-        uses: Heapy/setup-main-kts@b0858237748f325b825e752bbac2ec2eb1fb9419 # v1.0.1
-        with:
-          kotlin-version: '2.4.20'
-          java-version: '25'
 
       - name: Run tvOS and watchOS tests in simulator runtimes
         if: runner.os == 'macOS'
