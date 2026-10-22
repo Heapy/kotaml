@@ -58,6 +58,9 @@ jobs:
       - name: Check out code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      - name: Restore and verify locked plugins
+        uses: Heapy/setup-ktc-plugins@5de74f161cb07ad74e72ee28bfad228f4cce3bb4 # v1.0.0
+
       - name: Set up Kotlin Toolchain
         uses: Heapy/setup-ktc@e0a603c477110083db0b44f302deb188d4991ea0 # v1.1.0
         with:
@@ -71,25 +74,6 @@ jobs:
       - name: Install Chromium for web tests
         if: runner.os == 'Linux'
         run: npx --yes playwright@1.61.0 install --with-deps chromium
-
-      - name: Restore locked plugins
-        if: runner.os != 'Windows'
-        run: ./ktc-plugins sync
-
-      - name: Restore locked plugins on Windows
-        if: runner.os == 'Windows'
-        shell: powershell
-        run: ./ktc-plugins.bat sync
-
-      - name: Verify installed plugin sources
-        if: runner.os != 'Windows'
-        run: ./ktc-plugins verify
-
-      - name: Verify installed plugin sources on Windows
-        if: runner.os == 'Windows'
-        # The wrapper invokes Windows PowerShell 5.1; avoid inheriting PowerShell 7's module path.
-        shell: powershell
-        run: ./ktc-plugins.bat verify
 
       - name: Run tests
         if: runner.os != 'Windows'
