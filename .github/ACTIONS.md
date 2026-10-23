@@ -24,7 +24,7 @@ the script cache. Optional arguments select individual workflow files. For
 direct execution, run `chmod +x .github/scripts/check-action-pins.main.kts`
 once, then `./.github/scripts/check-action-pins.main.kts`.
 
-CI uses the SHA-pinned `Heapy/setup-main-kts` action to install Kotlin 2.4.20
+CI uses the SHA-pinned `Heapy/setup-main-kts` action to install Kotlin 2.4.21
 and Java 25, and cache the compiler, dependencies, and compiled script.
 
 The weekly `github-actions` Dependabot configuration opens update PRs for the
