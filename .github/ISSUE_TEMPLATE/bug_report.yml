@@ -1,5 +1,5 @@
 name: Bug report
-description: Report an issue in kaml
+description: Report an issue in kotaml
 labels:
   - is:bug
 body:
@@ -36,7 +36,7 @@ body:
   - type: textarea
     attributes:
       label: Version information
-      description: What version of kaml are you using? (Now is also a good time to double-check you're using the [most recent version](https://github.com/charleskorn/kaml/releases/latest) of kaml.)
+      description: What version of kotaml are you using? (Now is also a good time to double-check you're using the [most recent version](https://github.com/Heapy/kotaml/releases/latest) of kotaml.)
       render: plain text
     validations:
       required: true

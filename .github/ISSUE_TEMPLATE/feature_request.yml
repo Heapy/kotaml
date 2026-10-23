@@ -1,5 +1,5 @@
 name: Feature request
-description: Suggest an idea for kaml
+description: Suggest an idea for kotaml
 labels:
   - is:suggestion
 body:

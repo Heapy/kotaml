@@ -2,5 +2,5 @@ blank_issues_enabled: false
 
 contact_links:
   - name: Questions
-    about: Have a question about kaml? Discussions is the best place for that.
-    url: https://github.com/charleskorn/kaml/discussions
+    about: Have a question about kotaml? Discussions is the best place for that.
+    url: https://github.com/Heapy/kotaml/discussions

@@ -17,7 +17,6 @@
 
 */
 
-import com.charleskorn.kaml.build.configureAssemble
 import com.charleskorn.kaml.build.configurePublishing
 import com.charleskorn.kaml.build.configureSpotless
 import com.charleskorn.kaml.build.configureTesting
@@ -133,7 +132,6 @@ java {
     targetCompatibility = JavaVersion.VERSION_11
 }
 
-configureAssemble()
 configurePublishing(
     pomName = "kotaml",
     pomDescription = "YAML support for kotlinx.serialization",

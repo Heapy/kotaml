@@ -5,7 +5,7 @@
  * Usage: kotlinr .github/scripts/check-action-pins.main.kts [workflow.yml ...]
  * With no arguments, checks every .yml and .yaml file in .github/workflows.
  */
-@file:DependsOn("io.heapy.kotaml:kotaml-jvm:0.111.0")
+@file:DependsOn("io.heapy.kotaml:kotaml-jvm:0.112.0")
 @file:CompilerOptions("-jvm-target", "11")
 
 import com.charleskorn.kaml.AnchorsAndAliases

@@ -17,7 +17,6 @@
 
 */
 
-import com.charleskorn.kaml.build.configureAssemble
 import com.charleskorn.kaml.build.configurePublishing
 import com.charleskorn.kaml.build.configureTesting
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -119,7 +118,6 @@ java {
     targetCompatibility = JavaVersion.VERSION_11
 }
 
-configureAssemble()
 configurePublishing(
     pomName = "kotaml-json",
     pomDescription = "Convert kotaml YAML node trees to kotlinx.serialization JSON node trees",
