@@ -140,15 +140,15 @@ Add the following to your Gradle build script:
 
 ```kotlin
 plugins {
-    kotlin("jvm").version("2.4.20")
-    kotlin("plugin.serialization").version("2.4.20")
+    kotlin("jvm").version("2.4.21")
+    kotlin("plugin.serialization").version("2.4.21")
 }
 
 dependencies {
-    implementation("io.heapy.kotaml:kotaml:0.111.0")
+    implementation("io.heapy.kotaml:kotaml:0.112.0")
 
     // Optional kotlinx-serialization-json integration
-    implementation("io.heapy.kotaml:kotaml-json:0.111.0")
+    implementation("io.heapy.kotaml:kotaml-json:0.112.0")
 }
 ```
 
