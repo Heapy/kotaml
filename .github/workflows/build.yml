@@ -27,7 +27,7 @@ jobs:
       - name: Set up Kotlin scripting
         uses: Heapy/setup-main-kts@b0858237748f325b825e752bbac2ec2eb1fb9419 # v1.0.1
         with:
-          kotlin-version: '2.4.20'
+          kotlin-version: '2.4.21'
           java-version: '25'
       - name: Check action pins
         run: kotlinr .github/scripts/check-action-pins.main.kts

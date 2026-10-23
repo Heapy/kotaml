@@ -58,7 +58,7 @@ fun Project.configureSpotless() {
                     mapOf(
                         "dir" to ".",
                         "include" to listOf("**/*.md", "**/.gitignore", "**/*.yaml", "**/*.yml", "**/*.sh", "**/Dockerfile"),
-                        "exclude" to listOf(".gradle/**", ".gradle-cache/**", "build/**"),
+                        "exclude" to listOf("**/.gradle/**", "**/.gradle-cache/**", "**/build/**"),
                     ),
                 ),
             )
