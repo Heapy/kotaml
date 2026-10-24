@@ -73,10 +73,13 @@ public class InvalidPropertyValueException(
 ) : YamlException("Value for '$propertyName' is invalid: $reason", path, cause)
 
 /** YAML syntax or document structure cannot be read, including constructs unsupported by the node reader. */
-public class MalformedYamlException(
+public class MalformedYamlException internal constructor(
     message: String,
     path: YamlPath,
-) : YamlException(message, path)
+    cause: Throwable?,
+) : YamlException(message, path, cause) {
+    public constructor(message: String, path: YamlPath) : this(message, path, null)
+}
 
 /** A YAML null was encountered where decoding required a non-null value. */
 public class UnexpectedNullValueException(

@@ -24,8 +24,12 @@ import it.krzeminski.snakeyaml.engine.kmp.api.LoadSettings
 import it.krzeminski.snakeyaml.engine.kmp.api.copy
 import it.krzeminski.snakeyaml.engine.kmp.events.Event
 import it.krzeminski.snakeyaml.engine.kmp.exceptions.MarkedYamlEngineException
+import it.krzeminski.snakeyaml.engine.kmp.exceptions.ReaderException
+import it.krzeminski.snakeyaml.engine.kmp.exceptions.YamlEngineException
+import it.krzeminski.snakeyaml.engine.kmp.exceptions.YamlVersionException
 import it.krzeminski.snakeyaml.engine.kmp.parser.ParserImpl
 import it.krzeminski.snakeyaml.engine.kmp.scanner.StreamReader
+import okio.IOException
 import okio.Source
 
 /**
@@ -94,8 +98,22 @@ internal class YamlParser(
     ): Event {
         try {
             return retrieve()
-        } catch (e: MarkedYamlEngineException) {
-            throw translateYamlEngineException(e, path)
+        } catch (e: YamlEngineException) {
+            // The engine wraps source I/O. Preserve its identity so callers can classify/retry it.
+            val sourceFailure = e.cause
+            if (sourceFailure is IOException) throw sourceFailure
+            throw if (e is MarkedYamlEngineException) {
+                translateYamlEngineException(e, path)
+            } else {
+                val message =
+                    when (e) {
+                        is ReaderException -> "Invalid YAML code point U+${e.codePoint.toString(16).uppercase().padStart(4, '0')} at code-point offset ${e.position}: ${e.message}"
+                        is YamlVersionException -> "Unsupported YAML version ${e.message}."
+                        else -> e.message ?: "YAML parsing failed."
+                    }
+                // Unmarked failures have no exact error mark; retain the last reader cursor.
+                MalformedYamlException(message, path.withError(Location(streamReader.line + 1, streamReader.column + 1)), e)
+            }
         }
     }
 
@@ -141,8 +159,9 @@ internal class YamlParser(
             }
 
         return MalformedYamlException(
-            message = updatedMessage.toString(),
+            message = updatedMessage.toString().ifEmpty { translateYamlEngineExceptionMessage(e.problem) },
             path = updatedPath,
+            cause = e,
         )
     }
 

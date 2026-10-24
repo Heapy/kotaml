@@ -152,6 +152,20 @@ with compatibility enabled, writes it back, and verifies that the strict reader
 can load the result. Parsing an untyped `YamlNode` does not infer numeric types for
 legacy numeric strings.
 
+### Parser failures and source I/O
+
+Invalid YAML, unsupported YAML versions and input-limit failures from the parser throw
+`MalformedYamlException`. Its `cause` retains the original engine exception. Marked failures
+carry the exact one-based line and column; unmarked failures carry the last reader cursor,
+which may precede the invalid content because of look-ahead. Invalid-character messages also
+include the available code-point offset and character code.
+
+`decodeFromSource` propagates a source `IOException` unchanged, including when the YAML engine
+wrapped it. Kotaml does not retry reads. If the source failure is retryable, the caller should
+retry decoding from a fresh source starting at the beginning; a failed parser cannot resume.
+Cancellation, fatal errors and unrelated source programming errors are not converted to YAML
+syntax errors.
+
 ## Referencing kotaml
 
 Add the following to your Gradle build script:
