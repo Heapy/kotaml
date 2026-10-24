@@ -72,6 +72,7 @@ internal class YamlOutput(
     private val emitter = Emitter(settings, writer)
     private var shouldReadTypeName = false
     private var currentTypeName: String? = null
+    private val propertyNames = mutableMapOf<SerialDescriptor, YamlPropertyNames>()
 
     init {
         emitter.emit(StreamStartEvent())
@@ -166,9 +167,7 @@ internal class YamlOutput(
         encodeComment(descriptor, index)
 
         if (descriptor.kind is StructureKind.CLASS) {
-            val elementName = descriptor.getElementName(index)
-            val serializedName = configuration.yamlNamingStrategy?.serialNameForYaml(elementName) ?: elementName
-            emitPropertyName(serializedName)
+            emitPropertyName(propertyNames.getValue(descriptor).names[index])
         }
 
         forcedSingleLineScalarStyle = descriptor.getAnnotation<YamlSingleLineStringStyle>(index)?.singleLineStringStyle
@@ -178,6 +177,10 @@ internal class YamlOutput(
     }
 
     override fun beginStructure(descriptor: SerialDescriptor): CompositeEncoder {
+        if (descriptor.kind == StructureKind.CLASS || descriptor.kind == StructureKind.OBJECT) {
+            propertyNames.getOrPut(descriptor) { YamlPropertyNames(descriptor, configuration.yamlNamingStrategy) }
+        }
+
         when (descriptor.kind) {
             is PolymorphicKind -> {
                 shouldReadTypeName = true

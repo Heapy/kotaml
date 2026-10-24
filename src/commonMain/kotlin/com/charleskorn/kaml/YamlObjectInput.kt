@@ -41,11 +41,7 @@ internal class YamlObjectInput(
 
     override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
         if (!::pairedPropertyNames.isInitialized) {
-            pairedPropertyNames =
-                (0 until descriptor.elementsCount).associateBy { index ->
-                    val elementName = descriptor.getElementName(index)
-                    configuration.yamlNamingStrategy?.serialNameForYaml(elementName) ?: elementName
-                }
+            pairedPropertyNames = YamlPropertyNames(descriptor, configuration.yamlNamingStrategy).indicesByName
         }
 
         while (true) {
@@ -96,6 +92,9 @@ internal class YamlObjectInput(
             return fromCurrentValue { beginStructure(descriptor) }
         }
 
+        if (!::pairedPropertyNames.isInitialized) {
+            pairedPropertyNames = YamlPropertyNames(descriptor, configuration.yamlNamingStrategy).indicesByName
+        }
         return super.beginStructure(descriptor)
     }
 }
