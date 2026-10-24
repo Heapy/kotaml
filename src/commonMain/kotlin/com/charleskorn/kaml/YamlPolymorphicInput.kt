@@ -32,6 +32,12 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.SerializersModuleCollector
 import kotlin.reflect.KClass
 
+/**
+ * Adapts a tag or discriminator property to polymorphic decoding.
+ *
+ * [contentNode] excludes the discriminator property, so the subtype sees only its own fields.
+ * Unknown subtype errors use [typeNamePath] to locate the discriminator.
+ */
 @OptIn(ExperimentalSerializationApi::class)
 internal class YamlPolymorphicInput(
     val typeName: String,
@@ -66,7 +72,7 @@ internal class YamlPolymorphicInput(
                     }
 
                     else -> {
-                        // Nothing to do here - contentDecoder is set in beginStructure() for non-scalar values.
+                        // Structured payloads need the subtype descriptor supplied later by beginStructure().
                     }
                 }
 
@@ -180,10 +186,6 @@ internal class YamlPolymorphicInput(
                     provider: (typeArgumentsSerializers: List<KSerializer<*>>) -> KSerializer<*>,
                 ) {}
 
-                // FIXME: ideally we'd be able to get the name as used by the SerialModule
-                // (eg. the values in 'polyBase2NamedSerializers' in SerialModuleImpl,
-                // but these aren't exposed.
-                // The serializer's descriptor's name seems to be the same value.
                 override fun <Base : Any, Sub : Base> polymorphic(
                     baseClass: KClass<Base>,
                     actualClass: KClass<Sub>,

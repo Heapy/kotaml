@@ -31,6 +31,14 @@ import kotlinx.serialization.descriptors.getContextualDescriptor
 import kotlinx.serialization.encoding.AbstractDecoder
 import kotlinx.serialization.modules.SerializersModule
 
+/**
+ * A YAML decoder exposing the node and format context to YAML-aware custom serializers.
+ *
+ * A custom serializer can cast its decoder to [YamlInput] to inspect [node], use [yaml] to decode
+ * a selected subtree, or call [getCurrentPath] to attach a position to an error.
+ *
+ * Instances belong to one decoding operation and must not be cached or reused.
+ */
 @OptIn(ExperimentalSerializationApi::class)
 public sealed class YamlInput(
     public val node: YamlNode,
@@ -263,13 +271,22 @@ public sealed class YamlInput(
     }
 
     private fun throwIfMissingRequiredPropertyException(e: SerializationException) {
+        // Recover the field name from the library's message to add a YAML path to the error.
+        // Recheck this pattern when upgrading kotlinx.serialization; unmatched exceptions pass through.
         val match = missingFieldExceptionMessage.matchEntire(e.message!!) ?: return
 
         throw MissingRequiredPropertyException(match.groupValues[1], node.path, e)
     }
 
+    /** Returns the source location of [getCurrentPath], for error reporting. */
     public abstract fun getCurrentLocation(): Location
 
+    /**
+     * Returns the position selected by this decoder, for error reporting.
+     *
+     * List and mapping decoders return the collection's path until an element is selected, then retain
+     * that item's, key's, or value's path. This does not track progress inside a nested decoder.
+     */
     public abstract fun getCurrentPath(): YamlPath
 }
 

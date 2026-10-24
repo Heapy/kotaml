@@ -23,6 +23,10 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.modules.SerializersModule
 
+/**
+ * Presents a YAML null to nullable serializers. Requests for non-null values or structures throw
+ * [UnexpectedNullValueException] at the null node's path.
+ */
 internal class YamlNullInput(
     val nullValue: YamlNull,
     yaml: Yaml,

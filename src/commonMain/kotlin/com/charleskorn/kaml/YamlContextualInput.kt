@@ -23,6 +23,12 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.modules.SerializersModule
 
+/**
+ * Defers decoder selection for contextual or content-based serializers.
+ *
+ * Structured reads must use the decoder returned by [beginStructure] with a concrete descriptor;
+ * this placeholder cannot traverse elements itself.
+ */
 internal class YamlContextualInput(
     node: YamlNode,
     yaml: Yaml,

@@ -27,7 +27,7 @@ jobs:
       - name: Set up Kotlin scripting
         uses: Heapy/setup-main-kts@b0858237748f325b825e752bbac2ec2eb1fb9419 # v1.0.1
         with:
-          kotlin-version: '2.4.20'
+          kotlin-version: '2.4.21'
           java-version: '25'
       - name: Check action pins
         run: kotlinr .github/scripts/check-action-pins.main.kts
@@ -55,7 +55,7 @@ jobs:
         uses: gradle/actions/wrapper-validation@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
 
       - name: Set up JDK
-        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           java-version: 25
           distribution: temurin

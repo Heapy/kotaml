@@ -22,27 +22,28 @@ package com.charleskorn.kaml
 import kotlinx.serialization.ExperimentalSerializationApi
 
 /**
- * Configuration options for parsing YAML to objects and serialising objects to YAML.
+ * Controls YAML reading and writing for a [Yaml] instance.
  *
- * * [encodeDefaults]: set to `false` to not write default property values to YAML (defaults to `true`)
- * * [strictMode]: set to true to throw an exception when reading an object that has an unknown property, or false to ignore unknown properties (defaults to `true`)
- * * [extensionDefinitionPrefix]: prefix used on root-level keys (where document root is an object) to define extensions that can later be merged (defaults to `null`, which disables extensions altogether). See https://batect.dev/docs/reference/config#anchors-aliases-extensions-and-merging for example.
- * * [polymorphismStyle]: how to read or write the type of a polymorphic object:
- *    * [PolymorphismStyle.Tag]: use a YAML tag (eg. `!<typeOfThing> { property: value }`)
- *    * [PolymorphismStyle.Property]: use a property (eg. `{ type: typeOfThing, property: value }`)
- * * [polymorphismPropertyName]: property name to use when [polymorphismStyle] is [PolymorphismStyle.Property]
- * * [encodingIndentationSize]: number of spaces to use as indentation when encoding objects as YAML
- * * [breakScalarsAt]: maximum length of scalars when encoding objects as YAML (scalars exceeding this length will be split into multiple lines)
- * * [sequenceStyle]: how sequences (aka lists and arrays) should be formatted. See [SequenceStyle] for an example of each
- * * [singleLineStringStyle]: the style in which single-line String values, Char values and enum names are written. Can be overruled for a specific field with the [YamlSingleLineStringStyle] annotation.
- * * [multiLineStringStyle]: the style in which a multi line String value is written. Can be overruled for a specific field with the [YamlMultiLineStringStyle] annotation.
- * * [ambiguousQuoteStyle]: how strings should be escaped when [singleLineStringStyle] is [SingleLineStringStyle.PlainExceptAmbiguous] and the value is ambiguous
- * * [sequenceBlockIndent]: number of spaces to use as indentation for sequences, if [sequenceStyle] set to [SequenceStyle.Block]
- * * [anchorsAndAliases]: set to [AnchorsAndAliases.Permitted] to allow anchors and aliases when decoding YAML (defaults to [AnchorsAndAliases.Forbidden])
- * * [yamlNamingStrategy]: The system that converts the field names in to the names used in the Yaml.
- * * [codePointLimit]: the maximum amount of code points allowed in the input YAML document (defaults to 3 MB)
- * * [decodeEnumCaseInsensitive]: set to true to allow case-insensitive decoding of enums (defaults to `false`)
- * * [readCompatibility]: temporary migration support for a quick upgrade to 0.111.0; legacy mode will be removed in a future release (defaults to [YamlReadCompatibility.Strict])
+ * @param encodeDefaults whether to write properties equal to their declared defaults.
+ * @param strictMode whether unknown object properties cause an error or are ignored.
+ * @param extensionDefinitionPrefix root mapping keys with this prefix define extensions: their values
+ * must have anchors and are omitted from the decoded mapping. `null` disables extensions.
+ * @param polymorphismStyle how subtype discriminators are represented; see [PolymorphismStyle].
+ * @param polymorphismPropertyName discriminator key used by [PolymorphismStyle.Property].
+ * @param encodingIndentationSize indentation width in spaces.
+ * @param breakScalarsAt preferred line width for encoded scalars.
+ * @param sequenceStyle sequence layout; see [SequenceStyle] for examples.
+ * @param singleLineStringStyle default style for strings, characters, and enum names; overridable
+ * with [YamlSingleLineStringStyle].
+ * @param multiLineStringStyle default style for strings containing line breaks; overridable
+ * with [YamlMultiLineStringStyle].
+ * @param ambiguousQuoteStyle quotes used by [SingleLineStringStyle.PlainExceptAmbiguous] and for null-like strings.
+ * @param sequenceBlockIndent indentation of sequence indicators in block layout, in spaces.
+ * @param anchorsAndAliases whether anchors and aliases are accepted, and the alias expansion limit.
+ * @param yamlNamingStrategy transforms object property names for both reading and writing; `null` leaves them unchanged.
+ * @param codePointLimit maximum input size in Unicode code points; `null` uses the parser's default limit.
+ * @param decodeEnumCaseInsensitive whether to try case-insensitive enum matching after an exact match fails.
+ * @param readCompatibility scalar migration policy; see [YamlReadCompatibility].
  */
 @OptIn(ExperimentalVersionOverloading::class)
 public data class YamlConfiguration(
@@ -67,12 +68,20 @@ public data class YamlConfiguration(
     internal val readCompatibility: YamlReadCompatibility = YamlReadCompatibility.Strict,
 )
 
+/**
+ * Controls how ordinary polymorphic serializers represent a subtype discriminator in YAML.
+ *
+ * [Tag] attaches a YAML type tag; [Property] uses the configured discriminator property in a mapping.
+ * [None] omits the discriminator when writing polymorphic mappings, so reading them back requires a
+ * concrete serializer or content-based selection with [YamlContentPolymorphicSerializer].
+ */
 public enum class PolymorphismStyle {
     Tag,
     Property,
     None,
 }
 
+/** Chooses block or flow layout for encoded sequences; either layout is accepted when reading. */
 public enum class SequenceStyle {
     /**
      * The block form, eg
@@ -93,6 +102,12 @@ public enum class SequenceStyle {
     Flow,
 }
 
+/**
+ * Selects the output style for strings containing line breaks.
+ *
+ * [Literal] and [Folded] request block scalars (`|` and `>`). [YamlMultiLineStringStyle] overrides
+ * this default per property. The emitter may adjust the style to represent the content safely.
+ */
 public enum class MultiLineStringStyle {
     Literal,
     Folded,
@@ -101,6 +116,12 @@ public enum class MultiLineStringStyle {
     Plain,
 }
 
+/**
+ * Selects output quoting for single-line strings, characters, and enum names.
+ *
+ * [YamlSingleLineStringStyle] overrides this default per property. Plain styles may still require
+ * quotes to preserve the value; see [Plain] and [PlainExceptAmbiguous].
+ */
 public enum class SingleLineStringStyle {
     DoubleQuoted,
     SingleQuoted,
@@ -109,11 +130,8 @@ public enum class SingleLineStringStyle {
     Plain,
 
     /**
-     * This is the same as [SingleLineStringStyle.Plain], except strings that could be misinterpreted as other types
-     * will be quoted with the escape style defined in [AmbiguousQuoteStyle].
-     *
-     * For example, the strings "True", "0xAB", "1" and "1.2" would all be quoted,
-     * while "1.2.3" and "abc" would not be quoted.
+     * Quotes strings that could resolve to another type, using [AmbiguousQuoteStyle].
+     * For example, `True`, `0xAB`, and `1.2` are quoted; `1.2.3` and `abc` remain plain.
      */
     PlainExceptAmbiguous,
     ;
@@ -128,20 +146,36 @@ public enum class SingleLineStringStyle {
             }
 }
 
+/**
+ * Chooses quotes for strings that cannot safely use a requested plain style.
+ *
+ * This applies to null-like text under either plain single-line style, and to other ambiguous
+ * values under [SingleLineStringStyle.PlainExceptAmbiguous].
+ */
 public enum class AmbiguousQuoteStyle {
     DoubleQuoted,
     SingleQuoted,
 }
 
+/**
+ * Controls anchor acceptance and alias expansion while reading YAML.
+ *
+ * Aliases are expanded into node content; this policy does not enable writing anchors or aliases.
+ */
 public sealed class AnchorsAndAliases {
     internal abstract val maxAliasCount: UInt?
 
+    /** Rejects both anchor definitions and alias references while reading. */
     public data object Forbidden : AnchorsAndAliases() {
         override val maxAliasCount: UInt = 0u
     }
 
     /**
-     * [maxAliasCount]: the maximum amount of aliases allowed in the input YAML document if allowed at all, `null` allows any amount (defaults to `100`)
+     * Allows anchors and aliases within a per-document expansion budget.
+     *
+     * @param maxAliasCount maximum accumulated alias weight, defaulting to 100. An alias contributes
+     * one plus the weight of aliases within its referenced value, so nested reuse can cost more than
+     * the number of alias tokens. `null` removes the limit; zero rejects anchors and aliases entirely.
      */
     public data class Permitted(
         override val maxAliasCount: UInt? = 100u,

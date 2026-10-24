@@ -19,12 +19,22 @@
 
 package com.charleskorn.kaml
 
+/**
+ * Transforms serialized object property names into the keys used in YAML mappings.
+ *
+ * The strategy receives names from the serialization descriptor, including explicit `@SerialName`
+ * overrides. The same transformation is applied when writing properties and matching keys while
+ * reading; it does not transform arbitrary map keys or enum values.
+ *
+ * Implementations should return a stable result for each input and preserve distinct names within
+ * an object, so that properties can be decoded unambiguously. Configure it through [YamlConfiguration].
+ */
 public fun interface YamlNamingStrategy {
     public fun serialNameForYaml(serialName: String): String
 
     public companion object Builtins {
         /**
-         * A [YamlNamingStrategy] that converts property names to snake_case (lowercase words separated by underscores).
+         * Converts property names to snake_case, treating acronyms as words: `HTTPServer` becomes `http_server`.
          */
         public val SnakeCase: YamlNamingStrategy =
             object : YamlNamingStrategy {
@@ -34,7 +44,7 @@ public fun interface YamlNamingStrategy {
             }
 
         /**
-         * A [YamlNamingStrategy] that converts property names to kebab-case (lowercase words separated by dashes).
+         * Converts property names to kebab-case, treating acronyms as words: `HTTPServer` becomes `http-server`.
          */
         public val KebabCase: YamlNamingStrategy =
             object : YamlNamingStrategy {
@@ -44,7 +54,8 @@ public fun interface YamlNamingStrategy {
             }
 
         /**
-         * A [YamlNamingStrategy] that converts property names to PascalCase (capitalized words concatenated together).
+         * Capitalizes words separated by characters outside `A-Z`, `a-z`, and `0-9`.
+         * For example, `http_server` becomes `HttpServer`; existing capitalization within words is retained.
          */
         public val PascalCase: YamlNamingStrategy =
             object : YamlNamingStrategy {
@@ -56,9 +67,7 @@ public fun interface YamlNamingStrategy {
                 override fun toString(): String = "com.charleskorn.kaml.YamlNamingStrategy.PascalCase"
             }
 
-        /**
-         * A [YamlNamingStrategy] that converts property names to camelCase (like [PascalCase] but with the first letter lowercase).
-         */
+        /** Applies [PascalCase], then lowercases the first letter: `http_server` becomes `httpServer`. */
         public val CamelCase: YamlNamingStrategy =
             object : YamlNamingStrategy {
                 override fun serialNameForYaml(serialName: String): String =

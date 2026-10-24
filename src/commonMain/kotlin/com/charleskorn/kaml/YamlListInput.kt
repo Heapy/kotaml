@@ -25,6 +25,7 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.modules.SerializersModule
 
+/** Traverses one YAML sequence, retaining each item's path for decoding errors. */
 @OptIn(ExperimentalSerializationApi::class)
 internal class YamlListInput(
     val list: YamlList,

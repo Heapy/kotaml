@@ -47,6 +47,12 @@ import kotlinx.serialization.encoding.AbstractEncoder
 import kotlinx.serialization.encoding.CompositeEncoder
 import kotlinx.serialization.modules.SerializersModule
 
+/**
+ * Encodes one YAML document, applying formatting, property annotations, and polymorphic type policies.
+ *
+ * Use one instance per document and call [close] after encoding the root to finish the output.
+ * The caller retains ownership of the writer.
+ */
 @OptIn(ExperimentalSerializationApi::class, ExperimentalStdlibApi::class)
 internal class YamlOutput(
     writer: StreamDataWriter,
@@ -57,13 +63,9 @@ internal class YamlOutput(
     private val settings =
         DumpSettings(
             dumpComments = true,
-            // SnakeYAML validates that this value must be at least 1
             indent = configuration.encodingIndentationSize,
-            // SnakeYAML helps to validate that this value must be non-negative
             indicatorIndent = configuration.sequenceBlockIndent,
-            // No special reason why true is conditional. Designed to be consistent with 0.46.0 of kaml
             indentWithIndicator = configuration.sequenceBlockIndent > 0,
-            // Unclear if this value is validated
             width = configuration.breakScalarsAt,
         )
 
@@ -144,7 +146,7 @@ internal class YamlOutput(
 
     private fun emitPropertyName(value: String) = if (value.isNullLiteral() || value == "<<") emitQuotedScalar(value, ScalarStyle.DOUBLE_QUOTED) else emitPlainScalar(value)
 
-    /** Writes [value] unchanged, for text that already is the scalar the document should carry. */
+    /** Emits already-classified scalar text without conversion or configured string quoting. */
     internal fun encodeVerbatimScalar(value: String) = emitPlainScalar(value)
 
     private fun emitQuotedScalar(
@@ -169,7 +171,6 @@ internal class YamlOutput(
             emitPropertyName(serializedName)
         }
 
-        // If this field was annotated we overrule the used ScalarStyle with the annotation
         forcedSingleLineScalarStyle = descriptor.getAnnotation<YamlSingleLineStringStyle>(index)?.singleLineStringStyle
         forcedMultiLineScalarStyle = descriptor.getAnnotation<YamlMultiLineStringStyle>(index)?.multiLineStringStyle
 
@@ -211,7 +212,6 @@ internal class YamlOutput(
             }
 
             else -> {
-                // Nothing to do.
             }
         }
 
@@ -229,7 +229,6 @@ internal class YamlOutput(
             }
 
             else -> {
-                // Nothing to do.
             }
         }
     }
