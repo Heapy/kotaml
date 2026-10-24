@@ -184,7 +184,13 @@ internal class YamlOutput(
             }
 
             StructureKind.LIST -> {
-                emitter.emit(SequenceStartEvent(null, null, true, configuration.sequenceStyle.flowStyle))
+                val tag = getAndClearTypeName()
+                if (tag != null && configuration.polymorphismStyle != PolymorphismStyle.Tag) {
+                    throw IllegalStateException(
+                        "Cannot serialize a polymorphic value that is not a YAML object when using ${PolymorphismStyle::class.simpleName}.${configuration.polymorphismStyle}.",
+                    )
+                }
+                emitter.emit(SequenceStartEvent(null, tag, tag == null, configuration.sequenceStyle.flowStyle))
             }
 
             StructureKind.MAP, StructureKind.CLASS, StructureKind.OBJECT -> {
