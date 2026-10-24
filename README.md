@@ -84,6 +84,24 @@ source text, including `007`, `0x7`, `1E+003` and `True`. This preserves numeric
 precision and distinct mapping keys. String quoting and document formatting follow
 the writer configuration.
 
+Quoted scalars (`plain = false`) pass their original content to the string encoder,
+without numeric conversion. The default, `SingleQuoted`, `DoubleQuoted` and
+`PlainExceptAmbiguous` styles preserve the string meaning of text such as `0012`,
+`0x10`, `true` and `.nan`. `PlainExceptAmbiguous` may remove quotes from ordinary
+text. Property-level `@YamlSingleLineStringStyle` overrides the global style.
+
+```kotlin
+val node = Yaml.default.parseToYamlNode("\"0012\"")
+val safe = Yaml.default.encodeToString(YamlNode.serializer(), node) // "0012" followed by a newline
+val plainWriter = Yaml(configuration = YamlConfiguration(singleLineStringStyle = SingleLineStringStyle.Plain))
+val plain = plainWriter.encodeToString(YamlNode.serializer(), node) // 0012 followed by a newline
+```
+
+Both outputs retain all four characters of the content. Parsing `safe` preserves
+string semantics; parsing `plain` produces a plain scalar that resolves as an
+integer under the Core Schema. Selecting `Plain` explicitly allows this semantic
+change: `plain = false` does not require the writer to preserve source quotes.
+
 ### Temporary reader compatibility when upgrading to 0.111.0
 
 `LegacyV0_110` is intended **only for a quick upgrade to 0.111.0** and **will be removed

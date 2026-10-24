@@ -76,8 +76,12 @@ public data class YamlScalar(
      * Whether node encoding may implicitly resolve the text as a YAML scalar type.
      *
      * `false` routes the content through the string encoder. Parsing quoted scalars or explicit string
-     * tags sets this to `false`. The original quoting is not retained; [SingleLineStringStyle] controls
-     * output style.
+     * tags sets this to `false`. The original quoting is not retained; [SingleLineStringStyle] and
+     * property-level [YamlSingleLineStringStyle] overrides control output style.
+     * For example, non-plain `0012` keeps its text: the default writer quotes it, while
+     * [SingleLineStringStyle.Plain] emits `0012` without quotes, allowing numeric resolution
+     * on the next parse. [SingleLineStringStyle.PlainExceptAmbiguous] quotes ambiguous strings
+     * but may leave ordinary text plain.
      */
     val plain: Boolean = true,
 ) : YamlNode(path) {
