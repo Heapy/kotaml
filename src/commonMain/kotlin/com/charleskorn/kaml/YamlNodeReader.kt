@@ -294,7 +294,7 @@ internal class YamlNodeReader(
         path: YamlPath,
     ): WeightedNode {
         if (maxAliasCount == 0u) {
-            throw ForbiddenAnchorOrAliasException("Parsing anchors and aliases is disabled.", path)
+            throw ForbiddenAnchorOrAliasException("Parsing anchors and aliases is disabled. $ALIAS_LITERAL_HINT", path)
         }
 
         val anchor = event.alias

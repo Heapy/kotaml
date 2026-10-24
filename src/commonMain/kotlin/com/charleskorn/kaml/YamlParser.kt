@@ -25,6 +25,7 @@ import it.krzeminski.snakeyaml.engine.kmp.api.copy
 import it.krzeminski.snakeyaml.engine.kmp.events.Event
 import it.krzeminski.snakeyaml.engine.kmp.exceptions.MarkedYamlEngineException
 import it.krzeminski.snakeyaml.engine.kmp.exceptions.ReaderException
+import it.krzeminski.snakeyaml.engine.kmp.exceptions.ScannerException
 import it.krzeminski.snakeyaml.engine.kmp.exceptions.YamlEngineException
 import it.krzeminski.snakeyaml.engine.kmp.exceptions.YamlVersionException
 import it.krzeminski.snakeyaml.engine.kmp.parser.ParserImpl
@@ -149,6 +150,14 @@ internal class YamlParser(
                     |$snippet
                 """.trimMargin(),
             )
+        }
+
+        // Confirm both the scanner operation and the source indicator: the generic
+        // "unexpected character" message alone also occurs for unrelated syntax.
+        if (e is ScannerException && e.problem == "while scanning an alias" &&
+            problemMark?.codepoints?.getOrNull(problemMark.pointer) == '*'.code
+        ) {
+            updatedMessage.append("\n$ALIAS_LITERAL_HINT")
         }
 
         val updatedPath =

@@ -425,7 +425,7 @@ class YamlNodeReaderTest :
                             }
 
                         exception.asClue {
-                            it.message shouldBe "Unknown anchor 'thing'."
+                            it.message shouldBe "Unknown anchor 'thing'. $ALIAS_LITERAL_HINT"
                             it.line shouldBe 2
                             it.column shouldBe 3
                             it.path shouldBe YamlPath.root.withListEntry(1, Location(2, 3)).withError(Location(2, 3))
@@ -442,7 +442,7 @@ class YamlNodeReaderTest :
                             }
 
                         exception.asClue {
-                            it.message shouldBe "Parsing anchors and aliases is disabled."
+                            it.message shouldBe "Parsing anchors and aliases is disabled. $ALIAS_LITERAL_HINT"
                             it.line shouldBe 2
                             it.column shouldBe 3
                         }

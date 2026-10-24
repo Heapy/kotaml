@@ -82,9 +82,13 @@ public class MalformedYamlException internal constructor(
 }
 
 /** A YAML null was encountered where decoding required a non-null value. */
-public class UnexpectedNullValueException(
+public class UnexpectedNullValueException internal constructor(
     path: YamlPath,
-) : YamlException("Unexpected null or empty value for non-null field.", path)
+    message: String,
+    cause: Throwable?,
+) : YamlException(message, path, cause) {
+    public constructor(path: YamlPath) : this(path, "Unexpected null or empty value for non-null field.", null)
+}
 
 /** A required [propertyName] is absent; [path] identifies the containing value rather than a missing token. */
 public class MissingRequiredPropertyException(
@@ -139,7 +143,7 @@ public class MissingTypeTagException(
 public class UnknownAnchorException(
     public val anchorName: String,
     path: YamlPath,
-) : YamlException("Unknown anchor '$anchorName'.", path)
+) : YamlException("Unknown anchor '$anchorName'. $ALIAS_LITERAL_HINT", path)
 
 /** A root mapping [key] matches [extensionDefinitionPrefix] but its value does not define an anchor. */
 public class NoAnchorForExtensionException(
@@ -156,3 +160,5 @@ public class ForbiddenAnchorOrAliasException(
     message: String,
     path: YamlPath,
 ) : YamlException(message, path)
+
+internal const val ALIAS_LITERAL_HINT = "In YAML, '*' starts an alias. If you meant literal text, put it in quotes."

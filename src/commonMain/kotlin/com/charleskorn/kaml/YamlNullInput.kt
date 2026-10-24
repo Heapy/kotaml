@@ -32,8 +32,22 @@ internal class YamlNullInput(
     yaml: Yaml,
     context: SerializersModule,
     configuration: YamlConfiguration,
+    private val tag: String? = null,
 ) : YamlInput(nullValue, yaml, context, configuration) {
     override fun decodeNotNullMark(): Boolean = false
+
+    override fun decodeString(): String {
+        try {
+            return super.decodeString()
+        } catch (e: UnexpectedNullValueException) {
+            if (tag == null) throw e
+            throw UnexpectedNullValueException(
+                e.path,
+                "${e.message} YAML tag '$tag' applies to this null value. If you meant literal text, put it in quotes.",
+                e,
+            )
+        }
+    }
 
     override fun decodeValue(): Any = throw UnexpectedNullValueException(nullValue.path)
 

@@ -166,6 +166,13 @@ retry decoding from a fresh source starting at the beginning; a failed parser ca
 Cancellation, fatal errors and unrelated source programming errors are not converted to YAML
 syntax errors.
 
+YAML interprets an initial `*` as an alias reference and `!` as a tag. Quote literal
+patterns and names such as `"*.html"`, `"*.png"` and `"!.git"`. Diagnostics suggest
+quoting when the scanner confirms an alias, or an alias is undefined or disabled.
+A bare `!.git` tags an empty/null value: decoding it as non-null `String` reports
+the tag and preserves the original null failure as its cause. It still decodes as
+null for `String?`; supported tags and polymorphic dispatch keep their meaning.
+
 ## Referencing kotaml
 
 Add the following to your Gradle build script:

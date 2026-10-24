@@ -197,6 +197,10 @@ public sealed class YamlInput(
                             YamlPolymorphicInput(node.tag, node.path, node.innerNode, yaml, context, configuration)
                         }
 
+                        descriptor.kind == PrimitiveKind.STRING && node.innerNode is YamlNull -> {
+                            YamlNullInput(node.innerNode, yaml, context, configuration, tag = node.tag)
+                        }
+
                         else -> {
                             createFor(node.innerNode, yaml, context, configuration, descriptor)
                         }
