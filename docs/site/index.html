@@ -35,6 +35,7 @@
         <p class="nav-label second-label">REFERENCE</p>
         <a href="#features">YAML features</a>
         <a href="#errors">Errors &amp; I/O</a>
+        <a href="#nesting">Nesting depth</a>
         <a href="#migration">Migration</a>
         <p class="nav-label second-label">UNDER THE HOOD</p>
         <a href="#architecture">Architecture</a>
@@ -438,6 +439,14 @@ servers:
 <p>YAML interprets an initial <code>*</code> as an alias reference and <code>!</code> as a tag. Quote literal patterns and names such as <code>"*.html"</code>, <code>"*.png"</code> and <code>"!.git"</code>. Diagnostics suggest quoting when the scanner confirms an alias, or an alias is undefined or disabled. A bare <code>!.git</code> tags an empty/null value: decoding it as non-null <code>String</code> reports the tag and preserves the original null failure as its cause. It still decodes as null for <code>String?</code>; supported tags and polymorphic dispatch keep their meaning.</p>
 
 </section>
+
+      <section id="nesting" class="section reference-section" aria-labelledby="nesting-title">
+        <h2 id="nesting-title">Nesting depth</h2>
+        <p class="small-note">Available on main for the next release; not included in 0.112.0.</p>
+        <p><code>YamlConfiguration(maxNestingDepth = 50)</code> limits the number of nested mappings and sequences while reading. The root collection counts as one; scalars and null add no depth. Empty collections count, and aliases are checked using their expanded depth before copying nodes. Collections in merge syntax count before merges are applied.</p>
+        <p>Excess depth throws <code>MalformedYamlException</code> at the first offending collection or alias, with its path and location. The default is 50; zero permits only scalar/null documents, and negative limits are invalid. Raising the limit requires more runtime stack and should be reserved for trusted inputs.</p>
+        <p class="small-note">The common regression suite includes depth-10,000 documents. To run it with a 256 KiB JVM thread stack: <code>./gradlew -I scripts/nesting-depth-small-stack.init.gradle :jvmTest --tests com.charleskorn.kaml.YamlNestingDepthTest</code>.</p>
+      </section>
 
       <section id="migration" class="section reference-section" aria-labelledby="migration-title">
 <h2 id="migration-title">Migrating from 0.110</h2>

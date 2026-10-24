@@ -22,6 +22,7 @@ package com.charleskorn.kaml
 import com.charleskorn.kaml.internal.isNullLiteral
 import it.krzeminski.snakeyaml.engine.kmp.common.Anchor
 import it.krzeminski.snakeyaml.engine.kmp.events.AliasEvent
+import it.krzeminski.snakeyaml.engine.kmp.events.CollectionStartEvent
 import it.krzeminski.snakeyaml.engine.kmp.events.Event
 import it.krzeminski.snakeyaml.engine.kmp.events.MappingStartEvent
 import it.krzeminski.snakeyaml.engine.kmp.events.NodeEvent
@@ -42,9 +43,11 @@ internal class YamlNodeReader(
     private val extensionDefinitionPrefix: String? = null,
     private val maxAliasCount: UInt? = 0u,
     private val readCompatibility: YamlReadCompatibility = YamlReadCompatibility.Strict,
+    private val maxNestingDepth: Int = 50,
 ) {
     private val aliases = mutableMapOf<Anchor, WeightedNode>()
     private var aliasCount = 0u
+    private var nestingDepth = 0
 
     fun read(): YamlNode = readNode(YamlPath.root).node
 
@@ -53,7 +56,8 @@ internal class YamlNodeReader(
     private fun readNodeAndAnchor(path: YamlPath): Pair<WeightedNode, Anchor?> {
         val event = parser.consumeEvent(path)
         validateCollectionTag(event, path)
-        val (node, weight) = readFromEvent(event, path)
+        val result = readFromEvent(event, path)
+        val (node, weight, depth) = result
 
         if (event is NodeEvent) {
             if (event !is AliasEvent) {
@@ -63,14 +67,14 @@ internal class YamlNodeReader(
                     }
 
                     val anchor = node.withPath(YamlPath.forAliasDefinition(it.value, event.location))
-                    aliases[it] = WeightedNode(anchor, weight)
+                    aliases[it] = WeightedNode(anchor, weight, depth)
                 }
             }
 
-            return WeightedNode(node, weight) to event.anchor
+            return result to event.anchor
         }
 
-        return WeightedNode(node, weight = 0u) to null
+        return result to null
     }
 
     private fun readFromEvent(
@@ -79,8 +83,8 @@ internal class YamlNodeReader(
     ): WeightedNode =
         when (event) {
             is ScalarEvent -> WeightedNode(readScalarOrNull(event, path).maybeToTaggedNode(event.tag), weight = 0u)
-            is SequenceStartEvent -> readSequence(path).let { it.copy(node = it.node.maybeToTaggedNode(event.tag)) }
-            is MappingStartEvent -> readMapping(path).let { it.copy(node = it.node.maybeToTaggedNode(event.tag)) }
+            is SequenceStartEvent -> readCollection(event, path) { readSequence(path) }
+            is MappingStartEvent -> readCollection(event, path) { readMapping(path) }
             is AliasEvent -> readAlias(event, path)
             else -> throw MalformedYamlException("Unexpected ${event.eventId}", path.withError(event.location))
         }
@@ -104,6 +108,30 @@ internal class YamlNodeReader(
             }
         val shortTag = "!!" + tag.substringAfterLast(':')
         throw MalformedYamlException("Tag '$shortTag' requires a $requiredKind value.", path.withError(event.location))
+    }
+
+    private inline fun readCollection(
+        event: CollectionStartEvent,
+        path: YamlPath,
+        read: () -> WeightedNode,
+    ): WeightedNode {
+        checkDepth(1, path, event)
+        nestingDepth++
+        try {
+            return read().let { it.copy(node = it.node.maybeToTaggedNode(event.tag)) }
+        } finally {
+            nestingDepth--
+        }
+    }
+
+    private fun checkDepth(
+        additionalDepth: Int,
+        path: YamlPath,
+        event: Event,
+    ) {
+        if (additionalDepth > maxNestingDepth - nestingDepth) {
+            throw MalformedYamlException("Maximum YAML nesting depth of $maxNestingDepth exceeded.", path.withError(event.location))
+        }
     }
 
     private fun readScalarOrNull(
@@ -130,6 +158,7 @@ internal class YamlNodeReader(
     private fun readSequence(path: YamlPath): WeightedNode {
         val items = mutableListOf<YamlNode>()
         var sequenceWeight = 0u
+        var depth = 1
 
         while (true) {
             val event = parser.peekEvent(path)
@@ -137,11 +166,12 @@ internal class YamlNodeReader(
             when (event.eventId) {
                 Event.ID.SequenceEnd -> {
                     parser.consumeEventOfType(Event.ID.SequenceEnd, path)
-                    return WeightedNode(YamlList(items, path), sequenceWeight)
+                    return WeightedNode(YamlList(items, path), sequenceWeight, depth)
                 }
 
                 else -> {
-                    val (node, weight) = readNode(path.withListEntry(items.size, event.location))
+                    val (node, weight, childDepth) = readNode(path.withListEntry(items.size, event.location))
+                    depth = maxOf(depth, childDepth + 1)
                     sequenceWeight += weight
                     items += node
                 }
@@ -152,6 +182,7 @@ internal class YamlNodeReader(
     private fun readMapping(path: YamlPath): WeightedNode {
         val items = mutableMapOf<YamlScalar, YamlNode>()
         var mapWeight = 0u
+        var depth = 1
 
         while (true) {
             val event = parser.peekEvent(path)
@@ -159,7 +190,7 @@ internal class YamlNodeReader(
             when (event.eventId) {
                 Event.ID.MappingEnd -> {
                     parser.consumeEventOfType(Event.ID.MappingEnd, path)
-                    return WeightedNode(YamlMap(doMerges(items), path), mapWeight)
+                    return WeightedNode(YamlMap(doMerges(items), path), mapWeight, depth)
                 }
 
                 else -> {
@@ -172,6 +203,7 @@ internal class YamlNodeReader(
                     val valuePath = if (isMerge(keyNode)) path.withMerge(valueLocation) else keyNode.path.withMapElementValue(valueLocation)
                     val (weightedNode, anchor) = readNodeAndAnchor(valuePath)
                     mapWeight += weightedNode.weight
+                    depth = maxOf(depth, weightedNode.depth + 1)
 
                     if (path == YamlPath.root && extensionDefinitionPrefix != null && key.startsWith(extensionDefinitionPrefix)) {
                         if (anchor == null) {
@@ -322,11 +354,12 @@ internal class YamlNodeReader(
 
         val anchor = event.alias
 
-        val (resolvedNode, resolvedNodeWeight) =
+        val (resolvedNode, resolvedNodeWeight, resolvedDepth) =
             aliases.getOrElse(anchor) {
                 throw UnknownAnchorException(anchor.value, path.withError(event.location))
             }
 
+        checkDepth(resolvedDepth, path, event)
         val resultWeight = resolvedNodeWeight + 1u
         aliasCount += resultWeight
 
@@ -345,6 +378,7 @@ internal class YamlNodeReader(
                         .withAliasDefinition(anchor.value, resolvedNode.location),
                 ),
             weight = resultWeight,
+            depth = resolvedDepth,
         )
     }
 
@@ -358,6 +392,7 @@ internal class YamlNodeReader(
 private data class WeightedNode(
     val node: YamlNode,
     val weight: UInt,
+    val depth: Int = 0,
 )
 
 private val LEGACY_NULL_STRINGS = setOf("Null", "NULL")

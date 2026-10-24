@@ -44,6 +44,8 @@ import kotlinx.serialization.ExperimentalSerializationApi
  * @param codePointLimit maximum input size in Unicode code points; `null` uses the parser's default limit.
  * @param decodeEnumCaseInsensitive whether to try case-insensitive enum matching after an exact match fails.
  * @param readCompatibility scalar migration policy; see [YamlReadCompatibility].
+ * @param maxNestingDepth maximum nested mappings/sequences while reading, including alias expansion and merge syntax.
+ * Defaults to 50; zero permits only scalar/null documents. Raising it requires more runtime stack.
  */
 @OptIn(ExperimentalVersionOverloading::class)
 public data class YamlConfiguration(
@@ -66,7 +68,13 @@ public data class YamlConfiguration(
     internal val decodeEnumCaseInsensitive: Boolean = false,
     @IntroducedAt("0.111.0")
     internal val readCompatibility: YamlReadCompatibility = YamlReadCompatibility.Strict,
-)
+    @IntroducedAt("0.113.0")
+    internal val maxNestingDepth: Int = 50,
+) {
+    init {
+        require(maxNestingDepth >= 0) { "maxNestingDepth must not be negative." }
+    }
+}
 
 /**
  * Controls how ordinary polymorphic serializers represent a subtype discriminator in YAML.

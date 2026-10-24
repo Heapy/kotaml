@@ -1,0 +1,6 @@
+// Use with: ./gradlew -I scripts/nesting-depth-small-stack.init.gradle jvmTest --tests com.charleskorn.kaml.YamlNestingDepthTest
+gradle.beforeProject { project ->
+    project.tasks.withType(org.gradle.api.tasks.testing.Test).configureEach {
+        jvmArgs '-Xss256k'
+    }
+}
