@@ -44,6 +44,7 @@ internal class YamlParser(
     private val loadSettings =
         LoadSettings(
             label = dummyFileName,
+            useMarks = true,
         ).copy {
             if (codePointLimit != null) this.codePointLimit = codePointLimit
         }
@@ -76,9 +77,13 @@ internal class YamlParser(
         val event = consumeEvent(path)
 
         if (event.eventId != type) {
+            val startMark =
+                checkNotNull(event.startMark) {
+                    "SnakeYAML event ${event.eventId} has no start mark despite useMarks = true"
+                }
             throw MalformedYamlException(
                 "Unexpected ${event.eventId}, expected $type",
-                path.withError(Location(event.startMark!!.line, event.startMark!!.column)),
+                path.withError(Location(startMark.line + 1, startMark.column + 1)),
             )
         }
     }
