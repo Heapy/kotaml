@@ -24,6 +24,10 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.modules.SerializersModule
 
+/**
+ * Decodes scalar text with the configured numeric compatibility and enum case policies.
+ * Exact enum names take precedence over case-insensitive matches.
+ */
 @OptIn(ExperimentalSerializationApi::class)
 internal class YamlScalarInput(
     val scalar: YamlScalar,

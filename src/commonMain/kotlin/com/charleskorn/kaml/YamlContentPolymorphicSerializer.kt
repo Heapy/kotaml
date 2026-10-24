@@ -33,6 +33,48 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.serializerOrNull
 import kotlin.reflect.KClass
 
+/**
+ * Selects a subtype deserializer by inspecting YAML content instead of requiring a type discriminator.
+ *
+ * Implement [selectDeserializer] to choose a subtype from a mapping's keys or another feature of
+ * its content. Deserialization requires the [Yaml] format.
+ *
+ * Encoding looks up the runtime subtype in the encoder's serializers module, then falls back to
+ * the subtype's own serializer. It writes the subtype directly without adding a discriminator;
+ * the resulting content must be sufficient for [selectDeserializer] to recognize it when read back.
+ *
+ * For example, attach the serializer to a base type with `@Serializable(with = ...)`, then select
+ * a subtype by its mapping keys:
+ *
+ * ```kotlin
+ * @Serializable(with = MessageSerializer::class)
+ * sealed interface Message
+ *
+ * @Serializable
+ * data class TextMessage(val text: String) : Message
+ *
+ * @Serializable
+ * data class ImageMessage(val url: String) : Message
+ *
+ * object MessageSerializer : YamlContentPolymorphicSerializer<Message>(Message::class) {
+ *     override fun selectDeserializer(node: YamlNode): DeserializationStrategy<Message> {
+ *         val map = node.yamlMap
+ *         return when {
+ *             map.getKey("text") != null -> TextMessage.serializer()
+ *             map.getKey("url") != null -> ImageMessage.serializer()
+ *             else -> throw YamlException("Expected a text or url property", node.path)
+ *         }
+ *     }
+ * }
+ *
+ * val message = Yaml.default.decodeFromString(Message.serializer(), "text: hello")
+ * ```
+ *
+ * The serializer can also be passed directly to [Yaml.decodeFromString] when annotating the base
+ * type is not possible.
+ *
+ * @param baseClass base type used to look up registered polymorphic serializers during encoding.
+ */
 @OptIn(ExperimentalSerializationApi::class)
 public abstract class YamlContentPolymorphicSerializer<T : Any>(
     private val baseClass: KClass<T>,
@@ -46,6 +88,7 @@ public abstract class YamlContentPolymorphicSerializer<T : Any>(
             annotations += Marker()
         }
 
+    /** Marks descriptors whose subtype selection must be deferred until the YAML node is available. */
     @SerialInfo
     internal annotation class Marker
 
@@ -64,6 +107,14 @@ public abstract class YamlContentPolymorphicSerializer<T : Any>(
 
     override fun deserialize(decoder: Decoder): T = decoder.decodeSerializableValue(selectDeserializer((decoder as YamlInput).node))
 
+    /**
+     * Chooses the concrete subtype's deserializer for [node].
+     *
+     * The chosen strategy reads the same node, including any keys inspected to make this choice.
+     * Do not return this serializer or another strategy that delegates back to it for the same node:
+     * that would repeat selection recursively. For unrecognized content, throw [YamlException] with
+     * `node.path` so the error identifies the offending value.
+     */
     public abstract fun selectDeserializer(node: YamlNode): DeserializationStrategy<T>
 
     private fun throwSubtypeNotRegistered(

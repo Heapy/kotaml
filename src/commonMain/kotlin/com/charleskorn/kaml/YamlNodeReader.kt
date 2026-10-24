@@ -28,6 +28,15 @@ import it.krzeminski.snakeyaml.engine.kmp.events.NodeEvent
 import it.krzeminski.snakeyaml.engine.kmp.events.ScalarEvent
 import it.krzeminski.snakeyaml.engine.kmp.events.SequenceStartEvent
 
+/**
+ * Builds one node tree, resolving nulls, aliases, extensions, and mapping merges.
+ *
+ * Anchor definitions and alias counts belong to one document. Explicit entries take precedence
+ * over merged ones; earlier merged mappings take precedence over later ones. Root extension
+ * definitions supply anchors but are omitted from the returned mapping.
+ *
+ * [read] consumes the root; the caller must still check the parser's document and stream endings.
+ */
 internal class YamlNodeReader(
     private val parser: YamlParser,
     private val extensionDefinitionPrefix: String? = null,
@@ -233,6 +242,7 @@ internal class YamlNodeReader(
         }
     }
 
+    // Quoted "<<" is an ordinary key; only a plain << requests a mapping merge.
     private fun isMerge(key: YamlNode): Boolean = key is YamlScalar && key.plain && key.content == "<<"
 
     private fun doMerges(
@@ -321,6 +331,7 @@ internal class YamlNodeReader(
         get() = Location(startMark!!.line + 1, startMark!!.column + 1)
 }
 
+/** Couples resolved content with its nested alias weight so repeated references count toward the budget. */
 private data class WeightedNode(
     val node: YamlNode,
     val weight: UInt,

@@ -21,6 +21,10 @@ package com.charleskorn.kaml
 
 import kotlinx.serialization.SerializationException
 
+/**
+ * A YAML failure with a [path] identifying the value and [line]/[column] locating it in the source.
+ * [toString] includes the position and error message.
+ */
 public open class YamlException(
     override val message: String,
     public val path: YamlPath,
@@ -33,6 +37,12 @@ public open class YamlException(
     override fun toString(): String = "${this::class.simpleName} at ${path.toHumanReadableString()} on line $line, column $column: $message"
 }
 
+/**
+ * A mapping contains more than one scalar key with the same text.
+ *
+ * The inherited [path] points to [duplicatePath]; [originalPath] identifies the earlier occurrence.
+ * [key] is the key's diagnostic representation, which may include quotes.
+ */
 public class DuplicateKeyException(
     public val originalPath: YamlPath,
     public val duplicatePath: YamlPath,
@@ -45,11 +55,16 @@ public class DuplicateKeyException(
     public val duplicateLocation: Location = duplicatePath.endLocation
 }
 
+/** Parsing found no YAML document in the input stream, for example in empty or comment-only input. */
 public class EmptyYamlDocumentException(
     message: String,
     path: YamlPath,
 ) : YamlException(message, path)
 
+/**
+ * A mapping value could not be decoded for [propertyName].
+ * [path] locates the offending value; [cause] preserves the underlying decoding failure when available.
+ */
 public class InvalidPropertyValueException(
     public val propertyName: String,
     public val reason: String,
@@ -57,27 +72,38 @@ public class InvalidPropertyValueException(
     cause: Throwable? = null,
 ) : YamlException("Value for '$propertyName' is invalid: $reason", path, cause)
 
+/** YAML syntax or document structure cannot be read, including constructs unsupported by the node reader. */
 public class MalformedYamlException(
     message: String,
     path: YamlPath,
 ) : YamlException(message, path)
 
+/** A YAML null was encountered where decoding required a non-null value. */
 public class UnexpectedNullValueException(
     path: YamlPath,
 ) : YamlException("Unexpected null or empty value for non-null field.", path)
 
+/** A required [propertyName] is absent; [path] identifies the containing value rather than a missing token. */
 public class MissingRequiredPropertyException(
     public val propertyName: String,
     path: YamlPath,
     cause: Throwable? = null,
 ) : YamlException("Property '$propertyName' is required but it is missing.", path, cause)
 
+/**
+ * An unknown object property rejected in strict mode.
+ * [validPropertyNames] reflects the configured [YamlNamingStrategy]; [path] locates the key.
+ */
 public class UnknownPropertyException(
     public val propertyName: String,
     public val validPropertyNames: Set<String>,
     path: YamlPath,
 ) : YamlException("Unknown property '$propertyName'. Known properties are: ${validPropertyNames.sorted().joinToString(", ")}", path)
 
+/**
+ * No subtype serializer was found for discriminator [typeName].
+ * [path] locates the discriminator; [validTypeNames] lists names known to the descriptor or serializers module.
+ */
 public class UnknownPolymorphicTypeException(
     public val typeName: String,
     public val validTypeNames: Set<String>,
@@ -85,26 +111,34 @@ public class UnknownPolymorphicTypeException(
     cause: Throwable? = null,
 ) : YamlException("Unknown type '$typeName'. Known types are: ${validTypeNames.sorted().joinToString(", ")}", path, cause)
 
+/**
+ * Scalar text cannot represent the requested primitive or enum value, including an out-of-range integer.
+ * [originalValue] retains the unconverted text for diagnostics.
+ */
 public class YamlScalarFormatException(
     message: String,
     path: YamlPath,
     public val originalValue: String,
 ) : YamlException(message, path)
 
+/** A YAML node's shape or tag does not match the type required by a decoder or node accessor. */
 public open class IncorrectTypeException(
     message: String,
     path: YamlPath,
 ) : YamlException(message, path)
 
+/** Polymorphic decoding requires a type tag, but the supplied YAML value has none. */
 public class MissingTypeTagException(
     path: YamlPath,
 ) : IncorrectTypeException("Value is missing a type tag (eg. !<type>)", path)
 
+/** An alias refers to [anchorName] before a corresponding anchored value is available to the reader. */
 public class UnknownAnchorException(
     public val anchorName: String,
     path: YamlPath,
 ) : YamlException("Unknown anchor '$anchorName'.", path)
 
+/** A root mapping [key] matches [extensionDefinitionPrefix] but its value does not define an anchor. */
 public class NoAnchorForExtensionException(
     public val key: String,
     public val extensionDefinitionPrefix: String,
@@ -114,6 +148,7 @@ public class NoAnchorForExtensionException(
         path,
     )
 
+/** An anchor or alias violates the configured policy, either by being disabled or exceeding the alias limit. */
 public class ForbiddenAnchorOrAliasException(
     message: String,
     path: YamlPath,

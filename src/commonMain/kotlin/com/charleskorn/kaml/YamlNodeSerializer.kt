@@ -40,6 +40,10 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.encoding.encodeStructure
 
+/**
+ * Serializes a [YamlNode] as YAML content, without exposing node classes or path metadata in the output.
+ * Decoding returns the parsed tree, including any tag separated by polymorphic decoding.
+ */
 internal object YamlNodeSerializer : KSerializer<YamlNode> {
     override val descriptor: SerialDescriptor =
         buildSerialDescriptor("com.charleskorn.kaml.YamlNode", PolymorphicKind.SEALED) {
@@ -66,6 +70,11 @@ internal object YamlNodeSerializer : KSerializer<YamlNode> {
     }
 }
 
+/**
+ * Preserves scalar spelling and precision when encoding nodes.
+ * Plain non-string scalars are emitted verbatim to keep values and keys such as `7` and `007` distinct;
+ * other scalars use the configured string style.
+ */
 internal object YamlScalarSerializer : KSerializer<YamlScalar> {
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("com.charleskorn.kaml.YamlScalar", PrimitiveKind.STRING)
@@ -84,7 +93,6 @@ internal object YamlScalarSerializer : KSerializer<YamlScalar> {
             }
 
             else -> {
-                // Numeric conversion can round values or merge distinct map keys such as 7 and 007.
                 output.encodeVerbatimScalar(value.content)
             }
         }
@@ -113,6 +121,10 @@ internal object YamlNullSerializer : KSerializer<YamlNull> {
     }
 }
 
+/**
+ * Serializes a tagged node using the configured polymorphism style.
+ * Decoding requires [YamlPolymorphicInput] to supply the tag and its content separately.
+ */
 internal object YamlTaggedNodeSerializer : KSerializer<YamlTaggedNode> {
     override val descriptor: SerialDescriptor =
         buildSerialDescriptor("com.charleskorn.kaml.YamlTaggedNode", PolymorphicKind.OPEN) {

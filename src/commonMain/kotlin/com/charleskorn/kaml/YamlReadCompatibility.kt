@@ -19,23 +19,30 @@
 
 package com.charleskorn.kaml
 
-/** Controls the temporary migration support for reading scalars. Encoding is unaffected. */
+/**
+ * Controls whether reading accepts legacy scalar spellings. Encoding is unaffected.
+ *
+ * Numeric conversions always try the current rules first. [Strict] behaves like the corresponding
+ * parameterless [YamlScalar] conversion. [LegacyV0_110] retries failures using legacy rules and reports
+ * successful fallbacks to its optional callback. If both attempts fail, the original
+ * [YamlScalarFormatException] is thrown.
+ */
 public sealed class YamlReadCompatibility {
+    /** Uses the current scalar-reading rules without accepting or reporting legacy-only forms. */
     public data object Strict : YamlReadCompatibility()
 
     /**
-     * Temporary compatibility mode for a quick upgrade to 0.111.0. This mode will be removed in a
-     * future release: migrate the reported input values and switch back to [Strict] as soon as possible.
+     * Temporary migration support for legacy scalar syntax. Migrate reported values and return to
+     * [Strict]; this mode will be removed in a future release.
      *
      * Accepts legacy signed radix integers, non-ASCII integer digits, floating point suffixes,
      * hexadecimal floats, radix integers as floats, and Infinity/NaN spellings on every platform.
-     * Plain `Null` and `NULL` remain strings, both as values and as map keys.
-     * Empty plain mapping keys remain empty strings; empty values still resolve to null.
+     * Plain `Null` and `NULL` remain strings in values and keys. Empty plain keys remain empty strings;
+     * empty values still resolve to null.
      *
-     * [onUse] is called synchronously for each use of compatibility, including null resolution while
-     * parsing a [YamlNode]. Numeric conversions are reported only when requested by a numeric
-     * deserializer or a [YamlScalar] conversion. Events can precede a later failure in the document;
-     * exceptions from the callback propagate to the caller. No events are retained by the library.
+     * [onUse] runs synchronously when compatibility is used: during parsing for null resolution,
+     * and during typed conversion for numbers. Events may precede a later document failure;
+     * callback exceptions propagate. The library does not retain events.
      */
     @Suppress("ktlint:standard:class-naming")
     public class LegacyV0_110(
@@ -57,6 +64,10 @@ public data class YamlReadCompatibilityIssue(
         get() = path.endLocation
 }
 
+/**
+ * Identifies the legacy rule reported by [YamlReadCompatibilityIssue].
+ * Numeric reasons arise during typed conversion; null-value and null-key reasons arise during parsing.
+ */
 public enum class YamlReadCompatibilityReason {
     LegacyInteger,
     LegacyFloatingPoint,

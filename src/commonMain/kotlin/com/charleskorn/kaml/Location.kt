@@ -19,6 +19,7 @@
 
 package com.charleskorn.kaml
 
+/** One-based source coordinates; manually constructed nodes may use a synthetic location such as `(1, 1)`. */
 public data class Location(
     val line: Int,
     val column: Int,

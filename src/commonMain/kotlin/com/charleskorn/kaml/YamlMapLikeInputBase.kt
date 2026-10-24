@@ -23,6 +23,12 @@ import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.modules.SerializersModule
 
+/**
+ * Adds property context to failures shared by map and object decoders.
+ *
+ * Value failures are wrapped in [InvalidPropertyValueException]; key failures retain their original
+ * exception. Subclasses must select the current entry before delegating reads.
+ */
 internal sealed class YamlMapLikeInputBase(
     map: YamlMap,
     yaml: Yaml,

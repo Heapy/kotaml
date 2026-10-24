@@ -33,6 +33,27 @@ import okio.Sink
 import okio.Source
 import okio.buffer
 
+/**
+ * Reads and writes YAML documents using kotlinx.serialization serializers.
+ *
+ * Use [default] for the default settings, or create an instance with a [configuration] and
+ * [serializersModule]. Reading expects a single document. Use [parseToYamlNode] to inspect it without
+ * a Kotlin model, or [decodeFromYamlNode] to decode a tree you already have.
+ *
+ * Sources and sinks supplied by the caller remain open. Encoding to a sink flushes it when the
+ * operation finishes. Node serialization preserves scalar content but does not preserve original
+ * document formatting or comments.
+ *
+ * Instances can be reused. Concurrent use requires the supplied serializers and configuration
+ * callbacks to support it as well.
+ *
+ * ```kotlin
+ * val document = Yaml.default.parseToYamlNode("port: 8080")
+ * val port = document.yamlMap.getScalar("port")!!.toInt()
+ * ```
+ *
+ * @param serializersModule contextual and polymorphic serializers available during encoding and decoding.
+ */
 public class Yaml(
     override val serializersModule: SerializersModule = EmptySerializersModule(),
     public val configuration: YamlConfiguration = YamlConfiguration(),
@@ -97,7 +118,7 @@ public class Yaml(
         encodeToBufferedSink(serializer, value, sink.buffer())
     }
 
-    /** Encodes [value] as YAML, preserving the emitter's output, including the final line break. */
+    /** Encodes [value] as YAML. The result ends with a line break. */
     override fun <T> encodeToString(
         serializer: SerializationStrategy<T>,
         value: T,
@@ -126,6 +147,7 @@ public class Yaml(
     }
 }
 
+/** Adapts the emitter's text output to UTF-8, flushing on close without closing the caller's sink. */
 private class BufferedSinkDataWriter(
     val sink: BufferedSink,
 ) : StreamDataWriter,

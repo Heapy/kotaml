@@ -24,6 +24,10 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.modules.SerializersModule
 
+/**
+ * Decodes object fields using the naming strategy and strict-mode policy.
+ * Each instance is bound to one descriptor and one traversal.
+ */
 @OptIn(ExperimentalSerializationApi::class)
 internal class YamlObjectInput(
     map: YamlMap,

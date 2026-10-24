@@ -28,6 +28,12 @@ import it.krzeminski.snakeyaml.engine.kmp.parser.ParserImpl
 import it.krzeminski.snakeyaml.engine.kmp.scanner.StreamReader
 import okio.Source
 
+/**
+ * Reads one YAML document as events, translating parser failures into path diagnostics.
+ *
+ * After consuming the root, call [ensureEndOfStreamReached] to reject trailing documents.
+ * The caller retains ownership of the source. [YamlNodeReader] handles node construction and aliases.
+ */
 internal class YamlParser(
     reader: Source,
     codePointLimit: Int? = null,

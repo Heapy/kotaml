@@ -19,6 +19,15 @@
 
 package com.charleskorn.kaml
 
+/**
+ * A route through a YAML document, retaining source locations and alias or merge provenance.
+ *
+ * [segments] must be non-empty, begin with [YamlPathSegment.Root] or [YamlPathSegment.AliasDefinition],
+ * and contain no later root. The final segment supplies the location used in diagnostics.
+ *
+ * Functions such as [withListEntry] return extended paths. The supplied list is retained without
+ * copying and must not be mutated. [toHumanReadableString] is a diagnostic label, not a reversible query syntax.
+ */
 public data class YamlPath(
     val segments: List<YamlPathSegment>,
 ) {
@@ -120,7 +129,6 @@ public data class YamlPath(
                 is YamlPathSegment.MapElementValue,
                 is YamlPathSegment.AliasDefinition,
                 -> {
-                    // Nothing to do.
                 }
             }
         }
@@ -142,39 +150,52 @@ public data class YamlPath(
     }
 }
 
+/**
+ * A tree position or source marker in a [YamlPath].
+ * Alias, merge, and error markers retain diagnostic provenance; some affect only the location
+ * and are omitted from the human-readable path.
+ */
 public sealed class YamlPathSegment(
     public open val location: Location,
 ) {
+    /** The document origin, using line 1, column 1 as its location. */
     public object Root : YamlPathSegment(Location(1, 1))
 
+    /** Identifies a sequence item by its zero-based [index] and source location. */
     public data class ListEntry(
         val index: Int,
         override val location: Location,
     ) : YamlPathSegment(location)
 
+    /** Identifies a mapping entry by its scalar key text and the key's source location. */
     public data class MapElementKey(
         val key: String,
         override val location: Location,
     ) : YamlPathSegment(location)
 
+    /** Locates the value of a mapping entry whose key is identified by the preceding path. */
     public data class MapElementValue(
         override val location: Location,
     ) : YamlPathSegment(location)
 
+    /** Records the use of an alias, with [name] excluding the YAML `*` indicator. */
     public data class AliasReference(
         val name: String,
         override val location: Location,
     ) : YamlPathSegment(location)
 
+    /** Records the anchor supplying an aliased value, with [name] excluding the YAML `&` indicator. */
     public data class AliasDefinition(
         val name: String,
         override val location: Location,
     ) : YamlPathSegment(location)
 
+    /** Marks the source of a `<<` mapping merge so diagnostics can trace inherited entries. */
     public data class Merge(
         override val location: Location,
     ) : YamlPathSegment(location)
 
+    /** Refines an error's source location without adding another logical tree position. */
     public data class Error(
         override val location: Location,
     ) : YamlPathSegment(location)

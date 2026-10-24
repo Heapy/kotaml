@@ -24,6 +24,7 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.modules.SerializersModule
 
+/** Traverses mapping keys and values as map entries, without object-property naming or unknown-property checks. */
 @OptIn(ExperimentalSerializationApi::class)
 internal class YamlMapInput(
     map: YamlMap,
