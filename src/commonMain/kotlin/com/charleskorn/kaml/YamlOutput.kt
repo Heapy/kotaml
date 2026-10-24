@@ -198,6 +198,9 @@ internal class YamlOutput(
 
             StructureKind.MAP, StructureKind.CLASS, StructureKind.OBJECT -> {
                 val typeName = getAndClearTypeName()
+                if (typeName != null && configuration.polymorphismStyle == PolymorphismStyle.Property) {
+                    propertyNames[descriptor]?.validateDiscriminator(descriptor, configuration.polymorphismPropertyName)
+                }
 
                 when (configuration.polymorphismStyle) {
                     PolymorphismStyle.Tag -> {

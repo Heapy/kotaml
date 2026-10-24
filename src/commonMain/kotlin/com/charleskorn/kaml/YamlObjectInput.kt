@@ -34,15 +34,22 @@ internal class YamlObjectInput(
     yaml: Yaml,
     context: SerializersModule,
     configuration: YamlConfiguration,
+    private val discriminatorName: String? = null,
 ) : YamlMapLikeInputBase(map, yaml, context, configuration) {
     private val entriesList = map.entries.entries.toList()
     private var nextIndex = 0
     private lateinit var pairedPropertyNames: Map<String, Int>
 
-    override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
+    private fun preparePropertyNames(descriptor: SerialDescriptor) {
         if (!::pairedPropertyNames.isInitialized) {
-            pairedPropertyNames = YamlPropertyNames(descriptor, configuration.yamlNamingStrategy).indicesByName
+            val names = YamlPropertyNames(descriptor, configuration.yamlNamingStrategy)
+            discriminatorName?.let { names.validateDiscriminator(descriptor, it) }
+            pairedPropertyNames = names.indicesByName
         }
+    }
+
+    override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
+        preparePropertyNames(descriptor)
 
         while (true) {
             if (nextIndex == entriesList.size) {
@@ -92,9 +99,7 @@ internal class YamlObjectInput(
             return fromCurrentValue { beginStructure(descriptor) }
         }
 
-        if (!::pairedPropertyNames.isInitialized) {
-            pairedPropertyNames = YamlPropertyNames(descriptor, configuration.yamlNamingStrategy).indicesByName
-        }
+        preparePropertyNames(descriptor)
         return super.beginStructure(descriptor)
     }
 }

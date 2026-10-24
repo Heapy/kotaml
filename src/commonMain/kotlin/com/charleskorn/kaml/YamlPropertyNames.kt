@@ -32,6 +32,17 @@ internal class YamlPropertyNames(
     val names: List<String>
     val indicesByName: Map<String, Int>
 
+    fun validateDiscriminator(
+        descriptor: SerialDescriptor,
+        discriminator: String,
+    ) {
+        val index = indicesByName[discriminator] ?: return
+        throw SerializationException(
+            "Property '${descriptor.getElementName(index)}' in '${descriptor.serialName}' maps to YAML discriminator '$discriminator'. " +
+                "Change the property name, naming strategy or polymorphismPropertyName, or use PolymorphismStyle.Tag.",
+        )
+    }
+
     init {
         val indices = linkedMapOf<String, Int>()
         names =
