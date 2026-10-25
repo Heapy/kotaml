@@ -79,6 +79,17 @@ println(
 )
 ```
 
+Reading validates the node kind for standard collection tags: `!!seq` requires a sequence and
+`!!map` requires a mapping. Valid tags are retained in `YamlTaggedNode`. Mismatches such as
+`!!seq hello` or `!!map [1, 2]` throw `MalformedYamlException` with the offending node's path
+and one-based coordinates, both in `parseToYamlNode` and typed decoding from text or a source.
+Local `!seq` and `!map` are custom tags and are not subject to this check. Legacy scalar
+compatibility does not disable collection-tag validation.
+
+This validation belongs to the reader. Constructing `YamlTaggedNode` directly, decoding an
+existing tree with `decodeFromYamlNode`, or converting a tree to JSON does not repeat it;
+callers constructing trees are responsible for their collection tags.
+
 When a parsed `YamlNode` is serialized, plain numeric and boolean scalars keep their
 source text, including `007`, `0x7`, `1E+003` and `True`. This preserves numeric
 precision and distinct mapping keys. String quoting and document formatting follow

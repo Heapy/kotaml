@@ -52,6 +52,7 @@ internal class YamlNodeReader(
 
     private fun readNodeAndAnchor(path: YamlPath): Pair<WeightedNode, Anchor?> {
         val event = parser.consumeEvent(path)
+        validateCollectionTag(event, path)
         val (node, weight) = readFromEvent(event, path)
 
         if (event is NodeEvent) {
@@ -83,6 +84,27 @@ internal class YamlNodeReader(
             is AliasEvent -> readAlias(event, path)
             else -> throw MalformedYamlException("Unexpected ${event.eventId}", path.withError(event.location))
         }
+
+    private fun validateCollectionTag(
+        event: Event,
+        path: YamlPath,
+    ) {
+        val tag =
+            when (event) {
+                is ScalarEvent -> event.tag
+                is SequenceStartEvent -> event.tag
+                is MappingStartEvent -> event.tag
+                else -> return
+            }
+        val requiredKind =
+            when {
+                tag == SEQUENCE_TAG && event !is SequenceStartEvent -> "sequence"
+                tag == MAPPING_TAG && event !is MappingStartEvent -> "mapping"
+                else -> return
+            }
+        val shortTag = "!!" + tag.substringAfterLast(':')
+        throw MalformedYamlException("Tag '$shortTag' requires a $requiredKind value.", path.withError(event.location))
+    }
 
     private fun readScalarOrNull(
         event: ScalarEvent,
@@ -165,6 +187,7 @@ internal class YamlNodeReader(
 
     private fun readMapKey(path: YamlPath): ScalarEvent {
         val event = parser.peekEvent(path)
+        validateCollectionTag(event, path)
 
         when (event.eventId) {
             Event.ID.Scalar -> {
@@ -340,3 +363,6 @@ private data class WeightedNode(
 private val LEGACY_NULL_STRINGS = setOf("Null", "NULL")
 
 private const val STRING_TAG = "tag:yaml.org,2002:str"
+
+private const val SEQUENCE_TAG = "tag:yaml.org,2002:seq"
+private const val MAPPING_TAG = "tag:yaml.org,2002:map"
