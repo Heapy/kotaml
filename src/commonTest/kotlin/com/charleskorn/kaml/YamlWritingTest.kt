@@ -1567,12 +1567,7 @@ private data class SimpleStructureWithComments(
         "multiline",
     )
     val test: String,
-    @YamlComment(
-        """
-        Testing
-        multiline
-    """,
-    )
+    @YamlComment("Testing\nmultiline")
     val debug: Boolean,
 )
 
