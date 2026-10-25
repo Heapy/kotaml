@@ -1,0 +1,56 @@
+@startuml
+!include theme.puml.inc
+left to right direction
+skinparam nodesep 22
+skinparam ranksep 45
+hide empty members
+hide circle
+
+abstract class YamlNode <<sealed>> #DCEEE7 {
+  path: YamlPath
+  location: Location
+  --
+  Every node has a tree position.
+  location = path.endLocation
+  Line and column are one-based.
+}
+
+class YamlScalar {
+  content: String
+  plain: Boolean
+  --
+  Text before conversion to a Kotlin type
+}
+class YamlNull {
+  YAML null value
+}
+class YamlList {
+  items: List<YamlNode>
+  --
+  Ordered child values
+}
+class YamlMap {
+  entries: Map<YamlScalar, YamlNode>
+  --
+  Scalar keys → child values
+}
+class YamlTaggedNode {
+  tag: String
+  innerNode: YamlNode
+  --
+  A tag wrapped around one child value
+}
+
+YamlNode <|-- YamlScalar
+YamlNode <|-- YamlNull
+YamlNode <|-- YamlList
+YamlNode <|-- YamlMap
+YamlNode <|-- YamlTaggedNode
+
+legend bottom
+  <b>Read the arrows as “is a YamlNode”.</b>
+  Fields describe containment: a child can be any of the five node kinds.
+  YamlScalar stores text, including numbers and booleans.
+  Source layout and comments are not retained.
+endlegend
+@enduml

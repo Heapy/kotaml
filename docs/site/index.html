@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Get started with kotaml: YAML for kotlinx.serialization. Read and write Kotlin models, work with YAML trees, and explore the architecture with PlantUML diagrams.">
+  <meta name="theme-color" content="#f7f8f4">
+  <title>kotaml — YAML for Kotlin</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="vendor/highlight/github-dark.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <script src="vendor/highlight/highlight.min.js" defer></script>
+  <script src="vendor/highlight/kotlin.min.js" defer></script>
+  <script src="site.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="header">
+    <a class="wordmark" href="#main" aria-label="kotaml home"><span class="logo" aria-hidden="true">k:</span>kotaml</a>
+    <nav aria-label="Project links">
+      <a href="https://central.sonatype.com/artifact/io.heapy.kotaml/kotaml">Maven Central</a>
+      <a href="https://github.com/Heapy/kotaml">GitHub <span aria-hidden="true">↗</span></a>
+    </nav>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <nav aria-label="On this page">
+        <p class="nav-label">GET STARTED</p>
+        <a href="#install">01 <span>Install</span></a>
+        <a href="#platforms">Supported platforms</a>
+        <a href="#read-write">02 <span>Read & write</span></a>
+        <a href="#tree">03 <span>Work with a tree</span></a>
+        <a href="#json">04 <span>Convert to JSON</span></a>
+        <p class="nav-label second-label">REFERENCE</p>
+        <a href="#features">YAML features</a>
+        <a href="#errors">Errors &amp; I/O</a>
+        <a href="#migration">Migration</a>
+        <p class="nav-label second-label">UNDER THE HOOD</p>
+        <a href="#architecture">Architecture</a>
+        <a href="#reading">Reading flow</a>
+        <a href="#writing">Writing flow</a>
+        <a href="#model">Core classes</a>
+        <a href="#contributing">Contributing</a>
+        <a href="#next">Go further</a>
+      </nav>
+      <div class="sidebar-note">Kotlin models.<br>YAML documents.<br>One serialization API.</div>
+    </aside>
+
+    <main id="main">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="eyebrow"><span class="status-dot" aria-hidden="true"></span> YAML 1.2 · KOTLINX.SERIALIZATION</div>
+        <h1 id="hero-title">YAML in.<br><span>Kotlin out.</span></h1>
+        <p class="lead">Read configuration into Kotlin models, write it back, or explore a document as a tree. Start small. See how it works.</p>
+        <div class="hero-actions">
+          <a class="button" href="#install">Start building <span aria-hidden="true">↓</span></a>
+          <a class="text-link" href="#architecture">Explore the architecture <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="release-line"><span class="version">v0.112.0</span><span>Examples use the published release.</span></div>
+      </section>
+
+      <section id="install" class="section" aria-labelledby="install-title">
+        <div class="section-heading"><span class="section-number">01</span><h2 id="install-title">Add kotaml</h2></div>
+        <p>Choose your build tool. Enable Kotlin serialization to generate serializers for <code>@Serializable</code> models.</p>
+        <div class="install-tabs" role="tablist" aria-label="Installation options" hidden>
+          <button type="button" role="tab" id="tab-ktc" aria-controls="install-ktc" aria-selected="true">KTC</button>
+          <button type="button" role="tab" id="tab-gradle" aria-controls="install-gradle" aria-selected="false" tabindex="-1">Gradle (KTS)</button>
+          <button type="button" role="tab" id="tab-maven" aria-controls="install-maven" aria-selected="false" tabindex="-1">Maven</button>
+        </div>
+        <fieldset class="install-options" hidden>
+          <legend class="sr-only">Dependency options</legend>
+          <label><input type="checkbox" id="include-json"> Include kotaml-json</label>
+          <label id="catalog-option" hidden><input type="checkbox" id="use-catalog"> Use version catalog</label>
+        </fieldset>
+        <div id="install-ktc" class="install-panel">
+          <h3 class="install-label">Kotlin Toolchain (KTC)</h3>
+          <p class="small-note">For a Kotlin Toolchain 0.13 JVM app. Maven Central is available by default.</p>
+          <div id="ktc-direct">
+          <div class="code-block">
+            <div class="code-heading"><span>module.yaml</span><button type="button" data-copy="ktc-code" aria-label="Copy KTC configuration" hidden>Copy</button></div>
+            <pre><code class="language-yaml" id="ktc-code" data-json-position="before-settings" data-json-line="  - io.heapy.kotaml:kotaml-json:0.112.0">product: jvm/app
+
+dependencies:
+  - io.heapy.kotaml:kotaml:0.112.0
+
+settings:
+  kotlin:
+    version: 2.4.21
+    serialization: enabled</code></pre>
+          </div>
+          </div>
+          <div id="ktc-catalog">
+            <h3 class="install-label">KTC version catalog</h3>
+            <p class="small-note">Place the catalog at the project root, alongside <code>module.yaml</code>.</p>
+            <div class="code-block">
+              <div class="code-heading"><span>libs.versions.toml</span><button type="button" data-copy="ktc-catalog-code" aria-label="Copy KTC version catalog" hidden>Copy</button></div>
+              <pre><code class="language-ini" id="ktc-catalog-code" data-json-position="end" data-json-line='kotaml-json = { module = "io.heapy.kotaml:kotaml-json", version.ref = "kotaml" }'>[versions]
+kotaml = "0.112.0"
+
+[libraries]
+kotaml-core = { module = "io.heapy.kotaml:kotaml", version.ref = "kotaml" }</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-heading"><span>module.yaml</span><button type="button" data-copy="ktc-catalog-usage-code" aria-label="Copy KTC catalog usage" hidden>Copy</button></div>
+              <pre><code class="language-yaml" id="ktc-catalog-usage-code" data-json-position="before-settings" data-json-line="  - $libs.kotaml.json">product: jvm/app
+
+dependencies:
+  - $libs.kotaml.core
+
+settings:
+  kotlin:
+    version: 2.4.21
+    serialization: enabled</code></pre>
+            </div>
+          </div>
+          <p class="small-note">Place Kotlin sources in <code>src/</code>, then run <code>./kotlin run</code>. <a href="https://github.com/JetBrains/kotlin-toolchain">Kotlin Toolchain setup →</a></p>
+        </div>
+        <div id="install-gradle" class="install-panel">
+          <h3 class="install-label">Gradle Kotlin DSL</h3>
+          <p class="small-note">Keep the Kotlin and serialization plugin versions aligned.</p>
+          <div id="gradle-direct">
+          <div class="code-block">
+          <div class="code-heading"><span>build.gradle.kts · Kotlin/JVM</span><button type="button" data-copy="install-code" aria-label="Copy Gradle configuration" hidden>Copy</button></div>
+          <pre><code class="language-kotlin" id="install-code" data-json-position="before-close" data-json-line='    implementation("io.heapy.kotaml:kotaml-json:0.112.0")'>plugins {
+    kotlin("jvm") version "2.4.21"
+    kotlin("plugin.serialization") version "2.4.21"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("io.heapy.kotaml:kotaml:0.112.0")
+}</code></pre>
+          </div>
+        </div>
+        <div id="gradle-catalog">
+          <h3 class="install-label">Gradle version catalog</h3>
+          <p class="small-note">Add the version and library alias to your catalog.</p>
+          <div class="code-block">
+            <div class="code-heading"><span>gradle/libs.versions.toml</span><button type="button" data-copy="catalog-code" aria-label="Copy version catalog entry" hidden>Copy</button></div>
+            <pre><code class="language-ini" id="catalog-code" data-json-position="end" data-json-line='kotaml-json = { module = "io.heapy.kotaml:kotaml-json", version.ref = "kotaml" }'>[versions]
+kotaml = "0.112.0"
+
+[libraries]
+kotaml-core = { module = "io.heapy.kotaml:kotaml", version.ref = "kotaml" }</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-heading"><span>build.gradle.kts</span><button type="button" data-copy="catalog-usage-code" aria-label="Copy version catalog usage" hidden>Copy</button></div>
+            <pre><code class="language-kotlin" id="catalog-usage-code" data-json-position="before-close" data-json-line='    implementation(libs.kotaml.json)'>plugins {
+    kotlin("jvm") version "2.4.21"
+    kotlin("plugin.serialization") version "2.4.21"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation(libs.kotaml.core)
+}</code></pre>
+          </div>
+        </div>
+        </div>
+        <div id="install-maven" class="install-panel">
+          <h3 class="install-label">Maven</h3>
+          <p class="small-note">Add the JVM dependencies to <code>&lt;dependencies&gt;</code> in your Kotlin-enabled Maven project.</p>
+          <div class="code-block">
+            <div class="code-heading"><span>pom.xml · dependency</span><button type="button" data-copy="maven-code" aria-label="Copy Maven dependency" hidden>Copy</button></div>
+            <pre><code class="language-xml" id="maven-code" data-json-position="end" data-json-template="maven-json-dependency">&lt;dependency&gt;
+    &lt;groupId&gt;io.heapy.kotaml&lt;/groupId&gt;
+    &lt;artifactId&gt;kotaml-jvm&lt;/artifactId&gt;
+    &lt;version&gt;0.112.0&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+            <template id="maven-json-dependency">&lt;dependency&gt;
+    &lt;groupId&gt;io.heapy.kotaml&lt;/groupId&gt;
+    &lt;artifactId&gt;kotaml-json-jvm&lt;/artifactId&gt;
+    &lt;version&gt;0.112.0&lt;/version&gt;
+&lt;/dependency&gt;</template>
+          </div>
+          <details class="install-details">
+            <summary>Enable the serialization compiler plugin</summary>
+            <p class="small-note">Merge these settings into your existing <code>kotlin-maven-plugin</code> under <code>&lt;build&gt;&lt;plugins&gt;</code>. Use the same Kotlin version for both plugin artifacts.</p>
+            <div class="code-block">
+              <div class="code-heading"><span>pom.xml · Kotlin plugin</span><button type="button" data-copy="maven-plugin-code" aria-label="Copy Maven serialization plugin" hidden>Copy</button></div>
+              <pre><code class="language-xml" id="maven-plugin-code">&lt;plugin&gt;
+    &lt;groupId&gt;org.jetbrains.kotlin&lt;/groupId&gt;
+    &lt;artifactId&gt;kotlin-maven-plugin&lt;/artifactId&gt;
+    &lt;version&gt;2.4.21&lt;/version&gt;
+    &lt;extensions&gt;true&lt;/extensions&gt;
+    &lt;configuration&gt;
+        &lt;compilerPlugins&gt;
+            &lt;plugin&gt;kotlinx-serialization&lt;/plugin&gt;
+        &lt;/compilerPlugins&gt;
+    &lt;/configuration&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.jetbrains.kotlin&lt;/groupId&gt;
+            &lt;artifactId&gt;kotlin-maven-serialization&lt;/artifactId&gt;
+            &lt;version&gt;2.4.21&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+&lt;/plugin&gt;</code></pre>
+            </div>
+            <p class="small-note"><a href="https://github.com/Kotlin/kotlinx.serialization#maven">Maven serialization setup →</a></p>
+          </details>
+        </div>
+        <p class="small-note">The Maven group is <code>io.heapy.kotaml</code>; Kotlin imports retain <code>com.charleskorn.kaml</code>.</p>
+        <p class="small-note">These examples create a JVM app. Kotaml also supports <a href="#platforms">web and native platforms</a>; in a multiplatform project, add the dependencies to <code>commonMain</code>.</p>
+      </section>
+
+      <section id="platforms" class="section reference-section" aria-labelledby="platforms-title">
+<h2 id="platforms-title">Supported platforms</h2>
+<p>Both <code>kotaml</code> and <code>kotaml-json</code> support Kotlin Multiplatform. Parsing, writing and conversion tests live in shared test suites and run across JVM, web and native targets.</p>
+<div class="table-scroll" role="region" aria-label="Supported platforms" tabindex="0">
+<table><thead><tr><th>Platform</th><th>Targets</th><th>Test coverage in CI</th></tr></thead><tbody>
+<tr><td>JVM</td><td>Java 11 and newer</td><td>JVM tests on Linux with JDK 25.</td></tr>
+<tr><td>JavaScript</td><td>Browser and Node.js</td><td>Browser and Node.js tests.</td></tr>
+<tr><td>WebAssembly</td><td>Wasm JS in browser and Node.js</td><td>Browser and Node.js tests.</td></tr>
+<tr><td>macOS</td><td>ARM64 and x64</td><td>Native ARM64 tests on macOS; x64 execution is skipped on the current runner.</td></tr>
+<tr><td>iOS</td><td>ARM64 devices and ARM64 simulator</td><td>ARM64 simulator tests on macOS.</td></tr>
+<tr><td>tvOS</td><td>ARM64 devices; ARM64 and x64 simulators</td><td>ARM64 simulator tests on macOS.</td></tr>
+<tr><td>watchOS</td><td>ARM32 and ARM64 devices; ARM64 and x64 simulators</td><td>ARM64 simulator tests on macOS.</td></tr>
+<tr><td>Linux</td><td>x64 and ARM64</td><td>Native tests on x64; no ARM64 execution job.</td></tr>
+<tr><td>Windows</td><td>x64 (MinGW)</td><td>Native tests on Windows.</td></tr>
+</tbody></table></div>
+<p class="small-note">Apple device targets share their implementation and tests with the simulator targets; CI does not run on physical Apple devices. Apple x64 test tasks are skipped on the current ARM64 runner. Target availability and test execution are different: Linux ARM64 is a build target, but its tests are not executed by the current CI matrix. See the <a href="https://github.com/Heapy/kotaml/blob/main/build.gradle.kts">target configuration</a> and <a href="https://github.com/Heapy/kotaml/blob/main/.github/workflows/build.yml">CI matrix</a>.</p>
+</section>
+
+      <section id="read-write" class="section" aria-labelledby="read-write-title">
+        <div class="section-heading"><span class="section-number">02</span><h2 id="read-write-title">Read. Change. Write.</h2></div>
+        <p>A generated serializer connects your model to YAML. The same <code>Yaml</code> instance can be reused across operations.</p>
+        <div class="code-block">
+          <div class="code-heading"><span>Main.kt</span><button type="button" data-copy="main-code" aria-label="Copy Kotlin example" hidden>Copy</button></div>
+          <pre><code class="language-kotlin" id="main-code">import com.charleskorn.kaml.Yaml
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class Service(
+    val name: String,
+    val port: Int,
+    val tags: List&lt;String&gt; = emptyList(),
+)
+
+fun main() {
+    val input = """
+        name: api
+        port: 8080
+        tags: [internal, kotlin]
+    """.trimIndent()
+
+    val yaml = Yaml.default
+    val service = yaml.decodeFromString(Service.serializer(), input)
+    println(service.name) // api
+
+    val updated = service.copy(port = 9090)
+    val output = yaml.encodeToString(Service.serializer(), updated)
+    println(output)
+}</code></pre>
+        </div>
+        <div class="result-block"><span class="result-label">YAML OUTPUT</span><pre><code class="language-yaml">name: "api"
+port: 9090
+tags:
+- "internal"
+- "kotlin"</code></pre></div>
+        <p class="small-note">Output follows writer settings; source formatting is not retained. <a href="https://github.com/Heapy/kotaml/tree/main/docs/examples">Open the runnable examples →</a></p>
+      </section>
+
+      <section id="tree" class="section" aria-labelledby="tree-title">
+        <div class="section-heading"><span class="section-number">03</span><h2 id="tree-title">No model? Use a tree.</h2></div>
+<p>Parse a string into a <code>YamlNode</code> using <code>parseToYamlNode</code>. On JVM, an extension overload also accepts a UTF-8 <code>InputStream</code> (import <code>com.charleskorn.kaml.parseToYamlNode</code>). This example prints <code>Cindy</code>.</p>
+<div class="code-block"><div class="code-heading"><span>kotlin</span><button type="button" data-copy="tree-code-1" aria-label="Copy tree example 1" hidden>Copy</button></div><pre><code class="language-kotlin" id="tree-code-1">import com.charleskorn.kaml.Yaml
+import com.charleskorn.kaml.YamlList
+import com.charleskorn.kaml.yamlMap
+import com.charleskorn.kaml.yamlScalar
+
+fun main() {
+    val input = &quot;&quot;&quot;
+        leader: Amy
+        members:
+          - Bob
+          - Cindy
+          - Dan
+    &quot;&quot;&quot;.trimIndent()
+    val result = Yaml.default.parseToYamlNode(input)
+    println(result.yamlMap.get&lt;YamlList&gt;(&quot;members&quot;)!![1].yamlScalar.content)
+}</code></pre></div>
+<p>Decode a subtree into a Kotlin model with <code>decodeFromYamlNode</code>. Trees retain values and source locations, but do not preserve comments or the original layout.</p>
+<h3>Standard collection tags</h3>
+<p>Reading validates the node kind for standard collection tags: <code>!!seq</code> requires a sequence and <code>!!map</code> requires a mapping. Valid tags are retained in <code>YamlTaggedNode</code>. Mismatches such as <code>!!seq hello</code> or <code>!!map [1, 2]</code> throw <code>MalformedYamlException</code> with the offending node's path and one-based coordinates, both in <code>parseToYamlNode</code> and typed decoding from text or a source. Local <code>!seq</code> and <code>!map</code> are custom tags and are not subject to this check. Legacy scalar compatibility does not disable collection-tag validation.</p>
+<p>This validation belongs to the reader. Constructing <code>YamlTaggedNode</code> directly, decoding an existing tree with <code>decodeFromYamlNode</code>, or converting a tree to JSON does not repeat it; callers constructing trees are responsible for their collection tags.</p>
+<h3>Scalar text and quoting</h3>
+<p>When a parsed <code>YamlNode</code> is serialized, plain numeric and boolean scalars keep their source text, including <code>007</code>, <code>0x7</code>, <code>1E+003</code> and <code>True</code>. This preserves numeric precision and distinct mapping keys. String quoting and document formatting follow the writer configuration.</p>
+<p>Quoted scalars (<code>plain = false</code>) pass their original content to the string encoder, without numeric conversion. The default, <code>SingleQuoted</code>, <code>DoubleQuoted</code> and <code>PlainExceptAmbiguous</code> styles preserve the string meaning of text such as <code>0012</code>, <code>0x10</code>, <code>true</code> and <code>.nan</code>. <code>PlainExceptAmbiguous</code> may remove quotes from ordinary text. Property-level <code>@YamlSingleLineStringStyle</code> overrides the global style.</p>
+<div class="code-block"><div class="code-heading"><span>kotlin</span><button type="button" data-copy="tree-code-2" aria-label="Copy tree example 2" hidden>Copy</button></div><pre><code class="language-kotlin" id="tree-code-2">val node = Yaml.default.parseToYamlNode(&quot;\&quot;0012\&quot;&quot;)
+val safe = Yaml.default.encodeToString(YamlNode.serializer(), node) // &quot;0012&quot; followed by a newline
+val plainWriter = Yaml(configuration = YamlConfiguration(singleLineStringStyle = SingleLineStringStyle.Plain))
+val plain = plainWriter.encodeToString(YamlNode.serializer(), node) // 0012 followed by a newline</code></pre></div>
+<p>Both outputs retain all four characters of the content. Parsing <code>safe</code> preserves string semantics; parsing <code>plain</code> produces a plain scalar that resolves as an integer under the Core Schema. Selecting <code>Plain</code> explicitly allows this semantic change: <code>plain = false</code> does not require the writer to preserve source quotes.</p>
+
+</section>
+
+      <section id="json" class="section" aria-labelledby="json-title">
+        <div class="section-heading"><span class="section-number">04</span><h2 id="json-title">Bridge to JSON</h2><span class="tag">Optional</span></div>
+        <p>The optional <code>kotaml-json</code> artifact converts between YAML and kotlinx.serialization JSON trees. Select <strong>Include kotaml-json</strong> in the <a href="#install">installation options</a>. Projects that only use core kotaml do not need a dependency on <code>kotlinx-serialization-json</code>.</p>
+        <div class="code-block">
+          <div class="code-heading"><span>Kotlin</span><button type="button" data-copy="json-code" aria-label="Copy JSON conversion example" hidden>Copy</button></div>
+          <pre><code class="language-kotlin" id="json-code">import com.charleskorn.kaml.Yaml
+import com.charleskorn.kaml.json.toJsonElement
+import kotlinx.serialization.ExperimentalSerializationApi
+
+@OptIn(ExperimentalSerializationApi::class)
+fun main() {
+    val input = """
+        name: api
+        port: 8080
+    """.trimIndent()
+    val node = Yaml.default.parseToYamlNode(input)
+    val json = node.toJsonElement()
+    println(json) // {"name":"api","port":8080}
+}</code></pre>
+        </div>
+<h3 id="conversion-rules">Conversion rules</h3>
+<div class="code-block"><div class="code-heading"><span>kotlin</span><button type="button" data-copy="json-precision-code-1" aria-label="Copy json-precision example 1" hidden>Copy</button></div><pre><code class="language-kotlin" id="json-precision-code-1">val input = &quot;&quot;&quot;
+    name: &quot;123&quot;
+    port: 8080
+    ratio: 1.10
+    enabled: true
+&quot;&quot;&quot;.trimIndent()
+
+val json = Yaml.default.parseToYamlNode(input).toJsonElement()
+
+// {&quot;name&quot;:&quot;123&quot;,&quot;port&quot;:8080,&quot;ratio&quot;:1.10,&quot;enabled&quot;:true}
+println(Json.encodeToString(JsonElement.serializer(), json))</code></pre></div>
+
+<p>A quoted scalar without an explicit type tag becomes a JSON string, so <code>"123"</code> stays the string <code>"123"</code>. A plain scalar is resolved with the YAML 1.2 core schema, so <code>8080</code> becomes a number and <code>enabled: true</code> becomes a boolean. Numbers keep their original text wherever JSON allows it, so <code>1.10</code> does not become <code>1.1</code> and an integer too large for a <code>Long</code> keeps every digit.</p>
+<p>Plain <code>null</code>, <code>Null</code>, <code>NULL</code>, <code>~</code> and empty content become JSON null, including in manually constructed nodes: <code>YamlScalar("", path)</code> becomes null, while <code>YamlScalar("", path, plain = false)</code> stays an empty string. In YAML text, <code>value:</code> therefore becomes <code>{"value":null}</code>, and <code>value: ""</code> becomes <code>{"value":""}</code>. The converter always uses the Core Schema, including for plain scalars retained by legacy parsing.</p>
+<p>Explicit <code>!!int</code>, <code>!!bool</code> and <code>!!float</code> tags determine the type even when the scalar is quoted: <code>!!int "8080"</code> becomes the JSON number <code>8080</code>, <code>!!bool "false"</code> becomes <code>false</code>, and <code>!!float "1.50"</code> becomes the number <code>1.50</code>. Values incompatible with their tag, such as <code>!!int "hello"</code> or <code>!!int "1.5"</code>, throw <code>YamlException</code> with the value's path. <code>!!str</code> produces a string and <code>!!null</code> produces JSON null; other tags are discarded before converting their contents.</p>
+<p><code>.inf</code>, <code>-.inf</code> and <code>.nan</code> have no JSON representation. By default the conversion throws <code>NonFiniteNumberException</code>; pass <code>NonFiniteNumbers.AS_STRING</code> or <code>NonFiniteNumbers.AS_NULL</code> to convert them anyway.</p>
+<p>Both conversions are annotated with <code>@ExperimentalSerializationApi</code>. <code>toJsonElement</code> uses <code>JsonUnquotedLiteral</code> to preserve the exact text of numbers, and <code>toYamlNode</code> carries the same marker so that the pair stays opt-in together.</p>
+<h3 id="json-to-yaml">JSON to YAML</h3>
+<p>The same artifact converts the other way with <code>toYamlNode()</code>.</p>
+<div class="code-block"><div class="code-heading"><span>kotlin</span><button type="button" data-copy="json-reference-code-1" aria-label="Copy json-reference example 1" hidden>Copy</button></div><pre><code class="language-kotlin" id="json-reference-code-1">val json = Json.parseToJsonElement(&quot;&quot;&quot;{&quot;name&quot;:&quot;123&quot;,&quot;port&quot;:8080}&quot;&quot;&quot;)
+
+val node = json.toYamlNode()
+
+println(node.yamlMap.getScalar(&quot;port&quot;)!!.content) // 8080</code></pre></div>
+<p>This direction always succeeds. A JSON string becomes a quoted scalar, so it stays a string, and a JSON number or boolean becomes a plain scalar carrying its exact original text. Converting a valid JSON tree to YAML and back to JSON returns an equal JSON tree. Starting from YAML can normalize scalar text: for example, <code>007</code> becomes <code>7</code> after conversion to JSON and back.</p>
+<p>Nodes built this way are given the location line 1, column 1, because there is no source document behind them. Their paths identify a position in the tree, not in any text.</p>
+
+      </section>
+
+      <section id="features" class="section reference-section" aria-labelledby="features-title">
+<h2 id="features-title">YAML features</h2>
+<ul>
+<li><p>Supports most major YAML features:</p>
+<ul>
+<li>Scalars, including strings, booleans, integers and floats</li>
+<li><a href="https://yaml.org/type/seq.html">Sequences (lists)</a></li>
+<li><a href="https://yaml.org/type/map.html">Maps</a></li>
+<li><a href="https://yaml.org/type/null.html">Nulls</a></li>
+<li><a href="https://yaml.org/spec/1.2/spec.html#id2765878">Aliases and anchors</a>, including <a href="https://yaml.org/type/merge.html">merging aliases to form one map</a></li>
+</ul></li>
+<li><p>Supports parsing YAML to Kotlin objects (deserializing) and writing Kotlin objects as YAML (serializing)</p></li>
+</ul>
+<h3 id="polymorphism">Polymorphism</h3>
+<p>Supports <a href="https://github.com/Kotlin/kotlinx.serialization/blob/master/docs/polymorphism.md">kotlinx.serialization's polymorphism</a> for sealed and unsealed types</p>
+<p>Two styles are available (set <code>YamlConfiguration.polymorphismStyle</code> when creating an instance of <code>Yaml</code>):</p>
+<ul>
+<li><p>using <a href="https://yaml.org/spec/1.2/spec.html#id2761292">YAML tags</a> to specify the type:</p>
+<div class="code-block"><div class="code-heading"><span>yaml</span><button type="button" data-copy="features-code-1" aria-label="Copy features example 1" hidden>Copy</button></div><pre><code class="language-yaml" id="features-code-1">servers:
+  - !&lt;frontend&gt;
+    hostname: a.mycompany.com
+  - !&lt;backend&gt;
+    database: db-1</code></pre></div></li>
+<li><p>using a <code>type</code> property to specify the type:</p>
+<div class="code-block"><div class="code-heading"><span>yaml</span><button type="button" data-copy="features-code-2" aria-label="Copy features example 2" hidden>Copy</button></div><pre><code class="language-yaml" id="features-code-2">servers:
+  - type: frontend
+    hostname: a.mycompany.com
+  - type: backend
+    database: db-1</code></pre></div></li>
+</ul>
+<p>The fragments above could be generated with:</p>
+<div class="code-block"><div class="code-heading"><span>kotlin</span><button type="button" data-copy="features-code-3" aria-label="Copy features example 3" hidden>Copy</button></div><pre><code class="language-kotlin" id="features-code-3">@Serializable
+sealed class Server {
+    @SerialName(&quot;frontend&quot;)
+    @Serializable
+    data class Frontend(val hostname: String) : Server()
+
+    @SerialName(&quot;backend&quot;)
+    @Serializable
+    data class Backend(val database: String) : Server()
+}
+
+@Serializable
+data class Config(val servers: List&lt;Server&gt;)
+
+val config = Config(listOf(
+    Server.Frontend(&quot;a.mycompany.com&quot;),
+    Server.Backend(&quot;db-1&quot;)
+))
+
+val result = Yaml.default.encodeToString(Config.serializer(), config)
+
+println(result)</code></pre></div>
+<h3 id="anchors-merges-and-extension-fields">Anchors, merges and extension fields</h3>
+<p>Supports Docker Compose-style extension fields.</p>
+<div class="code-block"><div class="code-heading"><span>yaml</span><button type="button" data-copy="features-code-4" aria-label="Copy features example 4" hidden>Copy</button></div><pre><code class="language-yaml" id="features-code-4">x-common-labels: &amp;common-labels
+  labels:
+    owned-by: myteam@mycompany.com
+    cost-centre: myteam
+
+servers:
+  server-a:
+    &lt;&lt;: *common-labels
+    kind: frontend
+
+  server-b:
+    &lt;&lt;: *common-labels
+    kind: backend
+
+  # server-b and server-c are equivalent
+  server-c:
+    labels:
+      owned-by: myteam@mycompany.com
+      cost-centre: myteam
+    kind: backend</code></pre></div>
+<p>Specify the extension prefix by setting <code>YamlConfiguration.extensionDefinitionPrefix</code> when creating an instance of <code>Yaml</code> (eg. <code>"x-"</code> for the example above).</p>
+<p>Extensions can only be defined at the top level of a document, and only if the top level element is a map or object. Any key starting with the extension prefix must have an anchor defined (<code>&amp;...</code>) and will not be included in the deserialised value.</p>
+
+</section>
+
+      <section id="errors" class="section reference-section" aria-labelledby="errors-title">
+<h2 id="errors-title">Parser errors and source I/O</h2>
+<p>Invalid YAML, unsupported YAML versions and input-limit failures from the parser throw <code>MalformedYamlException</code>. Its <code>cause</code> retains the original engine exception. Marked failures carry the exact one-based line and column; unmarked failures carry the last reader cursor, which may precede the invalid content because of look-ahead. Invalid-character messages also include the available code-point offset and character code.</p>
+<p><code>decodeFromSource</code> propagates a source <code>IOException</code> unchanged, including when the YAML engine wrapped it. Kotaml does not retry reads. If the source failure is retryable, the caller should retry decoding from a fresh source starting at the beginning; a failed parser cannot resume. Cancellation, fatal errors and unrelated source programming errors are not converted to YAML syntax errors.</p>
+<p>YAML interprets an initial <code>*</code> as an alias reference and <code>!</code> as a tag. Quote literal patterns and names such as <code>"*.html"</code>, <code>"*.png"</code> and <code>"!.git"</code>. Diagnostics suggest quoting when the scanner confirms an alias, or an alias is undefined or disabled. A bare <code>!.git</code> tags an empty/null value: decoding it as non-null <code>String</code> reports the tag and preserves the original null failure as its cause. It still decodes as null for <code>String?</code>; supported tags and polymorphic dispatch keep their meaning.</p>
+
+</section>
+
+      <section id="migration" class="section reference-section" aria-labelledby="migration-title">
+<h2 id="migration-title">Migrating from 0.110</h2>
+<p><code>LegacyV0_110</code> is intended <strong>only for a quick upgrade to 0.111.0</strong> and <strong>will be removed in a future release</strong>. Use its diagnostics to migrate existing YAML, then remove the option and return to the default strict reader.</p>
+<div class="code-block"><div class="code-heading"><span>kotlin</span><button type="button" data-copy="migration-code-1" aria-label="Copy migration example 1" hidden>Copy</button></div><pre><code class="language-kotlin" id="migration-code-1">val compatibility = YamlReadCompatibility.LegacyV0_110(
+    onUse = { issue -&gt;
+        println(&quot;${issue.reason} at ${issue.path.toHumanReadableString()} &quot; +
+            &quot;(${issue.location.line}:${issue.location.column}): &quot; +
+            &quot;replace ${issue.originalValue} with ${issue.replacement}&quot;)
+    }
+)
+val yaml = Yaml(configuration = YamlConfiguration(readCompatibility = compatibility))</code></pre></div>
+<p>The mode accepts legacy signed radix integers (<code>-0x11</code>, <code>-0o11</code>), Unicode integer digits, floating point suffixes (<code>1f</code>, <code>1d</code>), <code>Infinity</code> / <code>-Infinity</code> / <code>NaN</code>, hexadecimal floats (<code>0x1p3</code>), and radix integers as floats (<code>0x2</code>, <code>0o2</code>, <code>0b10</code>). These forms are supported on every platform, including forms previously accepted only by JVM or JS. Integer range checks still apply.</p>
+<p>Unquoted <code>Null</code> and <code>NULL</code> remain strings in values and keys, including nullable string fields. Their diagnostics occur during parsing; numeric diagnostics occur when decoding a numeric type. Ordinary string values such as <code>Infinity</code> do not trigger numeric diagnostics. The callback is optional, runs synchronously, and may receive events before a later document error. Callback exceptions propagate.</p>
+<p><strong>Breaking in 0.111.0:</strong> strict reading rejects empty plain mapping keys, just as it rejects <code>null</code> and <code>~</code> keys. To use an empty string key, quote it:</p>
+<div class="code-block"><div class="code-heading"><span>yaml</span><button type="button" data-copy="migration-code-2" aria-label="Copy migration example 2" hidden>Copy</button></div><pre><code class="language-yaml" id="migration-code-2">? &quot;&quot;
+: 1</code></pre></div>
+<p><code>LegacyV0_110</code> preserves empty plain keys as empty strings and reports <code>LegacyNullKey</code> with <code>""</code> as the replacement. Empty values still resolve to null in both modes.</p>
+<p>Use this configured <code>Yaml</code> instance for both <code>parseToYamlNode</code> and typed decoding; an already resolved <code>YamlNull</code> cannot recover its original spelling. Direct scalar conversions require an explicit argument, for example <code>node.yamlScalar.toInt(compatibility)</code>. The parameterless scalar conversions remain strict.</p>
+<p>Encoding continues to use the new format. A typical migration reads a typed object with compatibility enabled, writes it back, and verifies that the strict reader can load the result. Parsing an untyped <code>YamlNode</code> does not infer numeric types for legacy numeric strings.</p>
+
+</section>
+
+      <section id="architecture" class="section architecture-section" aria-labelledby="architecture-title">
+        <div class="eyebrow">UNDER THE HOOD</div>
+        <h2 id="architecture-title">One API. Two different paths.</h2>
+        <p>Reading builds a <code>YamlNode</code> tree before decoding your model. Writing a model sends events directly to SnakeYAML’s emitter. An intermediate tree is not required for ordinary object encoding.</p>
+        <p class="small-note">These diagrams describe the implementation on <a href="https://github.com/Heapy/kotaml/tree/main">main</a>. They show the successful path; error handling is summarized in the accompanying text.</p>
+        <figure>
+          <div class="figure-heading"><h3>Component overview</h3><span>01 / 04</span></div>
+          <a class="diagram-link" href="diagrams/architecture.svg" aria-label="Open component diagram at full size"><img src="diagrams/architecture.svg" alt="Kotaml module boundary: Yaml exposes the API, reading combines parser, tree reader and decoder, and writing uses YamlOutput. SnakeYAML supplies parsing and emission. The optional kotaml-json module converts the public YamlNode tree." loading="lazy"></a>
+          <figcaption>The public API branches into reading and writing; the optional JSON module works with the public tree. <a href="diagrams/architecture.svg">Full size</a> · <a href="https://github.com/Heapy/kotaml/blob/main/docs/diagrams/architecture.puml">PlantUML source</a></figcaption>
+        </figure>
+      </section>
+
+      <section id="reading" class="section" aria-labelledby="reading-title">
+        <h2 id="reading-title">Reading a document</h2>
+        <p><code>YamlParser</code> wraps SnakeYAML events and normalizes parser failures. <code>YamlNodeReader</code> builds the tree and resolves aliases and merges. A concrete <code>YamlInput</code> then exposes the tree through the serialization decoder API.</p>
+        <figure>
+          <div class="figure-heading"><h3>Text → tree → Kotlin value</h3><span>02 / 04</span></div>
+          <a class="diagram-link" href="diagrams/reading.svg" aria-label="Open reading sequence diagram at full size"><img src="diagrams/reading.svg" alt="Reading sequence: Yaml creates the parser and reader, obtains a tree, checks the end of the stream, and invokes a deserializer through YamlInput. The deserializer calls decoder methods to read values." loading="lazy"></a>
+          <figcaption><code>parseToYamlNode</code> stops at the tree. <code>decodeFromYamlNode</code> starts there. <a href="diagrams/reading.svg">Full size</a> · <a href="https://github.com/Heapy/kotaml/blob/main/docs/diagrams/reading.puml">PlantUML source</a></figcaption>
+        </figure>
+        <p class="small-note">The node kind and <code>SerialDescriptor</code> jointly select the decoder. For example, a YAML mapping can become a Kotlin object through <code>YamlObjectInput</code> or a map through <code>YamlMapInput</code>.</p>
+      </section>
+
+      <section id="writing" class="section" aria-labelledby="writing-title">
+        <h2 id="writing-title">Writing a document</h2>
+        <p>The serializer calls <code>YamlOutput</code>, which applies naming, scalar styles and property annotations. It sends events to the emitter; an adapter writes the resulting text into an Okio sink.</p>
+        <figure>
+          <div class="figure-heading"><h3>Kotlin value → events → text</h3><span>03 / 04</span></div>
+          <a class="diagram-link" href="diagrams/writing.svg" aria-label="Open writing sequence diagram at full size"><img src="diagrams/writing.svg" alt="Writing sequence: Yaml creates an output and writer. The serializer calls encoder methods; YamlOutput emits SnakeYAML events that become UTF-8 text in a sink. The document is closed and the sink is flushed." loading="lazy"></a>
+          <figcaption>The caller’s sink is flushed, not closed. <a href="diagrams/writing.svg">Full size</a> · <a href="https://github.com/Heapy/kotaml/blob/main/docs/diagrams/writing.puml">PlantUML source</a></figcaption>
+        </figure>
+      </section>
+
+      <section id="model" class="section" aria-labelledby="model-title">
+        <h2 id="model-title">Know the core classes</h2>
+        <p>Every YAML value is one of five YamlNode types. Arrows show inheritance; fields show how lists, maps and tags contain child nodes. All nodes carry a path and source location.</p>
+        <figure>
+          <div class="figure-heading"><h3>The YAML tree</h3><span>04 / 04</span></div>
+          <a class="diagram-link" href="diagrams/model.svg" aria-label="Open YAML class diagram at full size"><img src="diagrams/model.svg" alt="Five node kinds inherit from YamlNode: scalar text, null, ordered list, map with scalar keys, and a tag wrapping a child. Child field types express containment. Every node carries a path and a location derived from that path." loading="lazy"></a>
+          <figcaption>Mapping keys are <code>YamlScalar</code> nodes. <a href="diagrams/model.svg">Full size</a> · <a href="https://github.com/Heapy/kotaml/blob/main/docs/diagrams/model.puml">PlantUML source</a></figcaption>
+        </figure>
+        <div class="table-scroll" role="region" aria-label="Core class responsibilities" tabindex="0">
+          <table>
+            <thead><tr><th>Class / family</th><th>Responsibility</th></tr></thead>
+            <tbody>
+              <tr><td><a href="https://github.com/Heapy/kotaml/blob/main/src/commonMain/kotlin/com/charleskorn/kaml/Yaml.kt">Yaml</a></td><td>Public entry point; owns configuration and a serializers module.</td></tr>
+              <tr><td><a href="https://github.com/Heapy/kotaml/blob/main/src/commonMain/kotlin/com/charleskorn/kaml/YamlNodeReader.kt">YamlNodeReader</a></td><td>Consumes parser events, builds nodes and resolves aliases/merges.</td></tr>
+              <tr><td><a href="https://github.com/Heapy/kotaml/blob/main/src/commonMain/kotlin/com/charleskorn/kaml/YamlInput.kt">YamlInput</a></td><td>Decoder base and factory; selects scalar, null, list, object, map, contextual or polymorphic decoding.</td></tr>
+              <tr><td><a href="https://github.com/Heapy/kotaml/blob/main/src/commonMain/kotlin/com/charleskorn/kaml/YamlOutput.kt">YamlOutput</a></td><td>Encoder that turns serializer calls into emitter events.</td></tr>
+              <tr><td><a href="https://github.com/Heapy/kotaml/blob/main/src/commonMain/kotlin/com/charleskorn/kaml/YamlPath.kt">YamlPath</a> / <a href="https://github.com/Heapy/kotaml/blob/main/src/commonMain/kotlin/com/charleskorn/kaml/Location.kt">Location</a></td><td>Identify a position in a tree and one-based source coordinates.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="contributing" class="section reference-section" aria-labelledby="contributing-title">
+<h2 id="contributing-title">Contributing</h2>
+<p>Pull requests and bug reports are always welcome!</p>
+<p>kotaml uses Gradle for builds and testing:</p>
+<ul>
+<li>To build the library: <code>./gradlew assemble</code></li>
+<li>To run the tests and static analysis tools: <code>./gradlew check</code></li>
+<li>To run the tests and static analysis tools continuously: <code>./gradlew --continuous check</code></li>
+</ul>
+<h3 id="references">References</h3>
+<ul>
+<li><a href="http://yaml.org/spec/1.2/spec.html">YAML 1.2 Specification</a></li>
+<li><a href="https://github.com/krzema12/snakeyaml-engine-kmp">snakeyaml-engine-kmp</a>, a Kotlin Multiplatform port of <a href="https://bitbucket.org/snakeyaml/snakeyaml-engine/wiki/Home">snakeyaml-engine</a>, the YAML parser this library is based on</li>
+</ul>
+
+</section>
+
+      <section id="next" class="section next-section" aria-labelledby="next-title">
+        <h2 id="next-title">Ready for your own config?</h2>
+        <p>Try the runnable examples, follow new releases, or help improve kotaml. This page is the home for installation, usage and behavior reference.</p>
+        <div class="next-links">
+          <a href="https://github.com/Heapy/kotaml/releases">Release notes <span aria-hidden="true">↗</span></a>
+          <a href="https://github.com/Heapy/kotaml/tree/main/docs/examples">Run the examples <span aria-hidden="true">↗</span></a>
+          <a href="https://github.com/Heapy/kotaml/issues">Report an issue <span aria-hidden="true">↗</span></a>
+        </div>
+      </section>
+      <footer>kotaml is a supported fork of <a href="https://github.com/charleskorn/kaml">kaml</a> by Charles Korn. <a href="https://github.com/Heapy/kotaml/blob/main/LICENSE">Apache 2.0</a>.<br>Diagrams are maintained as PlantUML alongside the code.</footer>
+    </main>
+  </div>
+  <p id="copy-status" class="sr-only" role="status" aria-live="polite"></p>
+</body>
+</html>

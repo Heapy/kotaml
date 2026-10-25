@@ -1,0 +1,34 @@
+@startuml
+!include theme.puml.inc
+top to bottom direction
+skinparam nodesep 40
+skinparam ranksep 40
+
+package "kotaml · YAML format" {
+  component "<b>Yaml</b>\nPublic API for models and trees\n\nYamlConfiguration · SerializersModule" as yaml #DCEEE7
+
+  together {
+    component "<b>Reading</b>\nYamlParser · syntax events\nYamlNodeReader · aliases, merges, tree\nYamlInput family · Decoder" as reading
+    component "<b>Writing</b>\nYamlOutput · Encoder\n\nNaming, styles, comments → events" as writing
+  }
+
+  component "<b>YamlNode</b>\nPublic value tree\nScalars · nulls · lists · maps · tags" as tree #DCEEE7
+}
+
+component "<b>SnakeYAML Engine KMP</b>\nYAML syntax parser + emitter\nSource / Sink adapters use Okio" as engine #F0F2F5
+component "<b>kotaml-json</b> · optional module\nYamlNode ↔ JsonElement\nUses kotlinx.serialization.json" as json #FFF4DF
+
+yaml --> reading : decode / parse
+yaml --> writing : encode
+reading --> tree : builds and decodes
+reading --> engine : parser
+writing --> engine : emitter
+json -up-> tree : converts
+engine -[hidden]right-> json
+
+legend bottom
+  <b>Integration with kotlinx.serialization</b>
+  Your serializer calls YamlInput (Decoder) or YamlOutput (Encoder).
+  Reading builds a tree; writing a Kotlin model emits events directly.
+endlegend
+@enduml

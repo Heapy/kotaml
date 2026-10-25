@@ -1,0 +1,46 @@
+@startuml
+!include theme.puml.inc
+title Reading: YAML text to a Kotlin value
+actor Caller
+participant Yaml
+participant YamlNodeReader as Reader
+participant YamlParser as Parser
+participant "SnakeYAML\nParserImpl" as Engine
+participant "YamlInput\nconcrete decoder" as Input
+participant "DeserializationStrategy<T>" as Serializer
+
+Caller -> Yaml : decodeFromString(deserializer, text)
+Yaml -> Yaml : decodeFromSource(deserializer, source)
+Yaml -> Parser : create(source, codePointLimit)
+Parser -> Engine : create parser / read stream start
+Yaml -> Reader : create(parser, read policies)
+Yaml -> Reader : read()
+loop Until the root node is complete
+  Reader -> Parser : peekEvent / consumeEvent(path)
+  Parser -> Engine : peekEvent / next
+  Engine --> Parser : Event with source marks
+  Parser --> Reader : Event
+  Reader -> Reader : build nodes; resolve aliases / merges
+end
+Reader --> Yaml : root YamlNode
+Yaml -> Parser : ensureEndOfStreamReached()
+note over Yaml, Reader
+  parseToYamlNode returns the tree at this point.
+  Parser errors carry YAML paths and source locations.
+end note
+Yaml -> Input : createFor(rootNode, descriptor, context)
+note over Input
+  Both node kind and descriptor kind select the decoder.
+  A YamlMap can decode as an object or a map.
+end note
+Yaml -> Input : decodeSerializableValue(deserializer)
+Input -> Serializer : deserialize(decoder)
+loop Properties, elements and nested values
+  Serializer -> Input : beginStructure / decode* / endStructure
+  Input -> Input : read nodes; create child decoders
+  Input --> Serializer : decoded values
+end
+Serializer --> Input : T
+Input --> Yaml : T
+Yaml --> Caller : T
+@enduml

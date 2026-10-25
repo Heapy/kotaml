@@ -1,0 +1,25 @@
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 14
+skinparam defaultFontColor #203A43
+skinparam shadowing false
+skinparam roundCorner 10
+skinparam ArrowColor #50757A
+skinparam ArrowThickness 1.3
+skinparam NoteBackgroundColor #FFF4DF
+skinparam NoteBorderColor #D7B77A
+skinparam packageStyle rectangle
+skinparam packageBorderColor #BED0CE
+skinparam packageBackgroundColor #F5F9F8
+skinparam componentStyle rectangle
+skinparam componentBackgroundColor #EAF4F1
+skinparam componentBorderColor #739C94
+skinparam classBackgroundColor #EAF4F1
+skinparam classBorderColor #739C94
+skinparam classAttributeIconSize 0
+skinparam sequenceParticipantBackgroundColor #EAF4F1
+skinparam sequenceParticipantBorderColor #739C94
+skinparam sequenceLifeLineBorderColor #BED0CE
+skinparam sequenceGroupBorderColor #BED0CE
+skinparam sequenceGroupBackgroundColor #F5F9F8
+hide footbox

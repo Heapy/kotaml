@@ -1,0 +1,45 @@
+@startuml
+!include theme.puml.inc
+title Writing: a Kotlin value to YAML text
+actor Caller
+participant Yaml
+participant YamlOutput as Output
+participant "SerializationStrategy<T>" as Serializer
+participant "SnakeYAML\nEmitter" as Emitter
+participant "BufferedSinkDataWriter" as Writer
+participant "Okio BufferedSink" as Sink
+
+Caller -> Yaml : encodeToString(serializer, value)
+Yaml -> Sink : create Buffer
+Yaml -> Writer : create(sink)
+Yaml -> Output : create(writer, module, configuration)
+Output -> Emitter : StreamStart / DocumentStart
+Yaml -> Output : encodeSerializableValue(serializer, value)
+Output -> Serializer : serialize(encoder, value)
+loop Properties, elements and nested values
+  Serializer -> Output : beginStructure / encode* / endStructure
+  Output -> Output : apply naming, styles, annotations
+  Output -> Emitter : scalar / collection / comment events
+  Emitter -> Writer : write(text) when ready
+  Writer -> Sink : writeUtf8(text)
+end
+Serializer --> Output : done
+Output --> Yaml : done
+Yaml -> Output : close()
+Output -> Emitter : DocumentEnd / StreamEnd
+Emitter -> Writer : write remaining text / flush
+Writer -> Sink : writeUtf8 / flush
+Yaml -> Writer : close() = flush()
+Yaml -> Sink : readUtf8()
+Sink --> Yaml : YAML text
+Yaml --> Caller : String
+
+note over Output, Serializer
+  Ordinary object encoding does not create a YamlNode tree.
+  YamlNode.serializer() is an optional route for an existing tree.
+end note
+note over Writer, Sink
+  For encodeToSink, the caller supplies the sink.
+  Kotaml flushes it but does not close it.
+end note
+@enduml

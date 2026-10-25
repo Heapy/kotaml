@@ -1,0 +1,14 @@
+{
+  "generator": "PlantUML version 1.2026.8 / 149874a [2026-09-05 15:59:17 UTC]",
+  "files": {
+    "diagrams/architecture.puml": "0d0b4d992d84d86d2ece92f540730ed073b12a24aa73fb490398127130ca4d97",
+    "diagrams/model.puml": "95115ca8109fca51dad51816e9fa3e56b3066369896dc8c8644ac90429874c49",
+    "diagrams/reading.puml": "fd3ff42a9628da3552da00fb0b70ab1374ec7c33182347c976f0696c573d4c58",
+    "diagrams/writing.puml": "a97e97baac013f3fa973d59236e99e7f96df9866442fbf80f5610c50cb1ee454",
+    "diagrams/theme.puml.inc": "7e828529e174cc0d7c7220b706492f92f4e7553af945a8c6e7ec51e1fe4e8590",
+    "site/diagrams/architecture.svg": "bac4b5a362f56e8001d01b1c751ee0de31f118d38b6735a1c3edd7f973b54ad6",
+    "site/diagrams/model.svg": "9f6f188f57b3e665764cced2126d3a1b7c945258ce95e7ab85d8bd410f1be6ca",
+    "site/diagrams/reading.svg": "76c50271089a98cedefcfe5d346e7a0d657edc5ba6d79c6ebef9c36ee8b80c1c",
+    "site/diagrams/writing.svg": "147ebf038d4c6017a7a1b086f25560684a6bc55e8b723758706965c757a2ca4a"
+  }
+}
