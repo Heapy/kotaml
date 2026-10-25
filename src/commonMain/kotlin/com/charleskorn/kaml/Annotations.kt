@@ -23,8 +23,10 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialInfo
 
 /**
- * Adds a comment block before property on serialization
- * @property lines comment lines to add
+ * Adds a comment block before a property during serialization.
+ * Each argument is split on LF, CRLF, or CR, and every resulting line is prefixed with `# `.
+ * Indentation, blank lines, and trailing spaces are preserved; no trimming is applied.
+ * @property lines comment text to add, as separate lines or multiline strings
  */
 @OptIn(ExperimentalSerializationApi::class)
 @Target(AnnotationTarget.PROPERTY)

@@ -1526,7 +1526,7 @@ class YamlWritingTest :
 
             context("handling comments") {
                 context("comments in kotlin object") {
-                    val input = SimpleStructureWithComments("objName", 73, "justTest")
+                    val input = SimpleStructureWithComments("objName", 73, "justTest", false)
 
                     test("is written") {
                         Yaml.default.encodeToString(SimpleStructureWithComments.serializer(), input) shouldBe
@@ -1537,6 +1537,9 @@ class YamlWritingTest :
                             # Testing
                             # multiline
                             test: "justTest"
+                            # Testing
+                            # multiline
+                            debug: false
                             """.trimIndent() + "\n"
                     }
                 }
@@ -1564,6 +1567,8 @@ private data class SimpleStructureWithComments(
         "multiline",
     )
     val test: String,
+    @YamlComment("Testing\nmultiline")
+    val debug: Boolean,
 )
 
 @Serializable

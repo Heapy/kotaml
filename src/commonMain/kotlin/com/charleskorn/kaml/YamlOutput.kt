@@ -256,7 +256,7 @@ internal class YamlOutput(
     ) {
         val commentAnno = descriptor.getAnnotation<YamlComment>(index) ?: return
 
-        for (line in commentAnno.lines) {
+        for (line in commentAnno.lines.flatMap { it.lines() }) {
             emitter.emit(CommentEvent(CommentType.BLOCK, " $line", null, null))
         }
     }
