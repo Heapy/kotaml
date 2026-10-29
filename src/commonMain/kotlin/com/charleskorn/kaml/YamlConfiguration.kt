@@ -37,7 +37,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
  * with [YamlSingleLineStringStyle].
  * @param multiLineStringStyle default style for strings containing line breaks; overridable
  * with [YamlMultiLineStringStyle].
- * @param ambiguousQuoteStyle quotes used by [SingleLineStringStyle.PlainExceptAmbiguous] and for null-like strings.
+ * @param ambiguousQuoteStyle quotes used by [SingleLineStringStyle.PlainExceptAmbiguous] and for null-like or merge-key strings.
  * @param sequenceBlockIndent indentation of sequence indicators in block layout, in spaces.
  * @param anchorsAndAliases whether anchors and aliases are accepted, and the alias expansion limit.
  * @param yamlNamingStrategy transforms object property names for both reading and writing; `null` leaves them unchanged.
@@ -134,7 +134,7 @@ public enum class SingleLineStringStyle {
     DoubleQuoted,
     SingleQuoted,
 
-    /** Uses plain style where possible, quoting null-like text so it remains readable as a string. */
+    /** Uses plain style where possible, quoting null-like text and `<<` so values and map keys retain their meaning. */
     Plain,
 
     /**
@@ -157,7 +157,7 @@ public enum class SingleLineStringStyle {
 /**
  * Chooses quotes for strings that cannot safely use a requested plain style.
  *
- * This applies to null-like text under either plain single-line style, and to other ambiguous
+ * This applies to null-like text and `<<` under either plain single-line style, and to other ambiguous
  * values under [SingleLineStringStyle.PlainExceptAmbiguous].
  */
 public enum class AmbiguousQuoteStyle {

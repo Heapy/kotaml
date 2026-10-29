@@ -137,10 +137,10 @@ internal class YamlOutput(
     ) {
         val style = forcedSingleLineScalarStyle ?: configuration.singleLineStringStyle
         val scalarStyle = style.scalarStyle
-        // Plain null spellings lose their text in the reader, including enum values and map keys.
-        val quoteNull = scalarStyle == ScalarStyle.PLAIN && value.isNullLiteral()
-        val quoteAmbiguous = !quoteNull && style == SingleLineStringStyle.PlainExceptAmbiguous && value.isAmbiguous(scalarKind)
-        emitScalar(value, if (quoteNull || quoteAmbiguous) configuration.ambiguousQuoteStyle.scalarStyle else scalarStyle)
+        // Null spellings lose their text, and << becomes a merge directive when used as a map key.
+        val quoteReserved = scalarStyle == ScalarStyle.PLAIN && (value.isNullLiteral() || value == "<<")
+        val quoteAmbiguous = !quoteReserved && style == SingleLineStringStyle.PlainExceptAmbiguous && value.isAmbiguous(scalarKind)
+        emitScalar(value, if (quoteReserved || quoteAmbiguous) configuration.ambiguousQuoteStyle.scalarStyle else scalarStyle)
     }
 
     private fun emitPlainScalar(value: String) = emitScalar(value, ScalarStyle.PLAIN)
@@ -274,7 +274,20 @@ internal class YamlOutput(
         }
 
         val implicit = if (tag != null) ALL_EXPLICIT else ALL_IMPLICIT
-        emitter.emit(ScalarEvent(null, tag, implicit, value, style))
+        // SnakeYAML Engine 5.0 misses LF after an internal colon when choosing plain style.
+        // Such text can be parsed as a mapping instead of a scalar, including in explicit keys.
+        val unsafePlain = style == ScalarStyle.PLAIN && value.contains(":\n")
+        // Engine wrapping loses spaces on more-indented folded lines. Literal style
+        // preserves those lines without introducing additional semantic line breaks.
+        val unsafeFolded = style == ScalarStyle.FOLDED && (value.startsWith(' ') || value.contains("\n "))
+        // Escape non-LF line breaks: the parser normalizes them in unescaped scalar styles.
+        val safeStyle =
+            when {
+                unsafePlain || value.any { it == '\r' || it == '\u0085' || it == '\u2028' || it == '\u2029' } -> ScalarStyle.DOUBLE_QUOTED
+                unsafeFolded -> ScalarStyle.LITERAL
+                else -> style
+            }
+        emitter.emit(ScalarEvent(null, tag, implicit, value, safeStyle))
     }
 
     private fun getAndClearTypeName(): String? {
