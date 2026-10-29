@@ -27,6 +27,15 @@ import org.gradle.kotlin.dsl.withType
 fun Project.configureTesting() {
     tasks.withType<Test> {
         useJUnitPlatform()
+        // Keep failed property seeds local to this module, including in isolated mutation runs.
+        environment(
+            "XDG_CACHE_HOME",
+            layout.buildDirectory
+                .dir("kotest-cache")
+                .get()
+                .asFile.absolutePath,
+        )
+        providers.gradleProperty("propertySeed").orNull?.let { systemProperty("kotest.proptest.default.seed", it) }
 
         testLogging {
             events("failed")

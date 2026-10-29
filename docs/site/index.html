@@ -535,6 +535,14 @@ val yaml = Yaml(configuration = YamlConfiguration(readCompatibility = compatibil
 <li>To run the tests and static analysis tools: <code>./gradlew check</code></li>
 <li>To run the tests and static analysis tools continuously: <code>./gradlew --continuous check</code></li>
 </ul>
+<h3 id="generative-testing">Randomized and property tests</h3>
+<p>The common test suites generate strings, serializable models, recursive collections and JSON trees. They check round trips, numeric spelling and types, relocated paths, collection tags, merge precedence, and depth and alias budgets. Random edits to YAML documents must produce a tree or a located <code>YamlException</code>; unexpected runtime errors fail the test.</p>
+<p>Each property runs 150 cases with a fixed seed and another 150 with a fresh seed. Kotest shrinks failures and prints the seed and counterexample. The tests run in the normal JVM, JS, Wasm and Native test tasks. On JVM, failed seeds are saved under each module’s <code>build/kotest-cache</code> and replayed automatically.</p>
+<pre><code class="language-bash">./gradlew :jvmTest --tests com.charleskorn.kaml.YamlRoundTripPropertyTest --tests com.charleskorn.kaml.YamlReaderPropertyTest :kotaml-json:jvmTest --tests com.charleskorn.kaml.json.JsonConversionPropertyTest
+# Replay the exploratory corpus with the seed printed by Kotest:
+./gradlew jvmTest -PpropertySeed=20261025
+# Run the same common tests on other targets:
+./gradlew jsNodeTest wasmJsNodeTest macosArm64Test</code></pre>
 <h3 id="references">References</h3>
 <ul>
 <li><a href="http://yaml.org/spec/1.2/spec.html">YAML 1.2 Specification</a></li>
