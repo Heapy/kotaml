@@ -543,6 +543,13 @@ val yaml = Yaml(configuration = YamlConfiguration(readCompatibility = compatibil
 ./gradlew jvmTest -PpropertySeed=20261025
 # Run the same common tests on other targets:
 ./gradlew jsNodeTest wasmJsNodeTest macosArm64Test</code></pre>
+<h3 id="mutation-testing">Mutation tests</h3>
+<p>The targeted mutation runner changes one production expression at a time in an isolated temporary copy, then runs the property suites and writer regressions on JVM. Its catalogue covers depth and alias boundaries, merge precedence, scalar quoting and radix conversion, JSON type preservation, paths and non-finite policies. It checks the unchanged baseline before and after the mutations.</p>
+<pre><code class="language-bash">kotlinr scripts/mutation-test.main.kts --list
+kotlinr scripts/mutation-test.main.kts
+# Run a single mutation:
+kotlinr scripts/mutation-test.main.kts alias-depth</code></pre>
+<p>Use the Kotlin and JDK versions configured in the Mutation tests workflow. Reports, Gradle logs and JUnit XML are written to <code>build/reports/mutation/&lt;run-id&gt;</code>. A mutation counts as killed only when tests execute and fail. Survivors, compiler errors, missing tests and timeouts fail the command; errors and timeouts never count as kills. This is a curated mutation catalogue, not an exhaustive mutation score for the library. The Mutation tests workflow runs on relevant pull requests and can also be started manually.</p>
 <h3 id="fuzzing">Coverage-guided fuzzing</h3>
 <p>The JVM-only <code>fuzzing</code> module uses <a href="https://github.com/CodeIntelligenceTesting/jazzer">Jazzer</a> to mutate inputs using coverage feedback from kotaml and SnakeYAML Engine. The reader target checks bounded YAML parsing and agreement between String and Source APIs. Only a located <code>YamlException</code> is accepted as an input rejection. The writer target checks exact round trips of strings and a model containing map keys, nullable list items and defaults across formatting configurations.</p>
 <pre><code class="language-bash"># Fast corpus regression; also included in the normal ./gradlew check on PRs:
