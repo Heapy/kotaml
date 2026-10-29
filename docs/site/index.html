@@ -543,6 +543,17 @@ val yaml = Yaml(configuration = YamlConfiguration(readCompatibility = compatibil
 ./gradlew jvmTest -PpropertySeed=20261025
 # Run the same common tests on other targets:
 ./gradlew jsNodeTest wasmJsNodeTest macosArm64Test</code></pre>
+<h3 id="fuzzing">Coverage-guided fuzzing</h3>
+<p>The JVM-only <code>fuzzing</code> module uses <a href="https://github.com/CodeIntelligenceTesting/jazzer">Jazzer</a> to mutate inputs using coverage feedback from kotaml and SnakeYAML Engine. The reader target checks bounded YAML parsing and agreement between String and Source APIs. Only a located <code>YamlException</code> is accepted as an input rejection. The writer target checks exact round trips of strings and a model containing map keys, nullable list items and defaults across formatting configurations.</p>
+<pre><code class="language-bash"># Fast corpus regression; also included in the normal ./gradlew check on PRs:
+./gradlew :fuzzing:test
+# Search for new inputs (separate JVM per target):
+./gradlew :fuzzing:fuzzReader :fuzzing:fuzzWriter -PfuzzDuration=5m
+# Short local exploration:
+./gradlew :fuzzing:fuzzWriter -PfuzzDuration=30s</code></pre>
+<p>Each target accepts at most 4096 input bytes and has a 10-second per-input timeout. The reader additionally limits depth to 20 and alias expansion weight to 64. Each fuzz task defaults to five minutes and a 1 GiB JVM heap. The daily workflow searches both targets and retains the generated corpus between runs; manual runs can select 30 seconds, five minutes or ten minutes per target. Test and coverage reports, findings and the corpus are uploaded even when a search fails.</p>
+<p>Checked-in seeds live under <code>fuzzing/src/test/resources/com/charleskorn/kaml/fuzz</code>. Reader seeds contain UTF-8 YAML. Writer seeds start with an options byte, followed by UTF-8 text: bits 0–1 select the single-line style, bits 2–4 select the multiline style modulo five, bit 5 selects flow sequences and bit 6 disables default encoding. Their bytes are preserved by <code>.gitattributes</code>. Invalid UTF-8 is replaced before testing, so these targets test YAML and string handling rather than UTF-8 validation.</p>
+<p>New coverage inputs go to <code>fuzzing/.cifuzz-corpus</code>; failing inputs are saved beside the checked-in seeds. Coverage reports and Java reproducers go to <code>fuzzing/build/fuzz</code>. Re-run <code>./gradlew :fuzzing:test</code> to reproduce a saved failure without further fuzzing. Reduce each finding to a small regression in <code>commonTest</code>, verify it on JVM, JS, Wasm and Native, and retain the original input as a corpus seed. A finite search without findings does not establish correctness for all inputs.</p>
 <h3 id="references">References</h3>
 <ul>
 <li><a href="http://yaml.org/spec/1.2/spec.html">YAML 1.2 Specification</a></li>

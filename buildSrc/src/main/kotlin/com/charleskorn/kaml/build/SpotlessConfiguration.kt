@@ -69,7 +69,7 @@ fun Project.configureSpotless() {
         }
 
         kotlinGradle {
-            target("*.gradle.kts", "gradle/*.gradle.kts", "buildSrc/*.gradle.kts", "kotaml-json/*.gradle.kts")
+            target("*.gradle.kts", "gradle/*.gradle.kts", "buildSrc/*.gradle.kts", "kotaml-json/*.gradle.kts", "fuzzing/*.gradle.kts")
             ktlint("1.8.0")
 
             @Suppress("INACCESSIBLE_TYPE")
@@ -81,7 +81,7 @@ fun Project.configureSpotless() {
         }
 
         kotlin {
-            target("src/**/*.kt", "buildSrc/**/*.kt", "kotaml-json/src/**/*.kt")
+            target("src/**/*.kt", "buildSrc/**/*.kt", "kotaml-json/src/**/*.kt", "fuzzing/src/**/*.kt")
             ktlint("1.8.0")
 
             @Suppress("INACCESSIBLE_TYPE")

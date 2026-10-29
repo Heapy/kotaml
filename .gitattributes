@@ -1,0 +1,2 @@
+# Preserve fuzz corpus bytes, including line endings and option bytes.
+fuzzing/src/test/resources/** binary

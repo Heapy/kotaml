@@ -26,6 +26,7 @@ import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrLink
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
+    alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotest)

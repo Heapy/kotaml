@@ -13,3 +13,6 @@ publish.sh
 
 # macOS
 .DS_Store
+
+# Coverage-guided fuzzing corpus (seed regressions live in src/test/resources)
+.cifuzz-corpus/

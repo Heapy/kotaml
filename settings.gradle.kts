@@ -20,3 +20,4 @@
 rootProject.name = "kotaml"
 
 include(":kotaml-json")
+include(":fuzzing")

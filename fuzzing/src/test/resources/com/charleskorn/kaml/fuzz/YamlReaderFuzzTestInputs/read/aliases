@@ -1,0 +1,2 @@
+base: &base {value: 1}
+copy: {<<: *base}
