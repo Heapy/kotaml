@@ -9,8 +9,8 @@ repositories {
 }
 
 dependencies {
-    implementation("io.heapy.kotaml:kotaml:0.112.0")
-    implementation("io.heapy.kotaml:kotaml-json:0.112.0")
+    implementation("io.heapy.kotaml:kotaml:0.113.0")
+    implementation("io.heapy.kotaml:kotaml-json:0.113.0")
 }
 
 application {
