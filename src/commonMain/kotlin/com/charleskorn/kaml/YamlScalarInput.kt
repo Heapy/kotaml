@@ -25,7 +25,7 @@ import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.modules.SerializersModule
 
 /**
- * Decodes scalar text with the configured numeric compatibility and enum case policies.
+ * Decodes scalar text using YAML numeric syntax and the configured enum case policy.
  * Exact enum names take precedence over case-insensitive matches.
  */
 @OptIn(ExperimentalSerializationApi::class)
@@ -37,17 +37,17 @@ internal class YamlScalarInput(
 ) : YamlInput(scalar, yaml, context, configuration) {
     override fun decodeString(): String = scalar.content
 
-    override fun decodeInt(): Int = scalar.toInt(configuration.readCompatibility)
+    override fun decodeInt(): Int = scalar.toInt()
 
-    override fun decodeLong(): Long = scalar.toLong(configuration.readCompatibility)
+    override fun decodeLong(): Long = scalar.toLong()
 
-    override fun decodeShort(): Short = scalar.toShort(configuration.readCompatibility)
+    override fun decodeShort(): Short = scalar.toShort()
 
-    override fun decodeByte(): Byte = scalar.toByte(configuration.readCompatibility)
+    override fun decodeByte(): Byte = scalar.toByte()
 
-    override fun decodeDouble(): Double = scalar.toDouble(configuration.readCompatibility)
+    override fun decodeDouble(): Double = scalar.toDouble()
 
-    override fun decodeFloat(): Float = scalar.toFloat(configuration.readCompatibility)
+    override fun decodeFloat(): Float = scalar.toFloat()
 
     override fun decodeBoolean(): Boolean = scalar.toBoolean()
 

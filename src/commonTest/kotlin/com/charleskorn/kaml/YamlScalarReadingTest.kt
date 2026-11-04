@@ -33,6 +33,50 @@ import kotlinx.serialization.builtins.serializer
 
 class YamlScalarReadingTest :
     FlatFunSpec({
+        for (text in listOf("-0x11", "-0o11", "٣", "１２", "-１２", "0xＦＦ")) {
+            test("rejects non-Core integer syntax '$text' in typed decoding and scalar conversions") {
+                val scalar = Yaml.default.parseToYamlNode(text).yamlScalar
+                shouldThrow<YamlScalarFormatException> { scalar.toByte() }
+                shouldThrow<YamlScalarFormatException> { scalar.toShort() }
+                shouldThrow<YamlScalarFormatException> { scalar.toInt() }
+                shouldThrow<YamlScalarFormatException> { scalar.toLong() }
+                shouldThrow<YamlScalarFormatException> { Yaml.default.decodeFromString(Byte.serializer(), text) }
+                shouldThrow<YamlScalarFormatException> { Yaml.default.decodeFromString(Short.serializer(), text) }
+                shouldThrow<YamlScalarFormatException> { Yaml.default.decodeFromString(Int.serializer(), text) }
+                shouldThrow<YamlScalarFormatException> { Yaml.default.decodeFromString(Long.serializer(), text) }
+                Yaml.default.decodeFromString(String.serializer(), text) shouldBe text
+            }
+        }
+
+        for (text in listOf(
+            "1f",
+            "1d",
+            "1F",
+            "1D",
+            "0x1p3",
+            "-0x1.8p+2",
+            "0X1.Ap2F",
+            "0x2",
+            "0o11",
+            "0b101",
+            "Infinity",
+            "+Infinity",
+            "-Infinity",
+            "NaN",
+            "+NaN",
+            "-NaN",
+            "-0.0f",
+        )) {
+            test("rejects non-Core floating point syntax '$text' in typed decoding and scalar conversions") {
+                val scalar = Yaml.default.parseToYamlNode(text).yamlScalar
+                shouldThrow<YamlScalarFormatException> { scalar.toFloat() }
+                shouldThrow<YamlScalarFormatException> { scalar.toDouble() }
+                shouldThrow<YamlScalarFormatException> { Yaml.default.decodeFromString(Float.serializer(), text) }
+                shouldThrow<YamlScalarFormatException> { Yaml.default.decodeFromString(Double.serializer(), text) }
+                Yaml.default.decodeFromString(String.serializer(), text) shouldBe text
+            }
+        }
+
         context("a YAML parser parsing scalars") {
             context("given the input 'hello'") {
                 val input = "hello"

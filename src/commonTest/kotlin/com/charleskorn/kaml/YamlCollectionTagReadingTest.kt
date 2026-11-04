@@ -100,10 +100,6 @@ class YamlCollectionTagReadingTest :
                 error.message shouldBe "Tag '!!$tag' requires a $kind value."
                 error.location shouldBe Location(1, 1)
             }
-            test("legacy scalar compatibility does not allow mismatched !!$tag") {
-                val yaml = Yaml(configuration = YamlConfiguration(readCompatibility = YamlReadCompatibility.LegacyV0_110()))
-                shouldThrow<MalformedYamlException> { yaml.parseToYamlNode("!!$tag hello") }
-            }
             test("validates !!$tag even in an ignored object property") {
                 val yaml = Yaml(configuration = YamlConfiguration(strictMode = false))
                 shouldThrow<MalformedYamlException> { yaml.decodeFromString<CollectionTagProperty>("value: ok\nignored: !!$tag hello") }

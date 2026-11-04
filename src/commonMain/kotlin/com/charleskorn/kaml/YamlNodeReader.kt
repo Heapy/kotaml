@@ -42,7 +42,6 @@ internal class YamlNodeReader(
     private val parser: YamlParser,
     private val extensionDefinitionPrefix: String? = null,
     private val maxAliasCount: UInt? = 0u,
-    private val readCompatibility: YamlReadCompatibility = YamlReadCompatibility.Strict,
     private val maxNestingDepth: Int = 50,
 ) {
     private val aliases = mutableMapOf<Anchor, WeightedNode>()
@@ -138,14 +137,9 @@ internal class YamlNodeReader(
         event: ScalarEvent,
         path: YamlPath,
     ): YamlNode {
-        // Explicit string tags take precedence over implicit null resolution and migration rules.
+        // Explicit string tags take precedence over implicit null resolution.
         if (event.isExplicitString) {
             return YamlScalar(event.value, path, plain = false)
-        }
-
-        if (event.plain && event.value in LEGACY_NULL_STRINGS && readCompatibility is YamlReadCompatibility.LegacyV0_110) {
-            readCompatibility.report(YamlReadCompatibilityReason.LegacyNullValue, path, event.value, null, "\"${event.value}\"")
-            return YamlScalar(event.value, path, plain = true)
         }
 
         if (event.value.isNullLiteral() && event.plain) {
@@ -232,18 +226,7 @@ internal class YamlNodeReader(
                 }
 
                 if (isNullKey) {
-                    val isLegacyNullKey = scalarEvent.value.isEmpty() || scalarEvent.value in LEGACY_NULL_STRINGS
-                    if (!isLegacyNullKey || readCompatibility !is YamlReadCompatibility.LegacyV0_110) {
-                        throw nonScalarMapKeyException(path, event)
-                    }
-
-                    readCompatibility.report(
-                        YamlReadCompatibilityReason.LegacyNullKey,
-                        path.withMapElementKey(scalarEvent.value, event.location),
-                        scalarEvent.value,
-                        null,
-                        "\"${scalarEvent.value}\"",
-                    )
+                    throw nonScalarMapKeyException(path, event)
                 }
 
                 return scalarEvent
@@ -396,8 +379,6 @@ private data class WeightedNode(
     val weight: UInt,
     val depth: Int = 0,
 )
-
-private val LEGACY_NULL_STRINGS = setOf("Null", "NULL")
 
 private const val STRING_TAG = "tag:yaml.org,2002:str"
 

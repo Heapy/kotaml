@@ -21,10 +21,6 @@ package com.charleskorn.kaml
 
 import com.charleskorn.kaml.internal.ScalarKind
 import com.charleskorn.kaml.internal.classifyScalar
-import com.charleskorn.kaml.internal.readWithCompatibility
-import com.charleskorn.kaml.internal.toLegacyDoubleOrNull
-import com.charleskorn.kaml.internal.toLegacyFloatOrNull
-import com.charleskorn.kaml.internal.toLegacyIntegerOrNull
 import kotlinx.serialization.Serializable
 
 /**
@@ -104,27 +100,8 @@ public data class YamlScalar(
      * Whitespace, non-ASCII digits, and binary `0b` notation are not accepted.
      *
      * @throws YamlScalarFormatException if the text is invalid or the value is outside the [Long] range.
-     * @see YamlReadCompatibility
      */
     public fun toLong(): Long = convertToIntegerLikeValue(String::toLongOrNull, "long")
-
-    /** Converts to [Byte] using the fallback and reporting rules of [YamlReadCompatibility]. */
-    public fun toByte(compatibility: YamlReadCompatibility): Byte = readWithCompatibility(compatibility, YamlReadCompatibilityReason.LegacyInteger, "Byte", { toByte() }) { content.toLegacyIntegerOrNull(String::toByteOrNull) }
-
-    /** Converts to [Short] using the fallback and reporting rules of [YamlReadCompatibility]. */
-    public fun toShort(compatibility: YamlReadCompatibility): Short = readWithCompatibility(compatibility, YamlReadCompatibilityReason.LegacyInteger, "Short", { toShort() }) { content.toLegacyIntegerOrNull(String::toShortOrNull) }
-
-    /** Converts to [Int] using the fallback and reporting rules of [YamlReadCompatibility]. */
-    public fun toInt(compatibility: YamlReadCompatibility): Int = readWithCompatibility(compatibility, YamlReadCompatibilityReason.LegacyInteger, "Int", { toInt() }) { content.toLegacyIntegerOrNull(String::toIntOrNull) }
-
-    /** Converts to [Long] using the fallback and reporting rules of [YamlReadCompatibility]. */
-    public fun toLong(compatibility: YamlReadCompatibility): Long = readWithCompatibility(compatibility, YamlReadCompatibilityReason.LegacyInteger, "Long", { toLong() }) { content.toLegacyIntegerOrNull(String::toLongOrNull) }
-
-    /** Converts to [Float] using the fallback and reporting rules of [YamlReadCompatibility]. */
-    public fun toFloat(compatibility: YamlReadCompatibility): Float = readWithCompatibility(compatibility, YamlReadCompatibilityReason.LegacyFloatingPoint, "Float", { toFloat() }) { content.toLegacyFloatOrNull() }
-
-    /** Converts to [Double] using the fallback and reporting rules of [YamlReadCompatibility]. */
-    public fun toDouble(compatibility: YamlReadCompatibility): Double = readWithCompatibility(compatibility, YamlReadCompatibilityReason.LegacyFloatingPoint, "Double", { toDouble() }) { content.toLegacyDoubleOrNull() }
 
     private fun <T : Any> convertToIntegerLikeValue(
         converter: (String, Int) -> T?,
@@ -185,7 +162,6 @@ public data class YamlScalar(
      * The result is rounded to [Double] precision; overflow can produce infinity.
      *
      * @throws YamlScalarFormatException if the text is not a supported number.
-     * @see YamlReadCompatibility
      */
     public fun toDouble(): Double =
         toDoubleOrNull()

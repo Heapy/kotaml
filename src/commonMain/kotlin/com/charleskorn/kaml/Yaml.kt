@@ -98,7 +98,6 @@ public class Yaml(
                 parser,
                 configuration.extensionDefinitionPrefix,
                 configuration.anchorsAndAliases.maxAliasCount,
-                configuration.readCompatibility,
                 configuration.maxNestingDepth,
             )
         val node = reader.read()

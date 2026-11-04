@@ -29,37 +29,30 @@ import kotlinx.serialization.encodeToString
 class YamlStringTagReadingTest :
     FlatFunSpec({
         val stringTags = listOf("!!str", "!<tag:yaml.org,2002:str>", "!")
-        val modes =
-            listOf(
-                "strict" to YamlReadCompatibility.Strict,
-                "legacy" to YamlReadCompatibility.LegacyV0_110 { error("Explicit string tags must not use compatibility: $it") },
-            )
-        for ((mode, compatibility) in modes) {
-            val yaml = Yaml(configuration = YamlConfiguration(readCompatibility = compatibility))
-            for (tag in stringTags) {
-                for (text in listOf("null", "Null", "NULL", "~", "")) {
-                    test("reads '$tag $text' as a string in $mode mode") {
-                        val input = "$tag $text"
-                        yaml.decodeFromString<String>(input) shouldBe text
-                        yaml.decodeFromString<String?>(input) shouldBe text
-                        val node = yaml.parseToYamlNode(input).shouldBeInstanceOf<YamlTaggedNode>()
-                        node.tag shouldBe if (tag == "!") "!" else "tag:yaml.org,2002:str"
-                        node.innerNode.shouldBeInstanceOf<YamlScalar>().content shouldBe text
-                        node.innerNode.yamlScalar.plain shouldBe false
-                    }
+        val yaml = Yaml.default
+        for (tag in stringTags) {
+            for (text in listOf("null", "Null", "NULL", "~", "")) {
+                test("reads '$tag $text' as a string") {
+                    val input = "$tag $text"
+                    yaml.decodeFromString<String>(input) shouldBe text
+                    yaml.decodeFromString<String?>(input) shouldBe text
+                    val node = yaml.parseToYamlNode(input).shouldBeInstanceOf<YamlTaggedNode>()
+                    node.tag shouldBe if (tag == "!") "!" else "tag:yaml.org,2002:str"
+                    node.innerNode.shouldBeInstanceOf<YamlScalar>().content shouldBe text
+                    node.innerNode.yamlScalar.plain shouldBe false
                 }
+            }
 
-                test("reads '$tag' keys as strings in $mode mode") {
-                    for (text in listOf("null", "Null", "NULL", "~", "", "0x11")) {
-                        val input = "$tag $text: 1"
-                        yaml.decodeFromString<Map<String, Int>>(input) shouldBe mapOf(text to 1)
-                        val node = yaml.parseToYamlNode(input).yamlMap
-                        node.entries.keys
-                            .single()
-                            .plain shouldBe false
-                        val output = yaml.encodeToString(YamlNode.serializer(), node)
-                        Yaml.default.decodeFromString<Map<String, Int>>(output) shouldBe mapOf(text to 1)
-                    }
+            test("reads '$tag' keys as strings") {
+                for (text in listOf("null", "Null", "NULL", "~", "", "0x11")) {
+                    val input = "$tag $text: 1"
+                    yaml.decodeFromString<Map<String, Int>>(input) shouldBe mapOf(text to 1)
+                    val node = yaml.parseToYamlNode(input).yamlMap
+                    node.entries.keys
+                        .single()
+                        .plain shouldBe false
+                    val output = yaml.encodeToString(YamlNode.serializer(), node)
+                    Yaml.default.decodeFromString<Map<String, Int>>(output) shouldBe mapOf(text to 1)
                 }
             }
         }
@@ -90,6 +83,7 @@ class YamlStringTagReadingTest :
         }
 
         test("distinguishes plain nulls from explicitly tagged strings in nullable object properties") {
+            Yaml.default.decodeFromString<TaggedStringProperty>("value: Null") shouldBe TaggedStringProperty(null)
             Yaml.default.decodeFromString<TaggedStringProperty>("value: NULL") shouldBe TaggedStringProperty(null)
             Yaml.default.decodeFromString<TaggedStringProperty>("value: !!str NULL") shouldBe TaggedStringProperty("NULL")
             Yaml.default.decodeFromString<TaggedStringProperty>("value: !!str") shouldBe TaggedStringProperty("")

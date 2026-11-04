@@ -43,7 +43,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
  * @param yamlNamingStrategy transforms object property names for both reading and writing; `null` leaves them unchanged.
  * @param codePointLimit maximum input size in Unicode code points; `null` uses the parser's default limit.
  * @param decodeEnumCaseInsensitive whether to try case-insensitive enum matching after an exact match fails.
- * @param readCompatibility scalar migration policy; see [YamlReadCompatibility].
  * @param maxNestingDepth maximum nested mappings/sequences while reading, including alias expansion and merge syntax.
  * Defaults to 50; zero permits only scalar/null documents. Raising it requires more runtime stack.
  */
@@ -66,8 +65,6 @@ public data class YamlConfiguration(
     internal val codePointLimit: Int? = null,
     @ExperimentalSerializationApi
     internal val decodeEnumCaseInsensitive: Boolean = false,
-    @IntroducedAt("0.111.0")
-    internal val readCompatibility: YamlReadCompatibility = YamlReadCompatibility.Strict,
     @IntroducedAt("0.113.0")
     internal val maxNestingDepth: Int = 50,
 ) {
