@@ -310,6 +310,10 @@ internal class YamlNodeReader(
             .filterNot { (key, _) -> isMerge(key) }
             .forEach { (key, value) -> merged.put(key, value) }
 
+        // Scalar content is the canonical key used by YamlScalar.equivalentContentTo.
+        // Keep the original nodes (including duplicates) for metadata and YamlMap validation.
+        val encounteredKeys = merged.keys.mapTo(mutableSetOf()) { it.content }
+
         others
             .forEach { other ->
                 when (other) {
@@ -331,9 +335,7 @@ internal class YamlNodeReader(
 
                     is YamlMap -> {
                         other.entries.forEach { (key, value) ->
-                            val existingEntry = merged.entries.singleOrNull { it.key.equivalentContentTo(key) }
-
-                            if (existingEntry == null) {
+                            if (encounteredKeys.add(key.content)) {
                                 merged.put(key, value)
                             }
                         }

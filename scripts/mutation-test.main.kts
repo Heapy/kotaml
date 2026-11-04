@@ -26,7 +26,7 @@ val mutations = listOf(
     Mutation("depth-accounting", core + "YamlNodeReader.kt", "maxNestingDepth - nestingDepth", "maxNestingDepth + nestingDepth"),
     Mutation("alias-depth", core + "YamlNodeReader.kt", "checkDepth(resolvedDepth, path, event)", "checkDepth(0, path, event)"),
     Mutation("alias-budget", core + "YamlNodeReader.kt", "aliasCount > maxAliasCount", "aliasCount >= maxAliasCount"),
-    Mutation("merge-precedence", core + "YamlNodeReader.kt", "if (existingEntry == null)", "if (existingEntry != null)"),
+    Mutation("merge-precedence", core + "YamlNodeReader.kt", "if (encounteredKeys.add(key.content))", "if (!encounteredKeys.add(key.content))"),
     Mutation("sequence-tag-kind", core + "YamlNodeReader.kt", "tag == SEQUENCE_TAG && event !is SequenceStartEvent", "tag == SEQUENCE_TAG && event is SequenceStartEvent"),
     Mutation("octal-radix", core + "YamlNode.kt", "converter(content.substring(2), 8)", "converter(content.substring(2), 16)"),
     Mutation("merge-key-quoting", core + "YamlOutput.kt", "scalarStyle == ScalarStyle.PLAIN && (value.isNullLiteral() || value == \"<<\")", "scalarStyle == ScalarStyle.PLAIN && value.isNullLiteral()"),
