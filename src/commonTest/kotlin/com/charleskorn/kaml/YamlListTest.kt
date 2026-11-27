@@ -85,6 +85,23 @@ class YamlListTest :
             shouldThrow<IndexOutOfBoundsException> { listElements[10] }
         }
 
+        test("iterating over list yields its items in order") {
+            listElements.toList() shouldBe listElements.items
+        }
+
+        test("list size matches its items") {
+            listElements.size shouldBe 2
+        }
+
+        test("mapping over list without accessing items property") {
+            listElements.map { it.yamlScalar.content } shouldBe listOf("item 1", "item 2")
+        }
+
+        test("associating list elements without accessing items property") {
+            listElements.associate { it.yamlScalar.content to it.path } shouldBe
+                mapOf("item 1" to firstItemPath, "item 2" to secondItemPath)
+        }
+
         test("converting content of an empty list to a human-readable string") {
             val listEmpty = YamlList(emptyList(), YamlPath.root)
             listEmpty.contentToString() shouldBe "[]"
